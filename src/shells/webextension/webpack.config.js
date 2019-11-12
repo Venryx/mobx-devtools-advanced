@@ -8,6 +8,10 @@ const rootDir = path.join(__dirname, '../../../');
 module.exports = {
   mode: "none",
   devtool: false,
+  optimization: {
+    // use paths as runtime identifiers for webpack modules (easier debugging)
+    // namedModules: true, // commented; not needed, since "output.pathinfo=true"
+  },
   entry: {
     backend: path.join(__dirname, 'backend.js'),
     background: path.join(__dirname, 'background.js'),
@@ -21,6 +25,7 @@ module.exports = {
   output: {
     path: `${rootDir}/lib/${process.env.TARGET_BROWSER}`,
     filename: '[name].js',
+    pathinfo: true, // include comments next to require-funcs saying path (easier debugging)
   },
   module: {
     rules: [

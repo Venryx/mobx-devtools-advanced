@@ -8,14 +8,16 @@ const rootDir = path.join(__dirname, '../../');
 
 require('./prepare');
 
-const HR_PORT = 3001;
+const HR_PORT = 5000;
 
 for (const entryName in config.entry) {
   if (Object.prototype.hasOwnProperty.call(config.entry, entryName)) {
     config.entry[entryName] = [
-      `webpack-dev-server/client?http://localhost:${HR_PORT}`,
+      // `webpack-dev-server/client?http://localhost:${HR_PORT}/`,
+      // 'webpack-dev-server/client', // old; this already gets added automatically by WebpackDevServer below
       'webpack/hot/dev-server',
     ].concat(config.entry[entryName]);
+    // console.log("Paths:", config.entry[entryName]);
   }
 }
 
@@ -24,6 +26,12 @@ config.plugins = [new webpack.HotModuleReplacementPlugin()].concat(config.plugin
 const compiler = webpack(config);
 
 const server = new WebpackDevServer(compiler, {
+  // host: `http://localhost:${HR_PORT}`,
+  host: 'localhost',
+  port: HR_PORT,
+  disableHostCheck: true,
+  // sockHost: 'localhost',
+  // sockPort: HR_PORT,
   hot: true,
   contentBase: path.join(rootDir, 'lib', TARGET_BROWSER),
   headers: { 'Access-Control-Allow-Origin': '*' },
