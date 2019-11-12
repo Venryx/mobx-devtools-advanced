@@ -1,0 +1,15 @@
+/node_modules
+/src/index.js
+/npm-debug.log
+/lerna-debug.log
+~*
+*.iml
+*.ipr
+*.iws
+/lib
+/packages/**/lib
+/packages/**/dist
+/packages/**/node_modules
+/packages/**/npm-debug.log
+.DS_Store
+.idea

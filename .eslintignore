@@ -1,0 +1,6 @@
+/vendor/**
+/node_modules/**
+/lib/**
+/packages/**/lib/**
+/packages/**/dist/**
+/packages/**/node_modules/**
