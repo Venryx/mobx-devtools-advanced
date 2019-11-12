@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { css, StyleSheet } from 'aphrodite';
-import 'hack-font/build/webfonts/css/hack.css';
+import 'hack-font/build/web/hack.css';
 import Bridge from '../Bridge';
 import createStores from './stores';
 import Blocker from './Blocker';
