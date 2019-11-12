@@ -13,7 +13,6 @@
 ## Chrome extension
 
 - Run: `yarn start:chrome`
-- Copy the "html" and "icons" folders from "src/shells/webextension" into the "lib/chrome" folder.
 - Go to `chrome://extensions`, check "developer mode", click "Loadunpacked extension", and select directory `lib/chrome`.
   
   

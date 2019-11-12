@@ -64,10 +64,10 @@ export default class RichPanel extends React.Component {
 
   getAvailableTabs(props = this.props) {
     return [
-      props.mobxReactFound && 'components',
-      props.mstFound && 'mst',
+      'components',
+      'mst',
       'changes',
-      props.mobxReactFound && 'performance',
+      'performance',
     ].filter(t => t);
   }
 

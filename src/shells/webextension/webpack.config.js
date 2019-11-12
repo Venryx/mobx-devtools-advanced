@@ -34,7 +34,7 @@ module.exports = {
         },
       },
       {
-        test: /icons\/.*\.(png|svg)$/,
+        test: /icons[/\\].*\.(png|svg)$/,
         loader: 'file-loader?name=icons/[name].[ext]',
         exclude: /node_modules/,
       },
@@ -42,7 +42,7 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         loader: 'eslint-loader',
-        query: {
+        options: {
           failOnWarning: false,
           failOnError: process.env.NODE_ENV !== 'development',
           fix: process.env.NODE_ENV === 'development',
