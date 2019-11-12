@@ -12,12 +12,12 @@ module.exports = {
     filename: 'index.js',
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.jsx?$/,
         loader: 'babel-loader',
         exclude: /node_modules/,
-        query: { cacheDirectory: true },
+        options: { cacheDirectory: true },
       },
     ],
   },

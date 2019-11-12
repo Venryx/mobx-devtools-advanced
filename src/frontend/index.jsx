@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import App from './App';
-import RichPanel from './RichPanel';
+import { RichPanel } from './RichPanel';
 
 export default (config) => {
   const reload = () => {

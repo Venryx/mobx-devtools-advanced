@@ -12,12 +12,12 @@ module.exports = [
       filename: 'mobxDevtoolsBackend.js',
     },
     module: {
-      loaders: [
+      rules: [
         {
           test: /\.jsx?$/,
           loader: 'babel-loader',
           exclude: /node_modules/,
-          query: { cacheDirectory: true },
+          options: { cacheDirectory: true },
         },
         {
           test: /\.(eot|ttf|woff2?)$/,
@@ -47,12 +47,12 @@ module.exports = [
       filename: 'frontend.js',
     },
     module: {
-      loaders: [
+      rules: [
         {
           test: /\.jsx?$/,
           loader: 'babel-loader',
           exclude: /node_modules/,
-          query: { cacheDirectory: true },
+          options: { cacheDirectory: true },
         },
         {
           test: /\.(eot|ttf|woff2?)$/,

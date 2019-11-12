@@ -44,15 +44,27 @@ exports.makeConfig = ({
     },
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.jsx?$/,
         loader: 'babel-loader',
         exclude: /node_modules/,
-        query: {
+        options: {
           cacheDirectory: true,
-          presets: ['es2015', 'stage-1'],
-          plugins: ['transform-decorators-legacy', 'transform-class-properties'],
+          presets: [
+            '@babel/env',
+            '@babel/react'
+          ],
+          plugins: [
+            [
+              '@babel/plugin-proposal-decorators',
+              {
+                //decoratorsBeforeExport: true,
+                legacy: true
+              },
+            ],
+            'transform-class-properties'
+          ],
         },
       },
       // {

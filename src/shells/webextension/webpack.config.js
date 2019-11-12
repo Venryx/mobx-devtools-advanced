@@ -6,6 +6,7 @@ const WriteFilePlugin = require('write-file-webpack-plugin');
 const rootDir = path.join(__dirname, '../../../');
 
 module.exports = {
+  mode: "none",
   devtool: false,
   entry: {
     backend: path.join(__dirname, 'backend.js'),
@@ -14,7 +15,7 @@ module.exports = {
     contentScript: path.join(__dirname, 'contentScript.js'),
     panel: path.join(__dirname, 'panel.jsx'),
     'panel-loader': path.join(__dirname, 'panel-loader.js'),
-    window: path.join(__dirname, 'window.jsx'),
+    window: path.join(__dirname, 'window.tsx'),
     icons: path.join(__dirname, 'icons'),
   },
   output: {
@@ -22,15 +23,28 @@ module.exports = {
     filename: '[name].js',
   },
   module: {
-    loaders: [
+    rules: [
+      { test: /\.tsx?$/, loader: 'ts-loader' },
       {
         test: /\.jsx?$/,
         loader: 'babel-loader',
         exclude: /node_modules/,
         query: {
           cacheDirectory: true,
-          presets: ['es2015', 'stage-1'],
-          plugins: ['transform-decorators-legacy', 'transform-class-properties'],
+          presets: [
+            '@babel/env',
+            '@babel/react'
+          ],
+          plugins: [
+            [
+              '@babel/plugin-proposal-decorators',
+              {
+                //decoratorsBeforeExport: true,
+                legacy: true
+              },
+            ],
+            'transform-class-properties'
+          ],
         },
       },
       {
@@ -50,10 +64,6 @@ module.exports = {
         },
       },
       {
-        test: /\.tsx?$/,
-        loader: 'ts-loader',
-      },
-      {
         test: /\.(png|svg)$/,
         loader: 'url-loader',
         exclude: /icons\//,
@@ -69,7 +79,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.ts'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       'mobx-react': `${rootDir}/mobx-react/src`,
       mobx: `${rootDir}/mobx/src/mobx.ts`,

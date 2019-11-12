@@ -15,7 +15,7 @@ function createPanelIfMobxLoaded() {
 
       clearInterval(loadCheckInterval);
       panelCreated = true;
-      chrome.devtools.panels.create('MobX', '', 'panel.html', () => {});
+      chrome.devtools.panels.create('MobX+', '', 'panel.html', () => {});
     }
   );
 }
