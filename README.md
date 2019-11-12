@@ -1,22 +1,25 @@
-# mobx-devtools
+# mobx-devtools-advanced
 This repository is home for:
-* [MobX Developer Tools for **Chrome**](https://chrome.google.com/webstore/detail/mobx-developer-tools/pfgnfdagidkfgccljigdamigbcnndkod)
-* [MobX Developer Tools for **Firefox**](https://addons.mozilla.org/en-US/firefox/addon/mobx-devtools/)
+* MobX Developer Tools (Advanced) for **Chrome** (not yet released)
+* MobX Developer Tools (Advanced) for **Firefox** (not yet released)
 * [Standalone app](#standalone-app) for Safari, IE etc. 
 
 ![MobX DevTools](preview.gif)
 
-#### Features
+#### Base features of mobx-devtools
 
-* Inspect mobx-react observers. Edit values in observable objects
-(Doesn't support editing react props/state, use react-devtools for that)
+* Inspect mobx-react observers. Edit values in observable objects. (Doesn't support editing react props/state, use react-devtools for that)
 * Track changes in MobX observables
 * MST support (see below).
 
+#### New features in advanced version
+
+TODO
+
 #### mobx-state-tree
-To allow inspecting MST root, do `npm install mobx-devtools-mst` and pass it to the function, exported as the default:
+To allow inspecting MST root, do `npm install mobx-devtools-mst-advanced` and pass it to the function, exported as the default:
 ```js
-import makeInspectable from 'mobx-devtools-mst';
+import makeInspectable from 'mobx-devtools-mst-advanced';
 
 const myStore = MyStore.create(/* ... */);
 
@@ -29,18 +32,18 @@ makeInspectable(myStore);
 
 Install:
 ```sh
-npm install --global mobx-devtools
+npm install --global mobx-devtools-advanced
 ```
 Start: 
 ```sh
-mobx-devtools
+mobx-devtools-advanced
 ```
 
 
 # Troubleshooting
 
 ### It doesn't work
-Make sure that you are using [mobx](https://www.npmjs.com/package/mobx) 3.1.15 or higher and your app does not live inside an iframe. If that doesn't help, please [create an issue](https://github.com/mobxjs/mobx-devtools/issues/new) with detail about your environment.
+Make sure that you are using [mobx](https://www.npmjs.com/package/mobx) 3.1.15 or higher and your app does not live inside an iframe. If that doesn't help, please [create an issue](https://github.com/Venryx/mobx-devtools-advanced/issues/new) with detail about your environment.
 
 ### Performance & Components tabs do not appear.
 They appear only when you are using [mobx-react](https://www.npmjs.com/package/mobx-react) 4.2.2 or higher;

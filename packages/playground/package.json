@@ -1,13 +1,13 @@
 {
   "private": true,
-  "name": "mobx-devtools-playground",
-  "version": "0.9.21",
+  "name": "mobx-devtools-advanced-playground",
+  "version": "0.0.1",
   "main": "dist/electronBackground.bundle.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mobxjs/mobx-devtools.git"
+    "url": "https://github.com/Venryx/mobx-devtools-advanced.git"
   },
-  "author": "Andy Kogut",
+  "author": "Venryx",
   "license": "MIT",
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack-dev-server --hot",

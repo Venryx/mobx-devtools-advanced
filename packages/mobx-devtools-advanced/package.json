@@ -1,0 +1,24 @@
+{
+  "name": "mobx-devtools-advanced",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Venryx/mobx-devtools-advanced.git"
+  },
+  "author": "Venryx",
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack"
+  },
+  "bin": {
+    "mobx-devtools-advanced": "./bin.js"
+  },
+  "bugs": {
+    "url": "https://github.com/Venryx/mobx-devtools-advanced/issues"
+  },
+  "dependencies": {
+    "electron": "^1.7.9",
+    "ip": "^1.1.5",
+    "ws": "^3.2.0"
+  }
+}
