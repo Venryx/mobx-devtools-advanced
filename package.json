@@ -24,7 +24,7 @@
         "lint": "eslint '**/*.js' '**/*.jsx'",
         "lint-fix": "eslint --fix '**/*.js' '**/*.jsx'",
         "prettier": "prettier --write --print-width 100 --tab-width 2 --single-quote \"src/**/*.js\" \"src/**/*.jsx\"",
-        "precommit": "lint-staged"
+        "#precommit": "lint-staged"
     },
     "lint-staged": {
         "*.js": [
