@@ -10,18 +10,18 @@ require('./prepare');
 
 const HR_PORT = 5000;
 
-for (const entryName in config.entry) {
+/* for (const entryName in config.entry) {
   if (Object.prototype.hasOwnProperty.call(config.entry, entryName)) {
     config.entry[entryName] = [
       // `webpack-dev-server/client?http://localhost:${HR_PORT}/`,
       // 'webpack-dev-server/client', // old; this already gets added automatically by WebpackDevServer below
-      'webpack/hot/dev-server',
+      // 'webpack/hot/dev-server',
     ].concat(config.entry[entryName]);
     // console.log("Paths:", config.entry[entryName]);
   }
-}
+} */
 
-config.plugins = [new webpack.HotModuleReplacementPlugin()].concat(config.plugins || []);
+// config.plugins = [new webpack.HotModuleReplacementPlugin()].concat(config.plugins || []);
 
 const compiler = webpack(config);
 
@@ -32,7 +32,9 @@ const server = new WebpackDevServer(compiler, {
   disableHostCheck: true,
   // sockHost: 'localhost',
   // sockPort: HR_PORT,
-  hot: true,
+  // hot: true,
+  hot: false,
+  liveReload: true, // even though only live-reload is enabled, it somehow ends up refreshing the (non-extension) page itself as well!
   contentBase: path.join(rootDir, 'lib', TARGET_BROWSER),
   headers: { 'Access-Control-Allow-Origin': '*' },
 });
