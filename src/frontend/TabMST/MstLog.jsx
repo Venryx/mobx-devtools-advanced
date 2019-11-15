@@ -2,12 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import {StyleSheet, css} from "aphrodite";
 import List from "react-virtualized/dist/commonjs/List";
-import injectStores from "../../utils/injectStores";
+import {InjectStores} from "../../utils/InjectStores";
 import MstLogItem from "./MstLogItem";
 
 const ITEM_HEIGHT = 30;
 
-@injectStores({
+@InjectStores({
   subscribe: {
     mstLoggerStore: [
     	"mstLogItems",

@@ -1,10 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {css, StyleSheet} from "aphrodite";
-import injectStores from "../../utils/injectStores";
+import {InjectStores} from "../../utils/InjectStores";
 import Checkbox from "./Checkbox";
 
-@injectStores({
+@InjectStores({
   subscribe: {
     updatesHighlighterStore: ["updatesEnabled", "updatesFilterByDuration"],
   },

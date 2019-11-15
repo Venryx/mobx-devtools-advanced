@@ -4,11 +4,11 @@ import PropTypes from "prop-types";
 import {css, StyleSheet} from "aphrodite";
 import List from "react-virtualized/dist/commonjs/List";
 import LogItem from "./LogItem";
-import injectStores from "../../utils/injectStores";
+import {InjectStores} from "../../utils/InjectStores";
 
 const ITEM_HEIGHT = 24;
 
-@injectStores({
+@InjectStores({
   subscribe: {
     actionsLoggerStore: ["log"],
   },

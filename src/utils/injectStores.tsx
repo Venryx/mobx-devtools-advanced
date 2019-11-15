@@ -3,7 +3,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-export type InjectPropsFunc = (stores: {actionsLoggerStore, updatesHighlighterStore, capabilitiesStore, mstLoggerStore}, props: {})=>any;
+export type InjectPropsFunc = (
+	stores: {actionsLoggerStore, updatesHighlighterStore, capabilitiesStore, mstLoggerStore, treeExplorerStore},
+	props: any,
+)=>any;
 
 export function InjectStores({subscribe, injectProps = (()=>{}) as InjectPropsFunc, shouldUpdate = null}) {
 	return (TargetComponent: Function): any=>{

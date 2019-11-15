@@ -1,12 +1,12 @@
 import React from "react";
 import {StyleSheet, css} from "aphrodite";
 import PropTypes from "prop-types";
-import injectStores from "../../utils/injectStores";
+import {InjectStores} from "../../utils/InjectStores";
 import DataViewer from "../DataViewer";
 import Collapsible from "../Collapsible";
 import PreviewValue from "../PreviewValue";
 
-@injectStores({
+@InjectStores({
   subscribe: ({mstLoggerStore})=>{
   	const itemData = mstLoggerStore.itemsDataByRootId[mstLoggerStore.activeRootId];
   	return {
@@ -36,7 +36,7 @@ export default class LogItemExplorer extends React.PureComponent {
     getValueByPath: PropTypes.func.isRequired,
   };
 
-  dataDecorator = injectStores({
+  dataDecorator = InjectStores({
     subscribe: (stores, {path})=>({
       treeExplorerStore: [`inspected--${path.join("/")}`],
     }),

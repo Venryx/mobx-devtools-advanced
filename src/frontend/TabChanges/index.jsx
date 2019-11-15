@@ -5,10 +5,10 @@ import SecondaryPanel from "../SecondaryPanel";
 import ButtonRecord from "../SecondaryPanel/ButtonRecord";
 import ButtonClear from "../SecondaryPanel/ButtonClear";
 import Log from "./Log";
-import injectStores from "../../utils/injectStores";
+import {InjectStores} from "../../utils/InjectStores";
 import InputSearch from "../SecondaryPanel/InputSearch";
 
-@injectStores({
+@InjectStores({
   subscribe: {
     actionsLoggerStore: ["logEnabled", "log"],
   },

@@ -4,13 +4,13 @@ import {css, StyleSheet} from "aphrodite";
 import SecondaryPanel from "../SecondaryPanel";
 import ButtonPickComponent from "../SecondaryPanel/ButtonPickComponent";
 import SearchComponents from "./SearchComponents";
-import injectStores from "../../utils/injectStores";
+import {InjectStores} from "../../utils/InjectStores";
 import TreeView from "./TreeView";
 import SplitPane from "../SplitPane";
 import Breadcrumb from "./TreeView/Breadcrumb";
 import TreeComponentExplorer from "./TreeComponentExplorer";
 
-@injectStores({
+@InjectStores({
   subscribe: {
     treeExplorerStore: ["pickingComponent"],
   },

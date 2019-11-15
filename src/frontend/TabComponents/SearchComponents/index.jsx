@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import injectStores from "../../../utils/injectStores";
+import {InjectStores} from "../../../utils/InjectStores";
 
-@injectStores({
+@InjectStores({
   subscribe: {
     treeExplorerStore: ["searchText"],
   },

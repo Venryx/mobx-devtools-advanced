@@ -1,11 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {css, StyleSheet} from "aphrodite";
-import injectStores from "../../../utils/injectStores";
+import {InjectStores} from "../../../utils/InjectStores";
 import DataViewer from "../../DataViewer";
 import Collapsible from "../../Collapsible";
 
-@injectStores({
+@InjectStores({
   subscribe: ({treeExplorerStore})=>({
     treeExplorerStore: [treeExplorerStore.selectedNodeId, "selectedNodeId"],
   }),
@@ -61,7 +61,7 @@ export default class TreeComponentExplorer extends React.Component {
   	this.props.inspect([], ()=>this.setState({}));
   }
 
-  dataDecorator = injectStores({
+  dataDecorator = InjectStores({
     subscribe: (stores, {path})=>({
       treeExplorerStore: [`inspected--${path.join("/")}`],
     }),

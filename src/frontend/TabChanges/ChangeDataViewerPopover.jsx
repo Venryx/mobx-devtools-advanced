@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import {css, StyleSheet} from "aphrodite";
 import PreviewValue from "../PreviewValue";
-import injectStores from "../../utils/injectStores";
+import {InjectStores} from "../../utils/InjectStores";
 import Popover from "../Popover";
 import DataViewer from "../DataViewer/index";
 
@@ -44,7 +44,7 @@ export default function ChangeDataViewerPopover({
       inspect={inspect}
       stopInspecting={stopInspecting}
       showMenu={showMenu}
-      decorator={injectStores({
+      decorator={InjectStores({
         subscribe: (stores, props)=>({
           actionsLoggerStore: [`inspected--${props.path.join("/")}`],
         }),

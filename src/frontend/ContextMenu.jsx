@@ -2,11 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import ReactDOM from "react-dom";
 import {css, StyleSheet} from "aphrodite";
-import injectStores from "../utils/injectStores";
+import {InjectStores} from "../utils/InjectStores";
 
 const MIN_WIDTH = 150;
 
-@injectStores({
+@InjectStores({
   subscribe: {
     treeExplorerStore: ["contextMenu"],
     actionsLoggerStore: ["contextMenu"],

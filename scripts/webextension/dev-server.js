@@ -1,7 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
-const {WebpackStringReplacer} = require("webpack-string-replacer");
+const WebpackStringReplacer = require("webpack-string-replacer");
 const config = require("../../src/shells/webextension/webpack.config");
 require("./prepare");
 
@@ -14,7 +14,8 @@ const HR_PORT = 5000;
 // (normally, the changes are UI only, so no need to reload the content-script or page)
 config.plugins.push(new WebpackStringReplacer({
 	//logOutputFilePaths: true,
-	logFileMatchContents: true,
+	logFileMatches: true,
+	//logFileMatchContents: 1000,
 	//logAroundPatternMatches: 200,
 	rules: [{
 		applyStage: "optimizeChunkAssets",
@@ -61,7 +62,7 @@ const server = new WebpackDevServer(compiler, {
 	stats: {
 		warnings: false,
 	},
-	quiet: true, // stops message spam in page console (for when run locally)
+	//quiet: true, // stops message spam in page console (for when run locally)
 });
 
 server.listen(HR_PORT);

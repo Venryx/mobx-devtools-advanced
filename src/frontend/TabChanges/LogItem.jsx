@@ -4,7 +4,7 @@ import {css, StyleSheet} from "aphrodite";
 import LObjDiff from "./LObjDiff";
 import LObjDiffPreview from "./LObjDiffPreview";
 import {IconComputed, IconScheduledReaction, IconError} from "./icons";
-import injectStores from "../../utils/injectStores";
+import {InjectStores} from "../../utils/InjectStores";
 import Popover from "../Popover";
 import ChangeDataViewerPopover from "./ChangeDataViewerPopover";
 
@@ -19,7 +19,7 @@ const getColor = type=>{
 	}
 };
 
-@injectStores({
+@InjectStores({
   subscribe: (stores, {change})=>({
     actionsLoggerStore: [change.id],
   }),

@@ -1,6 +1,6 @@
 import React from "react";
 import preferences from "../preferences";
-import {InjectStores} from "../utils/injectStores";
+import {InjectStores} from "../utils/InjectStores";
 import ContextMenu from "./ContextMenu";
 import MainMenu from "./MainMenu";
 import TabChanges from "./TabChanges";

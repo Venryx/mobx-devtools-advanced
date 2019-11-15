@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import {StyleSheet, css} from "aphrodite";
 import Player from "./Player";
-import injectStores from "../../utils/injectStores";
+import {InjectStores} from "../../utils/InjectStores";
 import SecondaryPanel from "../SecondaryPanel";
 import ButtonRecord from "../SecondaryPanel/ButtonRecord";
 import ButtonClear from "../SecondaryPanel/ButtonClear";
@@ -11,7 +11,7 @@ import TabsMenu from "./TabsMenu";
 import MstLog from "./MstLog";
 import LogItemExplorer from "./LogItemExplorer";
 
-@injectStores({
+@InjectStores({
   subscribe: {
     capabilitiesStore: ["mstFound"],
     mstLoggerStore: [

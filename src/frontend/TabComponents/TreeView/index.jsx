@@ -4,11 +4,11 @@ import {css, StyleSheet} from "aphrodite";
 import Node from "./Node";
 import * as SearchUtils from "../../../utils/SearchUtils";
 import Spinner from "../../Spinner";
-import injectStores from "../../../utils/injectStores";
+import {InjectStores} from "../../../utils/InjectStores";
 
 const MAX_SEARCH_ROOTS = 200;
 
-@injectStores({
+@InjectStores({
   subscribe: {
     treeExplorerStore: ["roots", "searchRoots", "loaded"],
   },
