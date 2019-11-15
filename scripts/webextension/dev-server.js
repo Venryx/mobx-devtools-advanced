@@ -24,16 +24,6 @@ const HR_PORT = 5000;
 
 // config.plugins = [new webpack.HotModuleReplacementPlugin()].concat(config.plugins || []);
 
-// maybe temp; disable warnings for webpack output (so webpack doesn't get flooded with them)
-config.plugins.push({
-  apply(compiler) {
-    compiler.plugin('emit', (compilation, cb) => {
-      compilation.warnings = [];
-      cb();
-    });
-  },
-});
-
 // hacky fix for webpack-dev-server causing the (non-extension) page to reload on any changes to dev-tools source!
 // (normally, the changes are UI only, so no need to reload the content-script or page)
 config.plugins.push(new StringReplacerPlugin({
@@ -53,6 +43,16 @@ config.plugins.push(new StringReplacerPlugin({
   }],
 }));
 
+// maybe temp; disable warnings for webpack output (so webpack doesn't get flooded with them)
+config.plugins.push({
+  apply(compiler) {
+    compiler.plugin('emit', (compilation, cb) => {
+      compilation.warnings = [];
+      cb();
+    });
+  },
+});
+
 const compiler = webpack(config);
 
 const server = new WebpackDevServer(compiler, {
@@ -70,6 +70,7 @@ const server = new WebpackDevServer(compiler, {
   stats: {
     warnings: false,
   },
+  quiet: true, // stops message spam in page console (for when run locally)
 });
 
 server.listen(HR_PORT);
