@@ -1,8 +1,8 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
-import PropTypes from 'prop-types';
-import { css, StyleSheet } from 'aphrodite';
-import ChangeDataViewerPopover from './ChangeDataViewerPopover';
+import React from "react";
+import PropTypes from "prop-types";
+import {css, StyleSheet} from "aphrodite";
+import ChangeDataViewerPopover from "./ChangeDataViewerPopover";
 
 export default class LObjDiff extends React.PureComponent {
   static propTypes = {
@@ -15,45 +15,45 @@ export default class LObjDiff extends React.PureComponent {
   };
 
   getDiff() {
-    const { change } = this.props;
-    switch (change.type) {
-      case 'add':
+  	const {change} = this.props;
+  	switch (change.type) {
+      case "add":
         return {
-          added: [{ name: change.name, value: change.newValue, path: ['newValue'] }],
+          added: [{name: change.name, value: change.newValue, path: ["newValue"]}],
         };
-      case 'delete':
+      case "delete":
         return {
-          removed: [{ name: change.name, value: change.oldValue, path: ['oldValue'] }],
+          removed: [{name: change.name, value: change.oldValue, path: ["oldValue"]}],
         };
-      case 'update':
+      case "update":
         return {
-          added: [{ name: change.name, value: change.newValue, path: ['newValue'] }],
-          removed: [{ name: change.name, value: change.oldValue, path: ['oldValue'] }],
+          added: [{name: change.name, value: change.newValue, path: ["newValue"]}],
+          removed: [{name: change.name, value: change.oldValue, path: ["oldValue"]}],
         };
-      case 'splice':
+      case "splice":
         return {
-          added: (change.added || []).map((value, i) => ({
+          added: (change.added || []).map((value, i)=>({
             name: change.index + i,
             value,
-            path: ['added', i],
+            path: ["added", i],
           })),
-          removed: (change.removed || []).map((value, i) => ({
+          removed: (change.removed || []).map((value, i)=>({
             name: change.index + i,
             value,
-            path: ['removed', i],
+            path: ["removed", i],
           })),
         };
       default:
-        return { added: [], removed: [] };
-    }
+        return {added: [], removed: []};
+  	}
   }
 
   render() {
-    const { added = [], removed = [] } = this.getDiff();
-    return (
+  	const {added = [], removed = []} = this.getDiff();
+  	return (
       <div className={css(styles.container)}>
         <div className={css(styles.innerContainer)}>
-          {removed.map(({ name, path }, i) => (
+          {removed.map(({name, path}, i)=>(
             <div className={css(styles.diffRow, styles.removed)} key={i}>
               <div className={css(styles.propName, styles.propNameRemoved)}>{name}</div>
               <div className={css(styles.propValue, styles.propValueRemoved)}>
@@ -67,7 +67,7 @@ export default class LObjDiff extends React.PureComponent {
               </div>
             </div>
           ))}
-          {added.map(({ name, path }, i) => (
+          {added.map(({name, path}, i)=>(
             <div className={css(styles.diffRow, styles.added)} key={i}>
               <div className={css(styles.propName, styles.propNameAdded)}>{name}</div>
               <div className={css(styles.propValue, styles.propValueAdded)}>
@@ -83,59 +83,59 @@ export default class LObjDiff extends React.PureComponent {
           ))}
         </div>
       </div>
-    );
+  	);
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    fontFamily: 'const(--font-family-monospace)',
-    width: '100%',
+    fontFamily: "const(--font-family-monospace)",
+    width: "100%",
     maxHeight: 270,
-    overflow: 'auto',
+    overflow: "auto",
   },
   innerContainer: {
-    display: 'table',
+    display: "table",
   },
   title: {},
   diffRow: {
-    display: 'table-row',
+    display: "table-row",
   },
   propName: {
-    display: 'table-cell',
+    display: "table-cell",
     minWidth: 70,
     maxWidth: 180,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
     padding: 5,
   },
   propNameRemoved: {
-    backgroundColor: 'rgba(245, 0, 30, 0.13)',
+    backgroundColor: "rgba(245, 0, 30, 0.13)",
   },
   propNameAdded: {
-    backgroundColor: 'rgba(0, 246, 54, 0.18)',
+    backgroundColor: "rgba(0, 246, 54, 0.18)",
   },
   propValue: {
-    padding: '5px 5px 5px 20px',
-    flex: '1 1 auto',
-    display: 'table-cell',
-    position: 'relative',
-    ':before': {
-      position: 'absolute',
+    padding: "5px 5px 5px 20px",
+    flex: "1 1 auto",
+    display: "table-cell",
+    position: "relative",
+    ":before": {
+      position: "absolute",
       left: 5,
-      flex: '0 0 auto',
+      flex: "0 0 auto",
     },
   },
   propValueRemoved: {
-    backgroundColor: 'rgba(245, 0, 30, 0.07)',
-    ':before': {
+    backgroundColor: "rgba(245, 0, 30, 0.07)",
+    ":before": {
       content: '"-"',
     },
   },
   propValueAdded: {
-    backgroundColor: 'rgba(0, 246, 54, 0.09)',
-    ':before': {
+    backgroundColor: "rgba(0, 246, 54, 0.09)",
+    ":before": {
       content: '"+"',
     },
   },

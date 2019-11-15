@@ -1,21 +1,21 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { css, StyleSheet } from 'aphrodite';
-import Tab from './MainMenuTab';
+import React from "react";
+import PropTypes from "prop-types";
+import {css, StyleSheet} from "aphrodite";
+import Tab from "./MainMenuTab";
 
-const getTitle = (type) => {
-  switch (type) {
-    case 'components':
-      return 'Components';
-    case 'changes':
-      return 'Changes';
-    case 'performance':
-      return 'Performance';
-    case 'mst':
-      return 'MST';
+const getTitle = type=>{
+	switch (type) {
+    case "components":
+      return "Components";
+    case "changes":
+      return "Changes";
+    case "performance":
+      return "Performance";
+    case "mst":
+      return "MST";
     default:
       return type;
-  }
+	}
 };
 
 MainMenu.propTypes = {
@@ -28,28 +28,28 @@ MainMenu.propTypes = {
 export default function MainMenu({
   availableTabs, activeTab, onTabChange, processingTabs,
 }) {
-  return (
+	return (
     <div className={css(styles.container)} data-test="MainMenu">
-      {availableTabs.map((type) => (
+      {availableTabs.map(type=>(
         <Tab
           key={type}
           type={type}
           active={activeTab === type}
-          onClick={() => onTabChange(type)} // eslint-disable-line react/jsx-no-bind
+          onClick={()=>onTabChange(type)} // eslint-disable-line react/jsx-no-bind
           processing={processingTabs.includes(type)}
         >
           {getTitle(type)}
         </Tab>
       ))}
     </div>
-  );
+	);
 }
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    flex: '0 0 auto',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-    padding: '0 10px',
+    display: "flex",
+    flex: "0 0 auto",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+    padding: "0 10px",
   },
 });

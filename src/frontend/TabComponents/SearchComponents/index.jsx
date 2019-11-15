@@ -1,14 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import injectStores from '../../../utils/injectStores';
+import React from "react";
+import PropTypes from "prop-types";
+import injectStores from "../../../utils/injectStores";
 
 @injectStores({
   subscribe: {
-    treeExplorerStore: ['searchText'],
+    treeExplorerStore: ["searchText"],
   },
-  injectProps: ({ treeExplorerStore }) => ({
+  injectProps: ({treeExplorerStore})=>({
     searchText: treeExplorerStore.searchText,
-    changeSearch: (e) => treeExplorerStore.changeSearch(e.target.value),
+    changeSearch: e=>treeExplorerStore.changeSearch(e.target.value),
   }),
 })
 export default class SearchComponents extends React.PureComponent {
@@ -18,19 +18,19 @@ export default class SearchComponents extends React.PureComponent {
   };
 
   render() {
-    return (
+  	return (
       <input
         type="search"
         value={this.props.searchText}
         onChange={this.props.changeSearch}
         placeholder="Search (string/regex)"
         style={{
-          border: '1px solid rgba(0, 0, 0, 0.12)',
+          border: "1px solid rgba(0, 0, 0, 0.12)",
           padding: 3,
           borderRadius: 4,
           width: 133,
         }}
       />
-    );
+  	);
   }
 }

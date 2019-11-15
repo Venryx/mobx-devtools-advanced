@@ -1,16 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { StyleSheet, css } from 'aphrodite';
-import pluralize from '../../utils/pluralize';
+import React from "react";
+import PropTypes from "prop-types";
+import {StyleSheet, css} from "aphrodite";
+import pluralize from "../../utils/pluralize";
 
-const getTitle = (logItem, initial) => {
-  if (initial) {
-    return 'Initial';
-  }
-  if (logItem.patches) {
-    return `${logItem.patches.length} ${pluralize(logItem.patches.length, 'patch', 'patches')}`;
-  }
-  return 'Change';
+const getTitle = (logItem, initial)=>{
+	if (initial) {
+		return "Initial";
+	}
+	if (logItem.patches) {
+		return `${logItem.patches.length} ${pluralize(logItem.patches.length, "patch", "patches")}`;
+	}
+	return "Change";
 };
 
 // const tsToDate = (timestamp) => {
@@ -34,19 +34,19 @@ export default class MstLogItem extends React.PureComponent {
     style: PropTypes.object,
   };
 
-  handleSelect = () => this.props.onSelect(this.props.logItem.id);
+  handleSelect = ()=>this.props.onSelect(this.props.logItem.id);
 
-  handleActivate = () => this.props.onActivate(this.props.logItem.id);
+  handleActivate = ()=>this.props.onActivate(this.props.logItem.id);
 
-  handleCancel = () => this.props.onCancel(this.props.logItem.id);
+  handleCancel = ()=>this.props.onCancel(this.props.logItem.id);
 
-  handleCommit = () => this.props.onCommit(this.props.logItem.id);
+  handleCommit = ()=>this.props.onCommit(this.props.logItem.id);
 
   render() {
-    const {
+  	const {
       active, initial, selected, logItem, style,
-    } = this.props;
-    return (
+  	} = this.props;
+  	return (
       <div
         onClick={this.handleSelect}
         className={css(styles.logItem, selected && styles.logItemSelected)}
@@ -94,11 +94,11 @@ export default class MstLogItem extends React.PureComponent {
           <div className={css(styles.activeIndicator)} />
         )}
       </div>
-    );
+  	);
   }
 }
 
-const TravelIcon = () => (
+const TravelIcon = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"
@@ -114,7 +114,7 @@ const TravelIcon = () => (
   </svg>
 );
 
-const CancelIcon = () => (
+const CancelIcon = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"
@@ -126,7 +126,7 @@ const CancelIcon = () => (
   </svg>
 );
 
-const CommitIcon = () => (
+const CommitIcon = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"
@@ -145,84 +145,84 @@ const CommitIcon = () => (
 
 const styles = StyleSheet.create({
   logItem: {
-    display: 'flex',
-    alignItems: 'center',
-    boxSizing: 'border-box',
+    display: "flex",
+    alignItems: "center",
+    boxSizing: "border-box",
     fontSize: 12,
-    userSelect: 'none',
-    cursor: 'default',
-    '--log-item-buttons-pane-opacity': '0',
-    '--log-item-buttons-color': '#000',
-    '--log-item-primary-color': 'var(--primary-color)',
-    '--log-item-date-color': 'inherit',
-    ':hover': {
-      '--log-item-date-color': 'transparent',
-      '--log-item-buttons-pane-opacity': '0.95',
+    userSelect: "none",
+    cursor: "default",
+    "--log-item-buttons-pane-opacity": "0",
+    "--log-item-buttons-color": "#000",
+    "--log-item-primary-color": "var(--primary-color)",
+    "--log-item-date-color": "inherit",
+    ":hover": {
+      "--log-item-date-color": "transparent",
+      "--log-item-buttons-pane-opacity": "0.95",
     },
-    ':not(:last-child)': {
-      borderBottom: '1px solid #eee',
+    ":not(:last-child)": {
+      borderBottom: "1px solid #eee",
     },
   },
   logItemSelected: {
-    backgroundColor: 'var(--primary-color)',
-    '--log-item-primary-color': '#fff',
-    color: '#fff',
-    ':hover': {
-      '--log-item-buttons-color': '#fff',
+    backgroundColor: "var(--primary-color)",
+    "--log-item-primary-color": "#fff",
+    color: "#fff",
+    ":hover": {
+      "--log-item-buttons-color": "#fff",
     },
   },
   title: {
     padding: 5,
-    flex: '1 1 auto',
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    direction: 'rtl',
-    unicodeBidi: 'plaintext',
-    textOverflow: 'ellipsis',
+    flex: "1 1 auto",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    direction: "rtl",
+    unicodeBidi: "plaintext",
+    textOverflow: "ellipsis",
   },
   titleSelected: {
-    filter: 'contrast(0.1) brightness(2)',
+    filter: "contrast(0.1) brightness(2)",
   },
 
   rightButtons: {
-    opacity: 'var(--log-item-buttons-pane-opacity)',
-    display: 'flex',
-    position: 'absolute',
+    opacity: "var(--log-item-buttons-pane-opacity)",
+    display: "flex",
+    position: "absolute",
     right: 0,
     top: 0,
     bottom: 0,
-    backgroundImage: 'linear-gradient(to right, transparent, #fff 10px)',
+    backgroundImage: "linear-gradient(to right, transparent, #fff 10px)",
   },
   rightButtonsSelected: {
-    backgroundImage: 'linear-gradient(to right, transparent, var(--primary-color) 10px)',
+    backgroundImage: "linear-gradient(to right, transparent, var(--primary-color) 10px)",
   },
   button: {
-    flex: '0 0 auto',
+    flex: "0 0 auto",
     width: 35,
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     opacity: 0.7,
-    position: 'relative',
+    position: "relative",
     zIndex: 1, // overflow date
-    ':hover': {
+    ":hover": {
       opacity: 1,
     },
   },
   activeIndicator: {
-    flex: '0 0 auto',
+    flex: "0 0 auto",
     width: 35,
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ':after': {
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    ":after": {
       content: '""',
       width: 8,
       height: 8,
-      backgroundColor: 'var(--log-item-primary-color)',
-      borderRadius: '50%',
+      backgroundColor: "var(--log-item-primary-color)",
+      borderRadius: "50%",
     },
   },
 });

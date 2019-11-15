@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
 export default class Blocker extends React.PureComponent {
   static propTypes = {
@@ -9,14 +9,14 @@ export default class Blocker extends React.PureComponent {
   };
 
   static defaultProps = {
-    icon: 'mobx',
+    icon: "mobx",
     children: undefined,
     onClick: undefined,
   };
 
   renderIcon() {
-    switch (this.props.icon) {
-      case 'mobx':
+  	switch (this.props.icon) {
+      case "mobx":
         return (
           <svg
             baseProfile="basic"
@@ -42,7 +42,7 @@ export default class Blocker extends React.PureComponent {
             />
           </svg>
         );
-      case 'pick':
+      case "pick":
         return (
           <svg
             baseProfile="basic"
@@ -56,31 +56,31 @@ export default class Blocker extends React.PureComponent {
         );
       default:
         return undefined;
-    }
+  	}
   }
 
   render() {
-    return (
+  	return (
       <div
         onClick={this.props.onClick}
         style={{
-          position: 'fixed',
+          position: "fixed",
           zIndex: 1,
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-          fontSize: '18px',
-          background: 'rgba(255, 255, 255, 0.8)',
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+          fontSize: "18px",
+          background: "rgba(255, 255, 255, 0.8)",
         }}
       >
         {this.renderIcon()}
-        <div style={{ margin: '10px' }}>{this.props.children}</div>
+        <div style={{margin: "10px"}}>{this.props.children}</div>
       </div>
-    );
+  	);
   }
 }

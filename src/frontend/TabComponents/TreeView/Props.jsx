@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { css, StyleSheet } from 'aphrodite';
-import PropVal from './PropVal';
+import React from "react";
+import PropTypes from "prop-types";
+import {css, StyleSheet} from "aphrodite";
+import PropVal from "./PropVal";
 
 export default class Props extends React.PureComponent {
   static propTypes = {
@@ -9,45 +9,45 @@ export default class Props extends React.PureComponent {
   };
 
   render() {
-    const { props } = this.props;
-    if (!props || typeof props !== 'object') {
-      return <span />;
-    }
+  	const {props} = this.props;
+  	if (!props || typeof props !== "object") {
+  		return <span />;
+  	}
 
-    const names = Object.keys(props).filter((name) => name !== 'children');
+  	const names = Object.keys(props).filter(name=>name !== "children");
 
-    const items = [];
+  	const items = [];
 
-    names.slice(0, 3).forEach((name) => {
-      items.push(
+  	names.slice(0, 3).forEach(name=>{
+  		items.push(
         <span key={`prop-${name}`} className={css(styles.prop)}>
           <span className={css(styles.attributeName)}>{name}</span>
           =
           <PropVal val={props[name]} />
-        </span>
-      );
-    });
+        </span>,
+  		);
+  	});
 
-    if (names.length > 3) {
-      items.push(
+  	if (names.length > 3) {
+  		items.push(
         <span key="ellipsis" className={css(styles.ellipsis)}>
           …
-        </span>
-      );
-    }
-    return <span>{items}</span>;
+        </span>,
+  		);
+  	}
+  	return <span>{items}</span>;
   }
 }
 
 const styles = StyleSheet.create({
   attributeName: {
-    color: 'var(--treenode-props-key)',
+    color: "var(--treenode-props-key)",
   },
   ellipsis: {
-    color: 'var(--treenode-props-ellipsis)',
+    color: "var(--treenode-props-ellipsis)",
   },
   prop: {
     paddingLeft: 5,
-    color: 'var(--treenode-props)',
+    color: "var(--treenode-props)",
   },
 });

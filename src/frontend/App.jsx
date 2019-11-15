@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { css, StyleSheet } from 'aphrodite';
-import 'hack-font/build/web/hack.css';
-import Bridge from '../Bridge';
-import createStores from './stores';
-import Blocker from './Blocker';
-import ContextProvider from '../utils/ContextProvider';
-import theme from './theme';
+import React from "react";
+import PropTypes from "prop-types";
+import {css, StyleSheet} from "aphrodite";
+import "hack-font/build/web/hack.css";
+import Bridge from "../Bridge";
+import createStores from "./stores";
+import Blocker from "./Blocker";
+import ContextProvider from "../utils/ContextProvider";
+import theme from "./theme";
 
 export default class App extends React.PureComponent {
   static propTypes = {
@@ -28,45 +28,45 @@ export default class App extends React.PureComponent {
   };
 
   componentWillMount() {
-    if (this.props.reloadSubscribe) {
-      this.$unsubscribeReload = this.props.reloadSubscribe(() => this.reload());
-    }
-    this.props.inject((wall, teardownWall) => {
-      this.$teardownWall = teardownWall;
-      const bridge = new Bridge(wall);
+  	if (this.props.reloadSubscribe) {
+  		this.$unsubscribeReload = this.props.reloadSubscribe(()=>this.reload());
+  	}
+  	this.props.inject((wall, teardownWall)=>{
+  		this.$teardownWall = teardownWall;
+  		const bridge = new Bridge(wall);
 
-      this.$disposables.push(
-        bridge.sub('capabilities', ({ mobxFound }) => {
-          this.setState({ mobxFound });
-        }),
-        bridge.sub('content-script-installation-error', () => {
-          this.setState({ contentScriptInstallationError: true });
-        })
-      );
+  		this.$disposables.push(
+  			bridge.sub("capabilities", ({mobxFound})=>{
+  				this.setState({mobxFound});
+  			}),
+  			bridge.sub("content-script-installation-error", ()=>{
+  				this.setState({contentScriptInstallationError: true});
+  			}),
+  		);
 
-      bridge.send('backend:ping');
-      const connectInterval = setInterval(() => bridge.send('backend:ping'), 500);
-      bridge.once('frontend:pong', () => {
-        clearInterval(connectInterval);
+  		bridge.send("backend:ping");
+  		const connectInterval = setInterval(()=>bridge.send("backend:ping"), 500);
+  		bridge.once("frontend:pong", ()=>{
+  			clearInterval(connectInterval);
 
-        this.stores = createStores(bridge);
-        if (__DEV__) {
-          window.$$frontendStores$$ = this.stores;
-        }
+  			this.stores = createStores(bridge);
+  			if (__DEV__) {
+  				window.$$frontendStores$$ = this.stores;
+  			}
 
-        this.setState({ connected: true });
-        bridge.send('get-capabilities');
-      });
+  			this.setState({connected: true});
+  			bridge.send("get-capabilities");
+  		});
 
-      if (!this.$unMounted) {
-        this.setState({ loaded: true });
-      }
-    });
+  		if (!this.$unMounted) {
+  			this.setState({loaded: true});
+  		}
+  	});
   }
 
   componentWillUnmount() {
-    this.$unMounted = true;
-    this.reload();
+  	this.$unMounted = true;
+  	this.reload();
   }
 
   $unMounted = false;
@@ -74,56 +74,56 @@ export default class App extends React.PureComponent {
   $disposables = [];
 
   reload() {
-    if (!this.$unMounted) this.setState({ loaded: false, store: undefined }, this.props.reload);
-    this.teardown();
+  	if (!this.$unMounted) this.setState({loaded: false, store: undefined}, this.props.reload);
+  	this.teardown();
   }
 
   teardown() {
-    if (this.$unsubscribeReload) {
-      this.$unsubscribeReload();
-      this.$unsubscribeReload = undefined;
-    }
-    if (this.$teardownWall) {
-      this.$teardownWall();
-      this.$teardownWall = undefined;
-    }
+  	if (this.$unsubscribeReload) {
+  		this.$unsubscribeReload();
+  		this.$unsubscribeReload = undefined;
+  	}
+  	if (this.$teardownWall) {
+  		this.$teardownWall();
+  		this.$teardownWall = undefined;
+  	}
   }
 
-  handleContextMenu = (e) => e.preventDefault();
+  handleContextMenu = e=>e.preventDefault();
 
   renderContent() {
-    if (this.state.contentScriptInstallationError) {
-      return <Blocker>Error while installing content-script</Blocker>;
-    }
-    if (!this.state.loaded) {
-      return !this.props.quiet && <Blocker>Loading...</Blocker>;
-    }
-    if (!this.state.connected) {
-      return !this.props.quiet && <Blocker>Connecting...</Blocker>;
-    }
-    if (this.state.mobxFound !== true) {
-      return !this.props.quiet && <Blocker>Looking for mobx...</Blocker>;
-    }
-    return (
+  	if (this.state.contentScriptInstallationError) {
+  		return <Blocker>Error while installing content-script</Blocker>;
+  	}
+  	if (!this.state.loaded) {
+  		return !this.props.quiet && <Blocker>Loading...</Blocker>;
+  	}
+  	if (!this.state.connected) {
+  		return !this.props.quiet && <Blocker>Connecting...</Blocker>;
+  	}
+  	if (this.state.mobxFound !== true) {
+  		return !this.props.quiet && <Blocker>Looking for mobx...</Blocker>;
+  	}
+  	return (
       <ContextProvider stores={this.stores}>
         {React.Children.only(this.props.children)}
       </ContextProvider>
-    );
+  	);
   }
 
   render() {
-    return (
+  	return (
       <div className={css(styles.app, theme.default)} onContextMenu={this.handleContextMenu}>
         {this.renderContent()}
       </div>
-    );
+  	);
   }
 }
 
 const styles = StyleSheet.create({
   app: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     fontSize: 13,
     fontFamily:
       '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',

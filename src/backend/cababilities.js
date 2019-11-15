@@ -1,33 +1,33 @@
-export default (bridge) => {
-  let mobxFound = false;
-  let mobxReactFound = false;
-  let mstFound = false;
+export default bridge=>{
+	let mobxFound = false;
+	let mobxReactFound = false;
+	let mstFound = false;
 
-  const sendCapabilities = () => bridge.send('capabilities', {
+	const sendCapabilities = ()=>bridge.send("capabilities", {
     mobxFound,
     mobxReactFound,
     mstFound,
-  });
+	});
 
-  sendCapabilities();
+	sendCapabilities();
 
-  const disposables = [bridge.sub('get-capabilities', sendCapabilities)];
+	const disposables = [bridge.sub("get-capabilities", sendCapabilities)];
 
-  return {
+	return {
     setup(mobxid, collection) {
-      if (collection.mobx) {
-        mobxFound = true;
-      }
-      if (collection.mobxReact) {
-        mobxReactFound = true;
-      }
-      if (collection.mst) {
-        mstFound = true;
-      }
-      sendCapabilities();
+    	if (collection.mobx) {
+    		mobxFound = true;
+    	}
+    	if (collection.mobxReact) {
+    		mobxReactFound = true;
+    	}
+    	if (collection.mst) {
+    		mstFound = true;
+    	}
+    	sendCapabilities();
     },
     dispose() {
-      disposables.forEach((fn) => fn());
+    	disposables.forEach(fn=>fn());
     },
-  };
+	};
 };

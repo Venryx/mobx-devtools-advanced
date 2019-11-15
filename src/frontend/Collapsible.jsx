@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { css, StyleSheet } from 'aphrodite';
+import React from "react";
+import PropTypes from "prop-types";
+import {css, StyleSheet} from "aphrodite";
 
 export default class Collapsible extends React.PureComponent {
   static propTypes = {
@@ -18,19 +18,19 @@ export default class Collapsible extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = { open: Boolean(this.props.startOpen) };
+    this.state = {open: Boolean(this.props.startOpen)};
   }
 
-  toggleOpen = () => {
-    this.setState({ open: !this.state.open });
+  toggleOpen = ()=>{
+  	this.setState({open: !this.state.open});
   };
 
   render() {
-    return (
+  	return (
       <div className={css(styles.collapsible)} style={this.props.style}>
         <div className={css(styles.head)} onClick={this.toggleOpen}>
           {Boolean(this.props.children) && (
-            <div className={css(styles.opener)} style={{ top: this.props.verticalAlign }}>
+            <div className={css(styles.opener)} style={{top: this.props.verticalAlign}}>
               {this.state.open ? (
                 <span className={css(styles.expandedArrow)} />
               ) : (
@@ -42,7 +42,7 @@ export default class Collapsible extends React.PureComponent {
         </div>
         {this.state.open && this.props.children}
       </div>
-    );
+  	);
   }
 }
 
@@ -52,33 +52,33 @@ const styles = StyleSheet.create({
   },
 
   head: {
-    display: 'flex',
-    position: 'relative',
-    cursor: 'pointer',
+    display: "flex",
+    position: "relative",
+    cursor: "pointer",
   },
 
   opener: {
-    cursor: 'pointer',
+    cursor: "pointer",
     marginLeft: -10,
     paddingRight: 3,
-    position: 'absolute',
+    position: "absolute",
   },
 
   collapsedArrow: {
-    borderColor: 'transparent transparent transparent var(--dataview-arrow)',
-    borderStyle: 'solid',
-    borderWidth: '4px 0 4px 7px',
-    display: 'inline-block',
+    borderColor: "transparent transparent transparent var(--dataview-arrow)",
+    borderStyle: "solid",
+    borderWidth: "4px 0 4px 7px",
+    display: "inline-block",
     marginLeft: 1,
-    verticalAlign: 'top',
+    verticalAlign: "top",
   },
 
   expandedArrow: {
-    borderColor: 'var(--dataview-arrow) transparent transparent transparent',
-    borderStyle: 'solid',
-    borderWidth: '7px 4px 0 4px',
-    display: 'inline-block',
+    borderColor: "var(--dataview-arrow) transparent transparent transparent",
+    borderStyle: "solid",
+    borderWidth: "7px 4px 0 4px",
+    display: "inline-block",
     marginTop: 1,
-    verticalAlign: 'top',
+    verticalAlign: "top",
   },
 });

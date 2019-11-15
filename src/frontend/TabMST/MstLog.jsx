@@ -1,42 +1,42 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { StyleSheet, css } from 'aphrodite';
-import List from 'react-virtualized/dist/commonjs/List';
-import injectStores from '../../utils/injectStores';
-import MstLogItem from './MstLogItem';
+import React from "react";
+import PropTypes from "prop-types";
+import {StyleSheet, css} from "aphrodite";
+import List from "react-virtualized/dist/commonjs/List";
+import injectStores from "../../utils/injectStores";
+import MstLogItem from "./MstLogItem";
 
 const ITEM_HEIGHT = 30;
 
 @injectStores({
   subscribe: {
     mstLoggerStore: [
-      'mstLogItems',
-      'activeRootId',
-      'selectedLogItemId',
-      'activeLogItemId',
+    	"mstLogItems",
+    	"activeRootId",
+    	"selectedLogItemId",
+    	"activeLogItemId",
     ],
   },
-  injectProps: ({ mstLoggerStore }) => {
-    const itemData = mstLoggerStore.itemsDataByRootId[mstLoggerStore.activeRootId];
-    return {
+  injectProps: ({mstLoggerStore})=>{
+  	const itemData = mstLoggerStore.itemsDataByRootId[mstLoggerStore.activeRootId];
+  	return {
       logItemsIds: itemData ? itemData.logItemsIds : [],
       logItemsById: itemData ? itemData.logItemsById : [],
       selectedLogItemId: itemData && itemData.selectedLogItemId,
       activeLogItemId: itemData && itemData.activeLogItemId,
       activeRootId: mstLoggerStore.activeRootId,
       activateLogItemId(id) {
-        mstLoggerStore.activateLogItemId(id);
+      	mstLoggerStore.activateLogItemId(id);
       },
       commitLogItemId(id) {
-        mstLoggerStore.commitLogItemId(id);
+      	mstLoggerStore.commitLogItemId(id);
       },
       cancelLogItemId(id) {
-        mstLoggerStore.cancelLogItemId(id);
+      	mstLoggerStore.cancelLogItemId(id);
       },
       selectLogItemId(id) {
-        mstLoggerStore.selectLogItemId(id);
+      	mstLoggerStore.selectLogItemId(id);
       },
-    };
+  	};
   },
 })
 export default class Log extends React.PureComponent {
@@ -59,38 +59,38 @@ export default class Log extends React.PureComponent {
   };
 
   componentDidMount() {
-    this.resizeTimeout = setTimeout(() => this.updateSize(), 0); // timeout for css applying
-    window.addEventListener('resize', this.handleResize);
+  	this.resizeTimeout = setTimeout(()=>this.updateSize(), 0); // timeout for css applying
+  	window.addEventListener("resize", this.handleResize);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize);
+  	window.removeEventListener("resize", this.handleResize);
   }
 
-  handleResize = () => {
-    if (this.resizeTimeout) return;
-    this.resizeTimeout = setTimeout(() => { this.updateSize(); }, 200);
+  handleResize = ()=>{
+  	if (this.resizeTimeout) return;
+  	this.resizeTimeout = setTimeout(()=>{ this.updateSize(); }, 200);
   };
 
   updateSize() {
-    if (!this.containerEl) return;
-    this.resizeTimeout = undefined;
-    this.setState({
+  	if (!this.containerEl) return;
+  	this.resizeTimeout = undefined;
+  	this.setState({
       listWidth: this.containerEl.offsetWidth,
       listHeight: this.containerEl.offsetHeight,
-    });
+  	});
   }
 
-  handleScroll = ({ clientHeight, scrollHeight, scrollTop }) => {
-    const autoScroll = scrollTop >= scrollHeight - clientHeight;
-    if (autoScroll !== this.state.autoScroll) {
-      this.setState({ autoScroll });
-    }
+  handleScroll = ({clientHeight, scrollHeight, scrollTop})=>{
+  	const autoScroll = scrollTop >= scrollHeight - clientHeight;
+  	if (autoScroll !== this.state.autoScroll) {
+  		this.setState({autoScroll});
+  	}
   };
 
-  renderItem = ({ index, style, key }) => {
-    const logItem = this.props.logItemsById[this.props.logItemsIds[index]];
-    return (
+  renderItem = ({index, style, key})=>{
+  	const logItem = this.props.logItemsById[this.props.logItemsIds[index]];
+  	return (
       <MstLogItem
         style={style}
         key={key}
@@ -104,27 +104,27 @@ export default class Log extends React.PureComponent {
         onCancel={this.props.cancelLogItemId}
         onActivate={this.props.activateLogItemId}
       />
-    );
+  	);
   };
 
   render() {
-    if (!this.props.activeRootId) return null;
-    const padding = 5;
-    const rowCount = this.props.logItemsIds.length;
-    return (
+  	if (!this.props.activeRootId) return null;
+  	const padding = 5;
+  	const rowCount = this.props.logItemsIds.length;
+  	return (
       <div
         className={css(styles.logItems)}
-        ref={(el) => {
-          this.containerEl = el;
+        ref={el=>{
+        	this.containerEl = el;
         }}
       >
         <List
-          ref={(list) => {
-            this.list = list;
+          ref={list=>{
+          	this.list = list;
           }}
           onScroll={this.handleScroll}
-          style={{ width: 'auto', padding, boxSizing: 'content-box' }}
-          containerStyle={{ width: 'auto', maxWidth: 'none' }}
+          style={{width: "auto", padding, boxSizing: "content-box"}}
+          containerStyle={{width: "auto", maxWidth: "none"}}
           width={this.state.listWidth - (padding * 2)}
           height={this.state.listHeight - (padding * 2)}
           rowCount={rowCount}
@@ -134,12 +134,12 @@ export default class Log extends React.PureComponent {
           rowRenderer={this.renderItem}
         />
       </div>
-    );
+  	);
   }
 }
 
 const styles = StyleSheet.create({
   logItems: {
-    width: '100%',
+    width: "100%",
   },
 });

@@ -1,39 +1,39 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { css, StyleSheet } from 'aphrodite';
-import injectStores from '../../utils/injectStores';
-import Checkbox from './Checkbox';
+import React from "react";
+import PropTypes from "prop-types";
+import {css, StyleSheet} from "aphrodite";
+import injectStores from "../../utils/injectStores";
+import Checkbox from "./Checkbox";
 
 @injectStores({
   subscribe: {
-    updatesHighlighterStore: ['updatesEnabled', 'updatesFilterByDuration'],
+    updatesHighlighterStore: ["updatesEnabled", "updatesFilterByDuration"],
   },
-  injectProps: ({ updatesHighlighterStore }) => ({
+  injectProps: ({updatesHighlighterStore})=>({
     updatesEnabled: updatesHighlighterStore.updatesEnabled,
     updatesFilterByDuration: updatesHighlighterStore.updatesFilterByDuration,
     toggleShowingUpdates() {
-      updatesHighlighterStore.toggleShowingUpdates();
+    	updatesHighlighterStore.toggleShowingUpdates();
     },
     toggleFastUpdates() {
-      const { updatesFilterByDuration } = updatesHighlighterStore;
-      updatesHighlighterStore.setUpdatesFilterByDuration({
+    	const {updatesFilterByDuration} = updatesHighlighterStore;
+    	updatesHighlighterStore.setUpdatesFilterByDuration({
         ...updatesFilterByDuration,
         fast: !updatesFilterByDuration.fast,
-      });
+    	});
     },
     toggleMediumUpdates() {
-      const { updatesFilterByDuration } = updatesHighlighterStore;
-      updatesHighlighterStore.setUpdatesFilterByDuration({
+    	const {updatesFilterByDuration} = updatesHighlighterStore;
+    	updatesHighlighterStore.setUpdatesFilterByDuration({
         ...updatesFilterByDuration,
         medium: !updatesFilterByDuration.medium,
-      });
+    	});
     },
     toggleSlowUpdates() {
-      const { updatesFilterByDuration } = updatesHighlighterStore;
-      updatesHighlighterStore.setUpdatesFilterByDuration({
+    	const {updatesFilterByDuration} = updatesHighlighterStore;
+    	updatesHighlighterStore.setUpdatesFilterByDuration({
         ...updatesFilterByDuration,
         slow: !updatesFilterByDuration.slow,
-      });
+    	});
     },
   }),
 })
@@ -52,13 +52,13 @@ export default class TabPerformance extends React.PureComponent {
   };
 
   shownAllUpdates() {
-    const { slow, medium, fast } = this.props.updatesFilterByDuration;
-    return slow && medium && fast;
+  	const {slow, medium, fast} = this.props.updatesFilterByDuration;
+  	return slow && medium && fast;
   }
 
   render() {
-    const { updatesEnabled, updatesFilterByDuration } = this.props;
-    return (
+  	const {updatesEnabled, updatesFilterByDuration} = this.props;
+  	return (
       <div>
         <div className={css(styles.panelBody)}>
           <div className={css(styles.block)}>
@@ -103,23 +103,23 @@ export default class TabPerformance extends React.PureComponent {
           </div>
         </div>
       </div>
-    );
+  	);
   }
 }
 
 const styles = StyleSheet.create({
   panelBody: {
-    padding: '15px 10px',
+    padding: "15px 10px",
   },
   block: {
-    padding: '10px',
-    background: '#f7f7f7',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
-    userSelect: 'none',
+    padding: "10px",
+    background: "#f7f7f7",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.2)",
+    userSelect: "none",
   },
   blockHeding: {
     fontSize: 17,
-    color: 'var(--lighter-text-color)',
+    color: "var(--lighter-text-color)",
     fontWeight: 500,
     marginBottom: 5,
   },

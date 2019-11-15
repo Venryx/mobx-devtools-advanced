@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-export const PickComponentIcon = () => (
+export const PickComponentIcon = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +22,7 @@ export const PickComponentIcon = () => (
   </svg>
 );
 
-export const ClearIcon = () => (
+export const ClearIcon = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +37,7 @@ export const ClearIcon = () => (
   </svg>
 );
 
-export const ContextMenu = () => (
+export const ContextMenu = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +49,7 @@ export const ContextMenu = () => (
   </svg>
 );
 
-export const StartRecordingArrow = () => (
+export const StartRecordingArrow = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +68,7 @@ export const StartRecordingArrow = () => (
   </svg>
 );
 
-export const ReloadIcon = () => (
+export const ReloadIcon = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"

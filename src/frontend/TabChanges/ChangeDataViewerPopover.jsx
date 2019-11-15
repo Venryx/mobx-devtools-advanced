@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { css, StyleSheet } from 'aphrodite';
-import PreviewValue from '../PreviewValue';
-import injectStores from '../../utils/injectStores';
-import Popover from '../Popover';
-import DataViewer from '../DataViewer/index';
+import React from "react";
+import PropTypes from "prop-types";
+import {css, StyleSheet} from "aphrodite";
+import PreviewValue from "../PreviewValue";
+import injectStores from "../../utils/injectStores";
+import Popover from "../Popover";
+import DataViewer from "../DataViewer/index";
 
 ChangeDataViewerPopover.propTypes = {
   className: PropTypes.string,
@@ -25,19 +25,19 @@ export default function ChangeDataViewerPopover({
   stopInspecting,
   showMenu,
 }) {
-  const value = getValueByPath(path);
-  const otype = typeof value;
-  if (
-    otype === 'number'
-    || otype === 'string'
+	const value = getValueByPath(path);
+	const otype = typeof value;
+	if (
+		otype === "number"
+    || otype === "string"
     || value === null
     || value === undefined
-    || otype === 'boolean'
-  ) {
-    return <PreviewValue data={value} className={className} path={path} />;
-  }
+    || otype === "boolean"
+	) {
+		return <PreviewValue data={value} className={className} path={path} />;
+	}
 
-  const dataViewer = (
+	const dataViewer = (
     <DataViewer
       path={path}
       getValueByPath={getValueByPath}
@@ -45,32 +45,32 @@ export default function ChangeDataViewerPopover({
       stopInspecting={stopInspecting}
       showMenu={showMenu}
       decorator={injectStores({
-        subscribe: (stores, props) => ({
-          actionsLoggerStore: [`inspected--${props.path.join('/')}`],
+        subscribe: (stores, props)=>({
+          actionsLoggerStore: [`inspected--${props.path.join("/")}`],
         }),
-        shouldUpdate: () => true,
+        shouldUpdate: ()=>true,
       })}
     />
   );
 
-  return (
+	return (
     <Popover
       requireClick
       content={dataViewer}
-      onShown={() => inspect(path)} // eslint-disable-line react/jsx-no-bind
+      onShown={()=>inspect(path)} // eslint-disable-line react/jsx-no-bind
     >
       <span
         className={`${css(styles.trigger)} ${className}`}
-        onContextMenu={(e) => { // eslint-disable-line react/jsx-no-bind
-          if (typeof showMenu === 'function') {
-            showMenu(e, undefined, path);
-          }
+        onContextMenu={e=>{ // eslint-disable-line react/jsx-no-bind
+        	if (typeof showMenu === "function") {
+        		showMenu(e, undefined, path);
+        	}
         }}
       >
         <PreviewValue data={value} displayName={displayName} path={path} />
       </span>
     </Popover>
-  );
+	);
 }
 
 const styles = StyleSheet.create({
@@ -78,9 +78,9 @@ const styles = StyleSheet.create({
     paddingLeft: 3,
     paddingRight: 3,
     borderRadius: 2,
-    cursor: 'pointer',
-    ':hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.08)',
+    cursor: "pointer",
+    ":hover": {
+      backgroundColor: "rgba(0, 0, 0, 0.08)",
     },
   },
 });

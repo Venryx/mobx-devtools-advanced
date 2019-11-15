@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-export const ChangesIcon = () => (
+export const ChangesIcon = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"
@@ -18,7 +18,7 @@ export const ChangesIcon = () => (
   </svg>
 );
 
-export const ComponentIcon = () => (
+export const ComponentIcon = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +37,7 @@ export const ComponentIcon = () => (
   </svg>
 );
 
-export const TimerIcon = () => (
+export const TimerIcon = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +63,7 @@ export const TimerIcon = () => (
   </svg>
 );
 
-export const MSTIcon = () => (
+export const MSTIcon = ()=>(
   <svg
     baseProfile="basic"
     xmlns="http://www.w3.org/2000/svg"

@@ -1,46 +1,46 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { css, StyleSheet } from 'aphrodite';
-import injectStores from '../../../utils/injectStores';
-import DataViewer from '../../DataViewer';
-import Collapsible from '../../Collapsible';
+import React from "react";
+import PropTypes from "prop-types";
+import {css, StyleSheet} from "aphrodite";
+import injectStores from "../../../utils/injectStores";
+import DataViewer from "../../DataViewer";
+import Collapsible from "../../Collapsible";
 
 @injectStores({
-  subscribe: ({ treeExplorerStore }) => ({
-    treeExplorerStore: [treeExplorerStore.selectedNodeId, 'selectedNodeId'],
+  subscribe: ({treeExplorerStore})=>({
+    treeExplorerStore: [treeExplorerStore.selectedNodeId, "selectedNodeId"],
   }),
-  injectProps: ({ treeExplorerStore }) => {
-    const node = treeExplorerStore.nodesById[treeExplorerStore.selectedNodeId];
-    return {
+  injectProps: ({treeExplorerStore})=>{
+  	const node = treeExplorerStore.nodesById[treeExplorerStore.selectedNodeId];
+  	return {
       node,
       selectedNodeId: treeExplorerStore.selectedNodeId,
       showMenu(e, val, path) {
-        e.preventDefault();
-        treeExplorerStore.showContextMenu(
-          'attr',
-          e,
-          treeExplorerStore.selectedNodeId,
-          node,
-          val,
-          path
-        );
+      	e.preventDefault();
+      	treeExplorerStore.showContextMenu(
+      		"attr",
+      		e,
+      		treeExplorerStore.selectedNodeId,
+      		node,
+      		val,
+      		path,
+      	);
       },
       inspect(path) {
-        treeExplorerStore.inspect(path);
+      	treeExplorerStore.inspect(path);
       },
       stopInspecting(path) {
-        treeExplorerStore.stopInspecting(path);
+      	treeExplorerStore.stopInspecting(path);
       },
       change(path, value) {
-        treeExplorerStore.changeValue({ path, value });
+      	treeExplorerStore.changeValue({path, value});
       },
       getValueByPath(path) {
-        return path.reduce(
-          (acc, next) => acc && acc[next],
-          treeExplorerStore.nodesById[treeExplorerStore.selectedNodeId]
-        );
+      	return path.reduce(
+      		(acc, next)=>acc && acc[next],
+      		treeExplorerStore.nodesById[treeExplorerStore.selectedNodeId],
+      	);
       },
-    };
+  	};
   },
 })
 export default class TreeComponentExplorer extends React.Component {
@@ -54,29 +54,29 @@ export default class TreeComponentExplorer extends React.Component {
   };
 
   componentDidMount() {
-    window.e = this;
+  	window.e = this;
   }
 
   reload() {
-    this.props.inspect([], () => this.setState({}));
+  	this.props.inspect([], ()=>this.setState({}));
   }
 
   dataDecorator = injectStores({
-    subscribe: (stores, { path }) => ({
-      treeExplorerStore: [`inspected--${path.join('/')}`],
+    subscribe: (stores, {path})=>({
+      treeExplorerStore: [`inspected--${path.join("/")}`],
     }),
-    shouldUpdate: () => true,
+    shouldUpdate: ()=>true,
   });
 
   render() {
-    const { node } = this.props;
-    if (!node) return null;
-    return (
+  	const {node} = this.props;
+  	if (!node) return null;
+  	return (
       <div>
         <div className={css(styles.heading)}>
-          <span className={css(styles.headingBracket)}>{'<'}</span>
+          <span className={css(styles.headingBracket)}>{"<"}</span>
           {node.name}
-          <span className={css(styles.headingBracket)}>{'/>'}</span>
+          <span className={css(styles.headingBracket)}>{"/>"}</span>
           {__DEV__ && ` ${node.id}`}
         </div>
         {node.dependencyTree && (
@@ -92,7 +92,7 @@ export default class TreeComponentExplorer extends React.Component {
           >
             <div className={css(styles.block)}>
               <DataViewer
-                path={['dependencyTree']}
+                path={["dependencyTree"]}
                 getValueByPath={this.props.getValueByPath}
                 inspect={this.props.inspect}
                 stopInspecting={this.props.stopInspecting}
@@ -105,7 +105,7 @@ export default class TreeComponentExplorer extends React.Component {
         )}
 
         <DataViewer
-          path={['component']}
+          path={["component"]}
           getValueByPath={this.props.getValueByPath}
           inspect={this.props.inspect}
           stopInspecting={this.props.stopInspecting}
@@ -115,27 +115,27 @@ export default class TreeComponentExplorer extends React.Component {
           hidenKeysRegex={/^(__\$mobRenderEnd|__\$mobRenderStart|_reactInternalInstance|updater)$/}
         />
       </div>
-    );
+  	);
   }
 }
 
 const styles = StyleSheet.create({
   heading: {
     fontSize: 17,
-    color: 'var(--treenode-tag-name)',
-    fontFamily: 'var(--font-family-monospace)',
+    color: "var(--treenode-tag-name)",
+    fontFamily: "var(--font-family-monospace)",
     fontWeight: 500,
     marginBottom: 15,
   },
   headingBracket: {
-    color: 'var(--treenode-bracket)',
+    color: "var(--treenode-bracket)",
   },
   block: {
     marginBottom: 15,
   },
   subheading: {
-    color: 'var(--lighter-text-color)',
-    textTransform: 'uppercase',
+    color: "var(--lighter-text-color)",
+    textTransform: "uppercase",
     fontSize: 13,
     marginBottom: 5,
     fontWeight: 500,

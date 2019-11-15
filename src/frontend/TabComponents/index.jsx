@@ -1,27 +1,27 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { css, StyleSheet } from 'aphrodite';
-import SecondaryPanel from '../SecondaryPanel';
-import ButtonPickComponent from '../SecondaryPanel/ButtonPickComponent';
-import SearchComponents from './SearchComponents';
-import injectStores from '../../utils/injectStores';
-import TreeView from './TreeView';
-import SplitPane from '../SplitPane';
-import Breadcrumb from './TreeView/Breadcrumb';
-import TreeComponentExplorer from './TreeComponentExplorer';
+import React from "react";
+import PropTypes from "prop-types";
+import {css, StyleSheet} from "aphrodite";
+import SecondaryPanel from "../SecondaryPanel";
+import ButtonPickComponent from "../SecondaryPanel/ButtonPickComponent";
+import SearchComponents from "./SearchComponents";
+import injectStores from "../../utils/injectStores";
+import TreeView from "./TreeView";
+import SplitPane from "../SplitPane";
+import Breadcrumb from "./TreeView/Breadcrumb";
+import TreeComponentExplorer from "./TreeComponentExplorer";
 
 @injectStores({
   subscribe: {
-    treeExplorerStore: ['pickingComponent'],
+    treeExplorerStore: ["pickingComponent"],
   },
-  injectProps: ({ treeExplorerStore }) => ({
+  injectProps: ({treeExplorerStore})=>({
     pickingComponent: treeExplorerStore.pickingComponent,
     togglePickingTreeExplorerComponent() {
-      if (treeExplorerStore.pickingComponent) {
-        treeExplorerStore.stopPickingComponent();
-      } else {
-        treeExplorerStore.pickComponent();
-      }
+    	if (treeExplorerStore.pickingComponent) {
+    		treeExplorerStore.stopPickingComponent();
+    	} else {
+    		treeExplorerStore.pickComponent();
+    	}
     },
   }),
 })
@@ -31,7 +31,7 @@ export default class TabComponents extends React.PureComponent {
     togglePickingTreeExplorerComponent: PropTypes.func.isRequired,
   };
 
-  leftRenderer = () => (
+  leftRenderer = ()=>(
     <div className={css(styles.leftPane)}>
       <SecondaryPanel>
         <ButtonPickComponent
@@ -47,14 +47,14 @@ export default class TabComponents extends React.PureComponent {
     </div>
   );
 
-  rightRenderer = () => (
+  rightRenderer = ()=>(
     <div className={css(styles.rightPane)}>
       <TreeComponentExplorer />
     </div>
   );
 
   render() {
-    return (
+  	return (
       <div className={css(styles.panel)}>
         <div className={css(styles.panelBody)}>
           <SplitPane
@@ -66,29 +66,29 @@ export default class TabComponents extends React.PureComponent {
           />
         </div>
       </div>
-    );
+  	);
   }
 }
 
 const styles = StyleSheet.create({
   panel: {
-    flex: '1 1 auto',
-    display: 'flex',
-    flexDirection: 'column',
+    flex: "1 1 auto",
+    display: "flex",
+    flexDirection: "column",
   },
   panelBody: {
-    display: 'flex',
-    flex: '1 1 auto',
+    display: "flex",
+    flex: "1 1 auto",
   },
   leftPane: {
     flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     minWidth: 0,
   },
   rightPane: {
-    flex: '1 1 auto',
-    overflow: 'auto',
+    flex: "1 1 auto",
+    overflow: "auto",
     padding: 10,
   },
 });

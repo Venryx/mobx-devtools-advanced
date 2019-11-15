@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
 export default class Draggable extends React.Component {
   static propTypes = {
@@ -11,37 +11,37 @@ export default class Draggable extends React.Component {
     children: PropTypes.node,
   };
 
-  onMove = (evt) => {
-    evt.preventDefault();
-    this.props.onMove(evt.pageX, evt.pageY);
+  onMove = evt=>{
+  	evt.preventDefault();
+  	this.props.onMove(evt.pageX, evt.pageY);
   };
 
-  onUp = (evt) => {
-    evt.preventDefault();
-    const doc = this.el.ownerDocument;
-    doc.removeEventListener('mousemove', this.onMove);
-    doc.removeEventListener('mouseup', this.onUp);
-    this.props.onStop();
+  onUp = evt=>{
+  	evt.preventDefault();
+  	const doc = this.el.ownerDocument;
+  	doc.removeEventListener("mousemove", this.onMove);
+  	doc.removeEventListener("mouseup", this.onUp);
+  	this.props.onStop();
   };
 
-  startDragging = (evt) => {
-    evt.preventDefault();
-    const doc = this.el.ownerDocument;
-    doc.addEventListener('mousemove', this.onMove);
-    doc.addEventListener('mouseup', this.onUp);
-    this.props.onStart();
+  startDragging = evt=>{
+  	evt.preventDefault();
+  	const doc = this.el.ownerDocument;
+  	doc.addEventListener("mousemove", this.onMove);
+  	doc.addEventListener("mouseup", this.onUp);
+  	this.props.onStart();
   };
 
   render() {
-    return (
+  	return (
       <div
-        ref={(el) => { this.el = el; }}
+        ref={el=>{ this.el = el; }}
         style={this.props.style}
         className={this.props.className}
         onMouseDown={this.startDragging}
       >
         {this.props.children}
       </div>
-    );
+  	);
   }
 }

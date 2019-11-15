@@ -1,5 +1,5 @@
-import { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import {PureComponent} from "react";
+import PropTypes from "prop-types";
 
 export default class ContextProvider extends PureComponent {
   static propTypes = {
@@ -12,10 +12,10 @@ export default class ContextProvider extends PureComponent {
   };
 
   getChildContext() {
-    return { stores: this.props.stores };
+  	return {stores: this.props.stores};
   }
 
   render() {
-    return this.props.children;
+  	return this.props.children;
   }
 }
