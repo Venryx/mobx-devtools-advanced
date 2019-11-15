@@ -4,7 +4,7 @@
  * Injected to the app page when panel/window is activated.
  */
 
-import initBackend from "../../backend";
+import {InitBackend} from "../../backend";
 import Bridge from "../../Bridge";
 import debugConnection from "../../utils/debugConnection";
 
@@ -16,32 +16,32 @@ function handshake(hook, contentScriptId) {
 	let listeners = [];
 
 	const bridge = new Bridge({
-    listen(fn) {
-    	const listener = evt=>{
-    		if (
-    			evt.data.source === "mobx-devtools-content-script"
-          && evt.data.contentScriptId === contentScriptId
-          && evt.data.backendId === backendId
-    		) {
-    			debugConnection("[contentScript -> BACKEND]", evt);
-    			fn(evt.data.payload);
-    		}
-    	};
-    	listeners.push(listener);
-    	window.addEventListener("message", listener);
-    },
-    send(data) {
-    	debugConnection("[BACKEND -> contentScript]", data);
-    	window.postMessage(
-    		{
-          source: "mobx-devtools-backend", payload: data, contentScriptId, backendId,
-    		},
-    		"*",
-    	);
-    },
+		listen(fn) {
+			const listener = evt=>{
+				if (
+					evt.data.source === "mobx-devtools-content-script"
+					&& evt.data.contentScriptId === contentScriptId
+					&& evt.data.backendId === backendId
+				) {
+					debugConnection("[contentScript -> BACKEND]", evt);
+					fn(evt.data.payload);
+				}
+			};
+			listeners.push(listener);
+			window.addEventListener("message", listener);
+		},
+		send(data) {
+			debugConnection("[BACKEND -> contentScript]", data);
+			window.postMessage(
+				{
+					source: "mobx-devtools-backend", payload: data, contentScriptId, backendId,
+				},
+				"*",
+			);
+		},
 	});
 
-	const disposeBackend = initBackend(bridge, hook);
+	const disposeBackend = InitBackend(bridge, hook);
 
 	bridge.once("disconnect", ()=>{
 		debugConnection("[contentScript -x BACKEND]");
@@ -74,7 +74,7 @@ function waitForPing() {
 			debugConnection("[contentScript -> BACKEND]", payload);
 			window.postMessage(
 				{
-          source: "mobx-devtools-backend", payload, contentScriptId, backendId,
+					source: "mobx-devtools-backend", payload, contentScriptId, backendId,
 				},
 				"*",
 			);
@@ -82,9 +82,9 @@ function waitForPing() {
 			const helloListener = e=>{
 				if (
 					e.data.source === "mobx-devtools-content-script"
-          && e.data.payload === "backend:hello"
-          && e.data.contentScriptId === contentScriptId
-          && e.data.backendId === backendId
+					&& e.data.payload === "backend:hello"
+					&& e.data.contentScriptId === contentScriptId
+					&& e.data.backendId === backendId
 				) {
 					debugConnection("[contentScript -> BACKEND]", e);
 					window.removeEventListener("message", helloListener);
@@ -97,9 +97,9 @@ function waitForPing() {
 			const failListener = e=>{
 				if (
 					e.data.source === "mobx-devtools-content-script"
-          && e.data.payload === "backend:connection-failed"
-          && e.data.contentScriptId === contentScriptId
-          && e.data.backendId === backendId
+					&& e.data.payload === "backend:connection-failed"
+					&& e.data.contentScriptId === contentScriptId
+					&& e.data.backendId === backendId
 				) {
 					debugConnection("[contentScript -> BACKEND]", e);
 					window.removeEventListener("message", helloListener);

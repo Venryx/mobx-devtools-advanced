@@ -21,7 +21,7 @@ const handshake = backendId=>{
 		debugConnection("[backgrond -> CONTENTSCRIPT -> backend]", payload);
 		window.postMessage(
 			{
-        source: "mobx-devtools-content-script", payload, contentScriptId, backendId,
+				source: "mobx-devtools-content-script", payload, contentScriptId, backendId,
 			},
 			"*",
 		);
@@ -34,8 +34,8 @@ const handshake = backendId=>{
 	function handleMessageFromPage(evt) {
 		if (
 			evt.data.source === "mobx-devtools-backend"
-      && evt.data.contentScriptId === contentScriptId
-      && evt.data.backendId === backendId
+			&& evt.data.contentScriptId === contentScriptId
+			&& evt.data.backendId === backendId
 		) {
 			debugConnection("[backend -> CONTENTSCRIPT -> backgrond]", evt);
 			evt.data.payload.contentScriptId = contentScriptId;
@@ -47,8 +47,8 @@ const handshake = backendId=>{
 		debugConnection("[backgrond -x CONTENTSCRIPT]");
 		window.removeEventListener("message", handleMessageFromPage);
 		sendMessageToBackend({
-      type: "event",
-      eventName: "disconnect",
+			type: "event",
+			eventName: "disconnect",
 		});
 	}
 
@@ -80,8 +80,8 @@ let connected = false;
 window.addEventListener("message", function listener(message) {
 	if (
 		message.data.source === "mobx-devtools-backend"
-    && message.data.payload === "contentScript:pong"
-    && message.data.contentScriptId === contentScriptId
+		&& message.data.payload === "contentScript:pong"
+		&& message.data.contentScriptId === contentScriptId
 	) {
 		debugConnection("[backend -> CONTENTSCRIPT]", message);
 		const {backendId} = message.data;
@@ -90,10 +90,10 @@ window.addEventListener("message", function listener(message) {
 		debugConnection("[CONTENTSCRIPT -> backend]", "backend:hello");
 		window.postMessage(
 			{
-        source: "mobx-devtools-content-script",
-        payload: connected ? "backend:connection-failed" : "backend:hello",
-        contentScriptId,
-        backendId,
+				source: "mobx-devtools-content-script",
+				payload: connected ? "backend:connection-failed" : "backend:hello",
+				contentScriptId,
+				backendId,
 			},
 			"*",
 		);

@@ -4,7 +4,7 @@ import initMobxReactNodesTreeBackend from "./mobxReactNodesTree";
 import initMobxReactUpdatesHighlighter from "./mobxReactUpdatesHighlighter";
 import initMobxLogBackend from "./mobxLog";
 
-export default (bridge, hook)=>{
+export function InitBackend(bridge, hook) {
 	if (!hook) {
 		if (__DEV__) {
 			throw new Error("");
@@ -38,4 +38,4 @@ export default (bridge, hook)=>{
 	return function dispose() {
 		disposables.forEach(fn=>{ fn(); });
 	};
-};
+}

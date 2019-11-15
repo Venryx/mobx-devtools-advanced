@@ -27,9 +27,9 @@ export default bridge=>{
 				let component = mobxReact && mobxReact.componentByNodeRegistery.get(node);
 				if (component) {
 					component = {
-            props: component.props,
-            state: component.state,
-            ...component,
+						props: component.props,
+						state: component.state,
+						...component,
 					};
 					mobxIdsByComponent.set(component, mobxid);
 					return component;
@@ -76,15 +76,15 @@ export default bridge=>{
 		const newAdded = id in componentsById === false;
 		if (newAdded) {
 			const componentInfo = {
-        id,
-        component,
-        mobxid: mobxIdsByComponent.get(component),
-        children: [],
-        name: getComponentName(component),
-        renders: 0,
-        props: component.props,
-        state: component.state,
-        context: component.context,
+				id,
+				component,
+				mobxid: mobxIdsByComponent.get(component),
+				children: [],
+				name: getComponentName(component),
+				renders: 0,
+				props: component.props,
+				state: component.state,
+				context: component.context,
 			};
 			componentsById[id] = componentInfo;
 			if (isTracking) {
@@ -248,34 +248,34 @@ export default bridge=>{
 	];
 
 	return {
-    setup(mobxid, collection) {
-    	collections[mobxid] = collection;
-    	if (collection.mobxReact) {
-    		collection.mobxReact.trackComponents();
-    		disposables.push(
-    			collection.mobx.spy(report=>{
-    				inspector.handleUpdate(report.object);
-    			}),
-    			collection.mobxReact.renderReporter.on(report=>{
-    				if (isTracking) {
-    					switch (report.event) {
-                case "destroy":
-                  onDestroy(report, mobxid);
-                  break;
-                case "render":
-                  // timeout to let the dom render
-                  if (report.node) setTimeout(()=>onRender(report, mobxid), 16);
-                  break;
-                default:
-                  break;
-    					}
-    				}
-    			}),
-    		);
-    	}
-    },
-    dispose() {
-    	disposables.forEach(fn=>fn());
-    },
+		setup(mobxid, collection) {
+			collections[mobxid] = collection;
+
+			// todo: find equivalent to the below
+			/*if (collection.mobxReact) {
+				collection.mobxReact.trackComponents();
+				disposables.push(collection.mobx.spy(report=>{
+					inspector.handleUpdate(report.object);
+				}));
+				disposables.push(collection.mobxReact.renderReporter.on(report=>{
+					if (isTracking) {
+						switch (report.event) {
+							case "destroy":
+								onDestroy(report, mobxid);
+								break;
+							case "render":
+								// timeout to let the dom render
+								if (report.node) setTimeout(()=>onRender(report, mobxid), 16);
+								break;
+							default:
+								break;
+						}
+					}
+				}));
+			}*/
+		},
+		dispose() {
+			disposables.forEach(fn=>fn());
+		},
 	};
 };
