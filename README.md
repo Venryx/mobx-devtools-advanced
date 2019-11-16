@@ -51,5 +51,5 @@ They appear only when you are using [mobx-react](https://www.npmjs.com/package/m
 
 # Documentation
 
-* [Hacking](Hacking.md): How to make local changes.
-* [TreeTraversal](Hacking.md): Documentation on how to traverse the tree of React components.
+* [Hacking](Docs/Hacking.md): How to make local changes.
+* [TreeTraversal](Docs/TreeTraversal.md): Documentation on how to traverse the tree of React components.
