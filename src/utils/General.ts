@@ -23,3 +23,9 @@ export function ShallowEquals(objA, objB, options?: {propsToIgnore?: string[]}) 
 export function ShallowChanged(objA, objB) {
 	return !ShallowEquals(objA, objB);
 }
+
+export function GetBySymbol(obj: Object, symbolName: string) {
+	const symbols = Object.getOwnPropertySymbols(obj);
+	const symbol = symbols.find(a=>a.toString() == `Symbol(${symbolName})`);
+	return obj[symbol];
+}

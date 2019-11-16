@@ -1,4 +1,5 @@
 import {Component} from "react";
+import {GetBySymbol} from "../utils/General";
 
 export class FiberRootNode {
 	current: FiberNode;
@@ -14,6 +15,9 @@ export class CompTreeNode {
 	static _sendFull = true; // makes-so bridge sends full object instead of stubbing it
 
 	typeName: string;
+	compIsObservable: boolean;
+	compRenderIsObserver: boolean;
+
 	children = [] as CompTreeNode[];
 }
 
@@ -23,8 +27,18 @@ export function GetCompTreeForRoots(fiberRoots: FiberRootNode[]): CompTreeNode {
 	return GetCompTree(fiberRoots[0].current);
 }
 export function GetCompTree(fiber: FiberNode): CompTreeNode {
+	const comp = typeof fiber.type == "function" ? fiber.stateNode as Component : null;
+
 	const result = new CompTreeNode();
 	result.typeName = fiber.type == null ? null : typeof fiber.type == "string" ? fiber.type : fiber.type.name;
+	if (comp) {
+		if (GetBySymbol(comp, "mobx administration")) {
+			result.compIsObservable = true;
+			if (GetBySymbol(comp["render"], "mobx administration")) {
+				result.compRenderIsObserver = true;
+			}
+		}
+	}
 
 	let nextChild = fiber.child;
 	while (nextChild != null) {

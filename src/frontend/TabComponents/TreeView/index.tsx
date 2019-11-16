@@ -276,7 +276,7 @@ class CompTreeNodeUI extends Component<{node: CompTreeNode}, {}> {
 		const {node} = this.props;
 		return (
 			<div>
-				<div>{node.typeName || "n/a"}</div>
+				<div>{node.typeName || "n/a"}{node.compIsObservable ? ` [mobx data]` : ""}{node.compRenderIsObserver ? ` [mobx observer]` : ""}</div>
 				<div style={{marginLeft: 10}}>
 					{node.children.map((child, index)=>{
 						return (
