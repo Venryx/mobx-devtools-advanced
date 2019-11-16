@@ -10,7 +10,7 @@ To see how react-devtools traverses the React component tree, the most helpful f
 
 #### Using console...
 
-###### Get selected DOM element or React Component
+###### Get selected DOM element or React component
 ```
 $0   // dev-tools -> Elements -> selected DOM element
 $r   // React DevTools -> Components -> selected React component
@@ -22,7 +22,7 @@ $r   // React DevTools -> Components -> selected React component
 ```
 let domFiber = dom[Object.keys(dom).find(a=>a.startsWith("__reactInternalInstance$"))];
 let compFiber = domFiber.return
-//compFiber = compFiber.return(.return+)		// if you need to traverse to wrapper/ancestor comps
+//compFiber = compFiber.return(.return+)     // if you need to traverse to wrapper/ancestor comps
 let comp = compFiber.stateNode
 ```
 
@@ -31,16 +31,16 @@ For a more comprehensive helper function, see here: https://stackoverflow.com/a/
 ###### Get parent of component
 ```
 let childCompFiber = childComp._reactInternalFiber
-let parentCompDOMFiber = childCompFiber.return			// usually a dom-fiber between; if not, remove this line
+let parentCompDOMFiber = childCompFiber.return        // usually a dom-fiber between; if not, remove this line
 let parentCompFiber = parentCompDOMFiber.return
-//let parentCompFiber = childCompFiber._debugOwner;	// alternative to .return.return (skips dom-fiber)
+//let parentCompFiber = childCompFiber._debugOwner;   // alternative to .return.return (skips dom-fiber)
 let parentComp = parentCompFiber.stateNode
 ```
 
 ###### Get first child of component
 ```
 let parentFiber = parentComp._reactInternalFiber
-let parentCompDOMFiber = compFiber.child				// usually a dom-fiber between; if not, remove this line
+let parentCompDOMFiber = compFiber.child           // usually a dom-fiber between; if not, remove this line
 let childCompFiber = parentCompDOMFiber.child
 let childComp = childCompFiber.stateNode
 ```
