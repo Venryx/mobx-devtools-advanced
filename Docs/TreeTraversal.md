@@ -21,24 +21,26 @@ $r   // React DevTools -> Components -> selected React component
 ###### Get React component for DOM element
 ```
 let domFiber = dom[Object.keys(dom).find(a=>a.startsWith("__reactInternalInstance$"))];
-let compFiber = fiberForDOM.return
-//compFiber = compFiber.return(.return+)   // if you need to traverse to wrapper/ancestor comps
+let compFiber = domFiber.return
+//compFiber = compFiber.return(.return+)		// if you need to traverse to wrapper/ancestor comps
 let comp = compFiber.stateNode
 ```
+
+For a more comprehensive helper function, see here: https://stackoverflow.com/a/39165137/2441655
 
 ###### Get parent of component
 ```
 let childCompFiber = childComp._reactInternalFiber
-let parentCompDOMFiber = childCompFiber.return
+let parentCompDOMFiber = childCompFiber.return			// usually a dom-fiber between; if not, remove this line
 let parentCompFiber = parentCompDOMFiber.return
-//let parentCompFiber = childCompFiber._debugOwner;   // alternative to .return.return (skips dom-fiber)
+//let parentCompFiber = childCompFiber._debugOwner;	// alternative to .return.return (skips dom-fiber)
 let parentComp = parentCompFiber.stateNode
 ```
 
 ###### Get first child of component
 ```
 let parentFiber = parentComp._reactInternalFiber
-let parentCompDOMFiber = compFiber.child
+let parentCompDOMFiber = compFiber.child				// usually a dom-fiber between; if not, remove this line
 let childCompFiber = parentCompDOMFiber.child
 let childComp = childCompFiber.stateNode
 ```
@@ -46,6 +48,12 @@ let childComp = childCompFiber.stateNode
 ###### Get next sibling of component
 ```
 comp._reactInternalFiber.sibling.stateNode
+```
+
+###### Check whether fiber is for dom-element or component
+```
+let isDomFiber = typeof fiber.type == "string";
+let isCompFiber = typeof fiber.type != "string"; // or: == "function"
 ```
 
 #### Using React dev-tools hook
