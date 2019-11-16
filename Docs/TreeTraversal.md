@@ -20,7 +20,7 @@ $r   // React DevTools -> Components -> selected React component
 
 ###### Get React component for DOM element
 ```
-let domFiber = dom[Object.keys(dom).find(a=>a.startsWith("__reactInternalInstance$"))];
+let domFiber = dom[Object.keys(dom).find(a=>a.startsWith("__reactInternalInstance$"))]
 let compFiber = domFiber.return
 //compFiber = compFiber.return(.return+)     // if you need to traverse to wrapper/ancestor comps
 let comp = compFiber.stateNode
@@ -31,9 +31,9 @@ For a more comprehensive helper function, see here: https://stackoverflow.com/a/
 ###### Get parent of component
 ```
 let childCompFiber = childComp._reactInternalFiber
-let parentCompDOMFiber = childCompFiber.return        // usually a dom-fiber between; if not, remove this line
+let parentCompDOMFiber = childCompFiber.return       // usually a dom-fiber between; if not, remove this line
 let parentCompFiber = parentCompDOMFiber.return
-//let parentCompFiber = childCompFiber._debugOwner;   // alternative to .return.return (skips dom-fiber)
+//let parentCompFiber = childCompFiber._debugOwner   // alternative to .return.return (skips dom-fiber)
 let parentComp = parentCompFiber.stateNode
 ```
 
@@ -52,8 +52,8 @@ comp._reactInternalFiber.sibling.stateNode
 
 ###### Check whether fiber is for dom-element or component
 ```
-let isDomFiber = typeof fiber.type == "string";
-let isCompFiber = typeof fiber.type != "string"; // or: == "function"
+let isDomFiber = typeof fiber.type == "string"
+let isCompFiber = typeof fiber.type != "string"   // or: == "function"
 ```
 
 #### Using React dev-tools hook
@@ -70,7 +70,7 @@ hook = __REACT_DEVTOOLS_GLOBAL_HOOK__
 ###### Get root fiber/component
 ```
 rootFragmentFiber = hook.getFiberRoots(1).toJSON()[0].current
-rootCompFiber = rootFragment.child
+rootCompFiber = rootFragmentFiber.child
 rootComp = rootFiber.stateNode
 ```
 
