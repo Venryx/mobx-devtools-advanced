@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {css, StyleSheet} from "aphrodite";
+import * as Aphrodite from "aphrodite";
 import "hack-font/build/web/hack.css";
 import Bridge from "../Bridge";
 import createStores from "./stores";
@@ -8,33 +8,46 @@ import Blocker from "./Blocker";
 import ContextProvider from "../utils/ContextProvider";
 import theme from "./theme";
 
-export default class App extends React.PureComponent {
-	static propTypes = {
-		quiet: PropTypes.bool,
-		reloadSubscribe: PropTypes.func.isRequired,
-		inject: PropTypes.func.isRequired,
-		reload: PropTypes.func.isRequired,
-		children: PropTypes.node.isRequired,
-	};
+const {css, StyleSheet} = Aphrodite;
 
+declare global {
+	let bridge_: Bridge;
+	let $$frontendStores$$;
+}
+
+type State = {
+	loaded: boolean, store: any, connected: boolean, mobxFound: boolean, contentScriptInstallationError: any,
+};
+export default class App extends React.PureComponent<
+	{
+		quiet: boolean,
+		reloadSubscribe: (func: Function)=>any,
+		inject: (func: Function)=>any,
+		reload: ()=>any,
+		children: any,
+	},
+	State
+> {
 	static defaultProps = {
 		quiet: false,
 	};
-
 	state = {
 		loaded: false,
 		connected: false,
 		mobxFound: false,
-	};
+	} as State;
 
-	componentWillMount() {
+	$unsubscribeReload;
+	$teardownWall;
+	stores;
+	UNSAFE_componentWillMount() {
 		if (this.props.reloadSubscribe) {
 			this.$unsubscribeReload = this.props.reloadSubscribe(()=>this.reload());
 		}
 		this.props.inject((wall, teardownWall)=>{
 			this.$teardownWall = teardownWall;
 			const bridge = new Bridge(wall);
-			window.bridge = bridge; // custom
+			window["bridge_"] = bridge; // custom
 
 			this.$disposables.push(
 				bridge.sub("capabilities", ({mobxFound})=>{
@@ -52,7 +65,7 @@ export default class App extends React.PureComponent {
 
 				this.stores = createStores(bridge);
 				if (__DEV__) {
-					window.$$frontendStores$$ = this.stores;
+					window["$$frontendStores$$"] = this.stores;
 				}
 
 				this.setState({connected: true});

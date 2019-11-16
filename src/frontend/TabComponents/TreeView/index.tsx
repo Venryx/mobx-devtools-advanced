@@ -1,14 +1,21 @@
-import PropTypes from "prop-types";
-import React from "react";
-import {css, StyleSheet} from "aphrodite";
+import PropTypes, {node} from "prop-types";
+import React, {Component} from "react";
+import * as Aphrodite from "aphrodite";
 import Node from "./Node";
 import * as SearchUtils from "../../../utils/SearchUtils";
 import Spinner from "../../Spinner";
 import {InjectStores} from "../../../utils/InjectStores";
+import {CompTreeNode} from "../../../backend/mobxReactNodesTree_new";
+import {ShallowChanged} from "../../../utils/General";
+
+const {css, StyleSheet} = Aphrodite;
 
 const MAX_SEARCH_ROOTS = 200;
 
+type State = {};
+
 @InjectStores({
+	shouldUpdate: ShallowChanged, // custom
 	subscribe: {
 		treeExplorerStore: ["roots", "searchRoots", "loaded"],
 	},
@@ -77,16 +84,19 @@ const MAX_SEARCH_ROOTS = 200;
 		},
 	}),
 })
-export default class TreeView extends React.Component {
+export default class TreeView extends React.Component<
+	{
+		roots?: any[], searchText?: string, searching?: boolean,
+		getComponents?: ()=>any[], reset?: ()=>any, selectInDirection?: (direction: "up" | "down" | "left" | "right")=>any,
+		loaded?: boolean,
+		compTree: CompTreeNode,
+	},
+	State
+> {
 	static propTypes = {
-		roots: PropTypes.array.isRequired,
-		searchText: PropTypes.string,
-		searching: PropTypes.bool.isRequired,
-		getComponents: PropTypes.func.isRequired,
-		reset: PropTypes.func.isRequired,
-		selectInDirection: PropTypes.func.isRequired,
 		loaded: PropTypes.bool.isRequired,
 	};
+	state = {} as State;
 
 	componentDidMount() {
 		this.props.getComponents();
@@ -155,8 +165,10 @@ export default class TreeView extends React.Component {
 	}
 
 	render() {
-		if (!this.props.roots.length) {
-			if (this.props.searching) {
+		const {roots, searching, searchText, loaded, compTree} = this.props;
+		console.log("TreeView.CompTree:", compTree);
+		if (!roots.length) {
+			if (searching) {
 				return (
 					<div className={css(styles.container)}>
 						<span className={css(styles.noSearchResults)}>Nothing found</span>
@@ -164,21 +176,11 @@ export default class TreeView extends React.Component {
 				);
 			}
 			return (
-				<div className={css(styles.container)}>
+				<div className={css(styles.container)} style={{overflowY: "auto"}}>
+					<span>Root children: {compTree ? compTree.children.length : 0}</span>
+					{compTree && <CompTreeNodeUI node={compTree}/>}
 
-					<button onClick={()=>{
-						console.log("Sending request. Val now:", window.fiberRoots);
-						bridge.send("backend:getFiberRoots");
-						//const connectInterval = setInterval(()=>bridge.send("backend:ping"), 500);
-						bridge.once("frontend:receiveFiberRoots", ({fiberRoots})=>{
-							console.log("Got fiber roots:", JSON.stringify(fiberRoots), fiberRoots);
-							window.fiberRoots = fiberRoots;
-							this.forceUpdate();
-						});
-					}}>Refresh</button>
-					<span>Roots: {window.fiberRoots ? window.fiberRoots.length : 0}</span>
-
-					{this.props.loaded ? (
+					{loaded ? (
 						<span className={css(styles.noSearchResults)}>No component observers</span>
 					) : (
 							<Spinner />
@@ -188,19 +190,16 @@ export default class TreeView extends React.Component {
 		}
 
 		// Convert search text into a case-insensitive regex for match-highlighting.
-		const {searchText} = this.props;
 		const searchRegExp = SearchUtils.isValidRegex(searchText)
 			? SearchUtils.searchTextToRegExp(searchText)
 			: null;
 
-		if (this.props.searching && this.props.roots.length > MAX_SEARCH_ROOTS) {
+		if (searching && roots.length > MAX_SEARCH_ROOTS) {
 			return (
 				<div className={css(styles.container)}>
 					<div ref={n=>{ this.node = n; }} className={css(styles.scroll)}>
 						<div className={css(styles.scrollContents)}>
-							{this.props.roots
-								.slice(0, MAX_SEARCH_ROOTS)
-								.map(id=><Node depth={0} id={id} key={id} searchRegExp={searchRegExp} />)}
+							{roots.slice(0, MAX_SEARCH_ROOTS).map(id=><Node depth={0} id={id} key={id} searchRegExp={searchRegExp} />)}
 							<span>Some results not shown. Narrow your search criteria to find them</span>
 						</div>
 					</div>
@@ -271,3 +270,21 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 	},
 });
+
+class CompTreeNodeUI extends Component<{node: CompTreeNode}, {}> {
+	render() {
+		const {node} = this.props;
+		return (
+			<div>
+				<div>{node.typeName || "n/a"}</div>
+				<div style={{marginLeft: 10}}>
+					{node.children.map((child, index)=>{
+						return (
+							<CompTreeNodeUI key={index} node={child}/>
+						);
+					})}
+				</div>
+			</div>
+		);
+	}
+}
