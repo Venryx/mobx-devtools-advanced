@@ -89,7 +89,7 @@ export default class TreeView extends React.Component<
 		roots?: any[], searchText?: string, searching?: boolean,
 		getComponents?: ()=>any[], reset?: ()=>any, selectInDirection?: (direction: "up" | "down" | "left" | "right")=>any,
 		loaded?: boolean,
-		compTree: CompTreeNode,
+		compTree: CompTreeNode, collapseNonMobX: boolean,
 	},
 	State
 > {
@@ -165,7 +165,7 @@ export default class TreeView extends React.Component<
 	}
 
 	render() {
-		const {roots, searching, searchText, loaded, compTree} = this.props;
+		const {roots, searching, searchText, loaded, compTree, collapseNonMobX} = this.props;
 		console.log("TreeView.CompTree:", compTree);
 		if (!roots.length) {
 			if (searching) {
@@ -177,8 +177,7 @@ export default class TreeView extends React.Component<
 			}
 			return (
 				<div className={css(styles.container)} style={{overflowY: "auto"}}>
-					<span>Root children: {compTree ? compTree.children.length : 0}</span>
-					{compTree && <CompTreeNodeUI node={compTree}/>}
+					{compTree && <CompTreeNodeUI node={compTree} collapseNonMobX={collapseNonMobX}/>}
 
 					{loaded ? (
 						<span className={css(styles.noSearchResults)}>No component observers</span>
@@ -271,16 +270,18 @@ const styles = StyleSheet.create({
 	},
 });
 
-class CompTreeNodeUI extends Component<{node: CompTreeNode}, {}> {
+class CompTreeNodeUI extends Component<{node: CompTreeNode, collapseNonMobX: boolean}, {}> {
 	render() {
-		const {node} = this.props;
+		const {node, collapseNonMobX} = this.props;
+		const nodeIsMobX = node.compIsObservable || node.compRenderIsObserver;
 		return (
 			<div>
-				<div>{node.typeName || "n/a"}{node.compIsObservable ? ` [mobx data]` : ""}{node.compRenderIsObserver ? ` [mobx observer]` : ""}</div>
+				{(nodeIsMobX || !collapseNonMobX) &&
+				<div>{node.typeName || "n/a"}{node.compIsObservable ? ` [mobx data]` : ""}{node.compRenderIsObserver ? ` [mobx observer]` : ""}</div>}
 				<div style={{marginLeft: 10}}>
 					{node.children.map((child, index)=>{
 						return (
-							<CompTreeNodeUI key={index} node={child}/>
+							<CompTreeNodeUI key={index} node={child} collapseNonMobX={collapseNonMobX}/>
 						);
 					})}
 				</div>

@@ -13,7 +13,7 @@ import {CompTreeNode} from "../../backend/mobxReactNodesTree_new";
 
 const {css, StyleSheet} = Aphrodite;
 
-type State = {compTree: CompTreeNode};
+type State = {compTree: CompTreeNode, collapseNonMobX: boolean};
 
 @InjectStores({
 	subscribe: {
@@ -31,9 +31,9 @@ type State = {compTree: CompTreeNode};
 	}),
 })
 export default class TabComponents extends React.PureComponent<{pickingComponent?: boolean, togglePickingTreeExplorerComponent?: ()=>any}, State> {
-	state = {} as State;
+	state = {collapseNonMobX: true} as State;
 	leftRenderer = ()=>{
-		const {compTree} = this.state;
+		const {compTree, collapseNonMobX} = this.state;
 		console.log("LeftRenderer...", compTree);
 		return (
 			<div className={css(styles.leftPane)}>
@@ -50,8 +50,12 @@ export default class TabComponents extends React.PureComponent<{pickingComponent
 							this.setState({compTree: newCompTree});
 						});
 					}}>Refresh</button>
+					<div style={{marginLeft: 5}}>Collapse non-MobX:</div>
+					<input type="checkbox" checked={collapseNonMobX} style={{marginLeft: 5, display: "inline-block"}} onChange={e=>{
+						this.setState({collapseNonMobX: !collapseNonMobX});
+					}}/>
 				</SecondaryPanel>
-				<TreeView compTree={compTree}/>
+				<TreeView compTree={compTree} collapseNonMobX={collapseNonMobX}/>
 				<div className={css(styles.footer)}>
 					<Breadcrumb />
 				</div>

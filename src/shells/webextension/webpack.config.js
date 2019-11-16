@@ -11,6 +11,7 @@ module.exports = {
 	optimization: {
 		// use paths as runtime identifiers for webpack modules (easier debugging)
 		// namedModules: true, // commented; not needed, since "output.pathinfo=true"
+		//noEmitOnErrors: true, // NoEmitOnErrorsPlugin
 	},
 	entry: {
 		backend: path.join(__dirname, "backend.js"),
