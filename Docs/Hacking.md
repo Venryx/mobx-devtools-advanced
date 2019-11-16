@@ -13,7 +13,7 @@
 ## Chrome extension
 
 - Run: `yarn start:chrome`
-- Go to `chrome://extensions`, check "developer mode", click "Loadunpacked extension", and select directory `lib/chrome`.
+- Go to `chrome://extensions`, check "developer mode", click "Load unpacked extension", and select directory `lib/chrome`.
   
   
 ## Firefox extension

@@ -49,6 +49,7 @@ Make sure that you are using [mobx](https://www.npmjs.com/package/mobx) 3.1.15 o
 They appear only when you are using [mobx-react](https://www.npmjs.com/package/mobx-react) 4.2.2 or higher;
 
 
-# Hacking
+# Documentation
 
-Check the [HACKING.md](HACKING.md).
+* [Hacking](Hacking.md): How to make local changes.
+* [TreeTraversal](Hacking.md): Documentation on how to traverse the tree of React components.
