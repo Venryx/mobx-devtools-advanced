@@ -12,7 +12,7 @@ const HR_PORT = 5000;
 
 // hacky fix for webpack-dev-server causing the (non-extension) page to reload on any changes to dev-tools source!
 // (normally, the changes are UI only, so no need to reload the content-script or page)
-config.plugins.push(new WebpackStringReplacer({
+/*config.plugins.push(new WebpackStringReplacer({
 	//logOutputFilePaths: true,
 	logFileMatches: true,
 	//logFileMatchContents: 1000,
@@ -33,7 +33,7 @@ config.plugins.push(new WebpackStringReplacer({
 			},
 		],
 	}],
-}));
+}));*/
 
 // maybe temp; disable warnings for webpack output (so webpack doesn't get flooded with them)
 config.plugins.push({

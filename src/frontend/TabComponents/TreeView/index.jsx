@@ -165,6 +165,19 @@ export default class TreeView extends React.Component {
 			}
 			return (
 				<div className={css(styles.container)}>
+
+					<button onClick={()=>{
+						console.log("Sending request. Val now:", window.fiberRoots);
+						bridge.send("backend:getFiberRoots");
+						//const connectInterval = setInterval(()=>bridge.send("backend:ping"), 500);
+						bridge.once("frontend:receiveFiberRoots", ({fiberRoots})=>{
+							console.log("Got fiber roots:", JSON.stringify(fiberRoots), fiberRoots);
+							window.fiberRoots = fiberRoots;
+							this.forceUpdate();
+						});
+					}}>Refresh</button>
+					<span>Roots: {window.fiberRoots ? window.fiberRoots.length : 0}</span>
+
 					{this.props.loaded ? (
 						<span className={css(styles.noSearchResults)}>No component observers</span>
 					) : (
