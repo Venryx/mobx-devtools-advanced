@@ -14,6 +14,11 @@ export class FiberNode {
 export class CompTreeNode {
 	static _sendFull = true; // makes-so bridge sends full object instead of stubbing it
 
+	path: string;
+	get RenderFuncPath() {
+		return `${this.path}/render`;
+	}
+
 	typeName: string;
 	compIsObservable: boolean;
 	compRenderIsObserver: boolean;
@@ -26,23 +31,26 @@ export function GetCompTreeForRoots(fiberRoots: FiberRootNode[]): CompTreeNode {
 	if (fiberRoots.length == 0) return new CompTreeNode();
 	return GetCompTree(fiberRoots[0].current);
 }
-export function GetCompTree(fiber: FiberNode): CompTreeNode {
+export function GetCompTree(fiber: FiberNode, parentPath?: string, indexInParent?: number): CompTreeNode {
 	const comp = typeof fiber.type == "function" ? fiber.stateNode as Component : null;
 
 	const result = new CompTreeNode();
+	result.path = parentPath == null ? "" : `${parentPath}/children/${indexInParent}`;
 	result.typeName = fiber.type == null ? null : typeof fiber.type == "string" ? fiber.type : fiber.type.name;
 	if (comp) {
 		if (GetBySymbol(comp, "mobx administration")) {
 			result.compIsObservable = true;
-			if (GetBySymbol(comp["render"], "mobx administration")) {
-				result.compRenderIsObserver = true;
-			}
+		}
+		if (GetBySymbol(comp["render"], "mobx administration")) {
+			result.compRenderIsObserver = true;
 		}
 	}
 
 	let nextChild = fiber.child;
 	while (nextChild != null) {
-		result.children.push(GetCompTree(nextChild));
+		const childIndex = result.children.length;
+		const childNode = GetCompTree(nextChild, result.path, childIndex);
+		result.children.push(childNode);
 		nextChild = nextChild.sibling;
 	}
 

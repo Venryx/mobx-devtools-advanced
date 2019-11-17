@@ -87,8 +87,9 @@ module.exports = {
 	resolve: {
 		extensions: [".js", ".jsx", ".ts", ".tsx"],
 		alias: {
-			"mobx-react": `${rootDir}/mobx-react/src`,
-			mobx: `${rootDir}/mobx/src/mobx.ts`,
+			// custom removed; don't see why need submodule for it
+			/*"mobx-react": `${rootDir}/mobx-react/src`,
+			mobx: `${rootDir}/mobx/src/mobx.ts`,*/
 			aphrodite: "aphrodite/no-important",
 		},
 	},

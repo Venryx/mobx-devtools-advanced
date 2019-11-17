@@ -1,12 +1,15 @@
 import PropTypes, {node} from "prop-types";
 import React, {Component} from "react";
 import * as Aphrodite from "aphrodite";
+import {observer} from "mobx-react";
 import Node from "./Node";
 import * as SearchUtils from "../../../utils/SearchUtils";
 import Spinner from "../../Spinner";
 import {InjectStores} from "../../../utils/InjectStores";
 import {CompTreeNode} from "../../../backend/mobxReactNodesTree_new";
 import {ShallowChanged} from "../../../utils/General";
+import {Button} from "../../../utils/ReactComponents/Button";
+import {store} from "../../Store";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -167,54 +170,15 @@ export default class TreeView extends React.Component<
 	render() {
 		const {roots, searching, searchText, loaded, compTree, collapseNonMobX} = this.props;
 		console.log("TreeView.CompTree:", compTree);
-		if (!roots.length) {
-			if (searching) {
-				return (
-					<div className={css(styles.container)}>
-						<span className={css(styles.noSearchResults)}>Nothing found</span>
-					</div>
-				);
-			}
-			return (
-				<div className={css(styles.container)} style={{overflowY: "auto"}}>
-					{compTree && <CompTreeNodeUI node={compTree} collapseNonMobX={collapseNonMobX}/>}
-
-					{loaded ? (
-						<span className={css(styles.noSearchResults)}>No component observers</span>
-					) : (
-							<Spinner />
-					)}
-				</div>
-			);
-		}
 
 		// Convert search text into a case-insensitive regex for match-highlighting.
 		const searchRegExp = SearchUtils.isValidRegex(searchText)
 			? SearchUtils.searchTextToRegExp(searchText)
 			: null;
 
-		if (searching && roots.length > MAX_SEARCH_ROOTS) {
-			return (
-				<div className={css(styles.container)}>
-					<div ref={n=>{ this.node = n; }} className={css(styles.scroll)}>
-						<div className={css(styles.scrollContents)}>
-							{roots.slice(0, MAX_SEARCH_ROOTS).map(id=><Node depth={0} id={id} key={id} searchRegExp={searchRegExp} />)}
-							<span>Some results not shown. Narrow your search criteria to find them</span>
-						</div>
-					</div>
-				</div>
-			);
-		}
-
 		return (
-			<div className={css(styles.container)}>
-				<div ref={n=>{ this.node = n; }} className={css(styles.scroll)}>
-					<div className={css(styles.scrollContents)}>
-						{this.props.roots.map(id=>(
-							<Node depth={0} id={id} key={id} searchRegExp={searchRegExp} />
-						))}
-					</div>
-				</div>
+			<div className={css(styles.container)} style={{overflowY: "auto"}}>
+				{compTree && <CompTreeNodeUI node={compTree} collapseNonMobX={collapseNonMobX}/>}
 			</div>
 		);
 	}
@@ -270,6 +234,7 @@ const styles = StyleSheet.create({
 	},
 });
 
+@observer
 class CompTreeNodeUI extends Component<{node: CompTreeNode, collapseNonMobX: boolean}, {}> {
 	render() {
 		const {node, collapseNonMobX} = this.props;
@@ -277,7 +242,17 @@ class CompTreeNodeUI extends Component<{node: CompTreeNode, collapseNonMobX: boo
 		return (
 			<div>
 				{(nodeIsMobX || !collapseNonMobX) &&
-				<div>{node.typeName || "n/a"}{node.compIsObservable ? ` [mobx data]` : ""}{node.compRenderIsObserver ? ` [mobx observer]` : ""}</div>}
+				<div>
+					{node.typeName || "n/a"}
+					{node.compIsObservable &&
+						<Button text={"[mobx data]"} style={{marginLeft: 5}} onClick={()=>{
+							store.selectedMobXObjectPath = node.path;
+						}}/>}
+					{node.compRenderIsObserver &&
+						<Button text={"[mobx observer]"} style={{marginLeft: 5}} onClick={()=>{
+							store.selectedMobXObjectPath = node.RenderFuncPath;
+						}}/>}
+				</div>}
 				<div style={{marginLeft: 10}}>
 					{node.children.map((child, index)=>{
 						return (

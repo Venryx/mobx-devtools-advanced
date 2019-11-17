@@ -8,10 +8,18 @@ import {InjectStores} from "../../utils/InjectStores";
 import TreeView from "./TreeView";
 import SplitPane from "../SplitPane";
 import Breadcrumb from "./TreeView/Breadcrumb";
-import TreeComponentExplorer from "./TreeComponentExplorer";
+import {TreeComponentExplorer} from "./TreeComponentExplorer";
 import {CompTreeNode} from "../../backend/mobxReactNodesTree_new";
 
 const {css, StyleSheet} = Aphrodite;
+
+const compTreeProto = CompTreeNode.prototype;
+export function RehydrateCompTree(compTree: CompTreeNode) {
+	Object.setPrototypeOf(compTree, compTreeProto);
+	for (const child of compTree.children) {
+		RehydrateCompTree(child);
+	}
+}
 
 type State = {compTree: CompTreeNode, collapseNonMobX: boolean};
 
@@ -46,6 +54,7 @@ export default class TabComponents extends React.PureComponent<{pickingComponent
 					<button style={{marginLeft: 5, display: "inline-block"}} onClick={()=>{
 						bridge_.send("backend:getCompTree");
 						bridge_.once("frontend:receiveCompTree", ({compTree: newCompTree})=>{
+							RehydrateCompTree(newCompTree);
 							console.log("Got comp tree:", newCompTree);
 							this.setState({compTree: newCompTree});
 						});
