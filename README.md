@@ -4,7 +4,11 @@ This repository is home for:
 * MobX Developer Tools (Advanced) for **Firefox** (not yet released)
 * [Standalone app](#standalone-app) for Safari, IE etc. 
 
-![MobX DevTools](preview.gif)
+#### Early development
+
+This fork is in early development, so some of this readme content may be incorrect. XD
+
+At the moment, follow this page to install locally: [Hacking](Docs/Hacking.md)
 
 #### Base features of mobx-devtools
 
