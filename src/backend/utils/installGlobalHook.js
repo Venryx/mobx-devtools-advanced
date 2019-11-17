@@ -160,7 +160,7 @@ export default function installGlobalHook(window) {
 				mountedRoots.delete(root);
 			}
 
-			console.log("Intercept reached!");
+			//console.log("Intercept reached!");
 
 			if (officialHook) officialHookProps.onCommitFiberRoot(rendererID, root, priorityLevel);
 		},
@@ -176,7 +176,7 @@ export default function installGlobalHook(window) {
 		window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = hook;
 	}
 	
-	console.log("Test1!");
+	//console.log("Test1!");
 
 	// wait until the official hook is added, then patch it
 	//let startTime = Date.now();

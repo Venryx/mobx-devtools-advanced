@@ -185,7 +185,7 @@ export class DataViewer extends BaseComponentPlus({depth: 0} as {data: any, dept
 					<div style={{width: 10}}>{expandable ? (!expanded ? ">" : "...") : ""}</div>
 					<div>{keyInTree}:</div>
 					{!expandable &&
-						<div>{JSON.stringify(data)}</div>}
+						<Text> {JSON.stringify(data)}</Text>}
 					{expandable && data && data.constructor &&
 						<Text> ({data.constructor.name})</Text>}
 				</Row>
