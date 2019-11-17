@@ -1,5 +1,6 @@
 import {Component} from "react";
 import {GetBySymbol} from "../utils/General";
+import {serialize} from "../Bridge";
 
 export class FiberRootNode {
 	current: FiberNode;
@@ -19,11 +20,23 @@ export class CompTreeNode {
 		return `${this.path}/render`;
 	}
 
+	fiber: FiberNode;
 	typeName: string;
 	compIsObservable: boolean;
 	compRenderIsObserver: boolean;
 
 	children = [] as CompTreeNode[];
+
+	_serialize(path: string[], seen: Map<any, any>) {
+		const clone = {} as any;
+		for (const prop in this) {
+			if (prop == "fiber") continue; // custom
+			if (Object.prototype.hasOwnProperty.call(this, prop)) {
+				clone[prop] = serialize(this, path.concat(prop), seen, prop);
+			}
+		}
+		return clone;
+	}
 }
 
 export function GetCompTreeForRoots(fiberRoots: FiberRootNode[]): CompTreeNode {
@@ -35,7 +48,8 @@ export function GetCompTree(fiber: FiberNode, parentPath?: string, indexInParent
 	const comp = typeof fiber.type == "function" ? fiber.stateNode as Component : null;
 
 	const result = new CompTreeNode();
-	result.path = parentPath == null ? "" : `${parentPath}/children/${indexInParent}`;
+	result.fiber = fiber;
+	result.path = parentPath == null ? "" : `${parentPath.length ? `${parentPath}/` : ""}children/${indexInParent}`;
 	result.typeName = fiber.type == null ? null : typeof fiber.type == "string" ? fiber.type : fiber.type.name;
 	if (comp) {
 		if (GetBySymbol(comp, "mobx administration")) {
@@ -60,12 +74,45 @@ export function GetCompTree(fiber: FiberNode, parentPath?: string, indexInParent
 export default (bridge, hook)=>{
 	const reactHook = hook.getReactHook();
 
+	function MobXObserverToPlainObj(mobx) {
+		const result = {} as any;
+		result.name = mobx.name;
+		result.observing = mobx.observing.map(observable=>MobXObservableToPlainObj(observable));
+		return result;
+	}
+	function MobXObservableToPlainObj(mobx) {
+		const result = {} as any;
+		result.name = mobx.name;
+		result.lastAccessedBy = mobx.lastAccessedBy;
+		return result;
+	}
+	function GetMobXObjectData(path: string) {
+		const parts = path.split("/");
+		const fiberRoots = reactHook.fiberRoots.toJSON();
+		const compTree = GetCompTreeForRoots(fiberRoots);
+		let nextNode = compTree;
+		for (const part of parts) {
+			if (part == "children") continue;
+			if (part == "render") {
+				return MobXObserverToPlainObj(GetBySymbol(nextNode.fiber.stateNode["render"], "mobx administration"));
+			}
+			nextNode = nextNode.children[part];
+		}
+		return MobXObservableToPlainObj(GetBySymbol(nextNode.fiber.stateNode, "mobx administration"));
+	}
+
 	const disposables = [
 		bridge.sub("backend:getCompTree", ({componentId})=>{
 			const fiberRoots = reactHook.fiberRoots.toJSON();
 			const compTree = GetCompTreeForRoots(fiberRoots);
 			console.log("Got comp-tree:", compTree);
 			bridge.send("frontend:receiveCompTree", {compTree});
+		}),
+		bridge.sub("backend:GetMobXObjectData", ({path})=>{
+			const data = GetMobXObjectData(path);
+			console.log("Got mobx-object data:", data);
+			data._sendFull = true;
+			bridge.send("frontend:ReceiveMobXObjectData", {data});
 		}),
 	];
 

@@ -6,6 +6,7 @@ import {InjectStores} from "../../../utils/InjectStores";
 import DataViewer from "../../DataViewer";
 import Collapsible from "../../Collapsible";
 import {store} from "../../Store";
+import {Button} from "../../../utils/ReactComponents/Button";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -146,12 +147,25 @@ const styles = StyleSheet.create({
 	},
 });
 
+type State = {dataStr: any};
+
 @observer
-export class TreeComponentExplorer extends Component<{}, {}> {
+export class TreeComponentExplorer extends Component<{}, State> {
+	state = {} as State;
 	render() {
+		const {dataStr} = this.state;
 		return (
 			<div>
 				Path: {store.selectedMobXObjectPath}
+				<Button text="Refresh" onClick={()=>{
+					bridge_.send("backend:GetMobXObjectData", {path: store.selectedMobXObjectPath});
+					bridge_.once("frontend:ReceiveMobXObjectData", ({data})=>{
+						this.setState({dataStr: JSON.stringify(data, null, 2)});
+					});
+				}}/>
+				<div style={{whiteSpace: "pre"}}>
+					{dataStr}
+				</div>
 			</div>
 		);
 	}

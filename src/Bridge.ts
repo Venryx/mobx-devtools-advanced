@@ -1,3 +1,5 @@
+import {CompTreeNode} from "./backend/mobxReactNodesTree_new";
+
 const now = typeof window.performance === "object" && window.performance.now
 	? ()=>window.performance.now()
 	: ()=>Date.now();
@@ -16,15 +18,16 @@ export const symbols = {
 	serializationException: "@@serializationException",
 };
 
-function serialize(data, path = [], seen = new Map(), propToExtract) {
+export function serialize(data, path = [], seen = new Map(), propToExtract?) {
 	try {
 		if (propToExtract !== undefined) {
 			data = data[propToExtract]; // eslint-disable-line no-param-reassign
 		}
 		if (!data || typeof data !== "object") {
-			if (typeof data === "string" && data.length > 500) {
+			// custom removed
+			/*if (typeof data === "string" && data.length > 500) {
 				return `${data.slice(0, 500)}...`;
-			}
+			}*/
 			if (typeof data === "symbol") {
 				return {
 					[symbols.type]: "symbol",
@@ -90,7 +93,20 @@ function serialize(data, path = [], seen = new Map(), propToExtract) {
 			return result;
 		}
 
-		if (prototype && prototype !== Object.prototype && !prototype.constructor._sendFull) { // custom
+		// custom
+		if (data._serialize) {
+			return data._serialize(path, seen);
+		}
+		if (data._sendFull || prototype.constructor._sendFull) {
+			for (const prop in data) {
+				if (Object.prototype.hasOwnProperty.call(data, prop)) {
+					clone[prop] = serialize(data, path.concat(prop), seen, prop);
+				}
+			}
+			return clone;
+		}
+
+		if (prototype && prototype !== Object.prototype) {
 			// This is complex object (dom node or mobx.something)
 			// only short signature will be sent to prevent performance loss
 			const result = {
@@ -131,7 +147,7 @@ function serialize(data, path = [], seen = new Map(), propToExtract) {
 	}
 }
 
-const deserialize = (data, root)=>{
+export const deserialize = (data, root)=>{
 	if (!data || typeof data !== "object") return data;
 	if (data instanceof Array) {
 		return data.map(o=>deserialize(o, root || data));
@@ -150,8 +166,8 @@ const deserialize = (data, root)=>{
 // Custom polyfill that runs the queue with a backoff.
 // If you change it, make sure it behaves reasonably well in Firefox.
 let lastRunTimeMS = 5;
-const cancelIdleCallback = window.cancelIdleCallback || clearTimeout;
-const requestIdleCallback = window.requestIdleCallback
+const cancelIdleCallback = window["cancelIdleCallback"] || clearTimeout;
+const requestIdleCallback = window["requestIdleCallback"]
 	|| function reqIdleCallback(cb) {
 		// Magic numbers determined by tweaking in Firefox.
 		// There is no special meaning to them.
@@ -178,6 +194,9 @@ export default class Bridge {
 
 	$buffer = [];
 
+	$wall;
+	$serialize;
+	$deserialize;
 	constructor(wall) {
 		this.$wall = wall;
 		this.$serialize = serialize;
@@ -217,6 +236,8 @@ export default class Bridge {
 		};
 	}
 
+	$flushHandle;
+	$paused;
 	scheduleFlush() {
 		if (!this.$flushHandle && this.$buffer.length) {
 			const timeout = this.$paused ? 5000 : 500;

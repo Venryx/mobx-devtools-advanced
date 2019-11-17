@@ -46,11 +46,11 @@ export default class TabComponents extends React.PureComponent<{pickingComponent
 		return (
 			<div className={css(styles.leftPane)}>
 				<SecondaryPanel>
-					<ButtonPickComponent
+					{/*<ButtonPickComponent
 						onClick={this.props.togglePickingTreeExplorerComponent}
 						active={this.props.pickingComponent}
 					/>
-					<SearchComponents />
+					<SearchComponents />*/}
 					<button style={{marginLeft: 5, display: "inline-block"}} onClick={()=>{
 						bridge_.send("backend:getCompTree");
 						bridge_.once("frontend:receiveCompTree", ({compTree: newCompTree})=>{
