@@ -2,13 +2,13 @@ import PropTypes, {node} from "prop-types";
 import React, {Component} from "react";
 import * as Aphrodite from "aphrodite";
 import {observer} from "mobx-react";
+import {Button} from "react-vcomponents";
 import Node from "./Node";
 import * as SearchUtils from "../../../utils/SearchUtils";
 import Spinner from "../../Spinner";
 import {InjectStores} from "../../../utils/InjectStores";
 import {CompTreeNode} from "../../../backend/mobxReactNodesTree_new";
 import {ShallowChanged} from "../../../utils/General";
-import {Button} from "../../../utils/ReactComponents/Button";
 import {store} from "../../Store";
 
 const {css, StyleSheet} = Aphrodite;

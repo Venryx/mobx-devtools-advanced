@@ -65,7 +65,7 @@ module.exports = {
 				options: {
 					failOnWarning: false,
 					failOnError: process.env.NODE_ENV !== "development",
-					fix: process.env.NODE_ENV === "development",
+					//fix: process.env.NODE_ENV === "development",
 					cache: false,
 				},
 			},

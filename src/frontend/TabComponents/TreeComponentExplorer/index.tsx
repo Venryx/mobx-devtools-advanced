@@ -1,12 +1,13 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
+import {BaseComponentPlus} from "react-vextensions";
+import {Column, Row, Button, Text} from "react-vcomponents";
 import {observer} from "../../../../node_modules/mobx-react";
 import {InjectStores} from "../../../utils/InjectStores";
-import DataViewer from "../../DataViewer";
+import DataViewer_Old from "../../DataViewer";
 import Collapsible from "../../Collapsible";
 import {store} from "../../Store";
-import {Button} from "../../../utils/ReactComponents/Button";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -96,7 +97,7 @@ export class TreeComponentExplorer_Old extends React.Component<any, any> {
 						)}
 					>
 						<div className={css(styles.block)}>
-							<DataViewer
+							<DataViewer_Old
 								path={["dependencyTree"]}
 								getValueByPath={this.props.getValueByPath}
 								inspect={this.props.inspect}
@@ -109,7 +110,7 @@ export class TreeComponentExplorer_Old extends React.Component<any, any> {
 					</Collapsible>
 				)}
 
-				<DataViewer
+				<DataViewer_Old
 					path={["component"]}
 					getValueByPath={this.props.getValueByPath}
 					inspect={this.props.inspect}
@@ -147,26 +148,55 @@ const styles = StyleSheet.create({
 	},
 });
 
-type State = {dataStr: any};
+type State = {data: any};
 
 @observer
 export class TreeComponentExplorer extends Component<{}, State> {
 	state = {} as State;
 	render() {
-		const {dataStr} = this.state;
+		const {data} = this.state;
 		return (
 			<div>
 				Path: {store.selectedMobXObjectPath}
-				<Button text="Refresh" onClick={()=>{
+				<Button text="Refresh" enabled={data} onClick={()=>{
 					bridge_.send("backend:GetMobXObjectData", {path: store.selectedMobXObjectPath});
 					bridge_.once("frontend:ReceiveMobXObjectData", ({data})=>{
-						this.setState({dataStr: JSON.stringify(data, null, 2)});
+						//this.setState({dataStr: JSON.stringify(data, null, 2)});
+						this.setState({data});
 					});
 				}}/>
-				<div style={{whiteSpace: "pre"}}>
-					{dataStr}
-				</div>
+				{data && <DataViewer data={data} keyInTree="root"/>}
 			</div>
+		);
+	}
+}
+
+export class DataViewer extends BaseComponentPlus({depth: 0} as {data: any, depth?: number, keyInTree?: string}, {expanded: false}) {
+	render() {
+		const {data, depth, keyInTree} = this.props;
+		const {expanded} = this.state;
+		const expandable = data != null && typeof data == "object";
+		const childKeys = expandable ? Object.keys(data) : [];
+		return (
+			<Column>
+				<Row style={{cursor: "pointer"}} onClick={()=>{
+					this.SetState({expanded: !expanded});
+				}}>
+					<div style={{width: 10}}>{expandable ? (!expanded ? ">" : "...") : ""}</div>
+					<div>{keyInTree}:</div>
+					{!expandable &&
+						<div>{JSON.stringify(data)}</div>}
+					{expandable && data && data.constructor &&
+						<Text> ({data.constructor.name})</Text>}
+				</Row>
+				{expandable && expanded &&
+				<Column style={{marginLeft: 10}}>
+					{childKeys.map(childKey=>{
+						//if (depth >= 50) return <div key={childKey}>Too deep.</div>;
+						return <DataViewer key={childKey} keyInTree={childKey} depth={depth + 1} data={data[childKey]}/>;
+					})}
+				</Column>}
+			</Column>
 		);
 	}
 }

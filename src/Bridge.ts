@@ -18,7 +18,7 @@ export const symbols = {
 	serializationException: "@@serializationException",
 };
 
-export function serialize(data, path = [], seen = new Map(), propToExtract?) {
+export function serialize(data, path = [], seen = new Map(), propToExtract?, sendFull = false) {
 	try {
 		if (propToExtract !== undefined) {
 			data = data[propToExtract]; // eslint-disable-line no-param-reassign
@@ -43,27 +43,45 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?) {
 			return data;
 		}
 
-		if (data instanceof RegExp || data instanceof Date) {
-			return data;
-		}
-
 		const seenPath = seen.get(data);
 		if (seenPath) {
 			return {
 				[symbols.reference]: seenPath,
 			};
 		}
-
 		seen.set(data, path);
+
+		// start non-cached serializing
+		const prototype = Object.getPrototypeOf(data);
+		const inspecting = allowedComplexObjects.has(data);
+
+		// custom
+		if (data._serialize) {
+			return data._serialize(path, seen);
+		}
+		if (sendFull || data._sendFull || prototype.constructor._sendFull) {
+			if (typeof data == "object") {
+				// temp
+				//if (path.length > 10) return `Path too deep. @type(${data.constructor.name}) @keys(${Object.keys(data).join(",")})`;
+
+				const clone = data instanceof Array ? [] : {};
+				for (const prop in data) {
+					if (Object.prototype.hasOwnProperty.call(data, prop)) {
+						clone[prop] = serialize(data, path.concat(prop), seen, prop, true);
+					}
+				}
+				return clone;
+			}
+			return data;
+		}
+
+		if (data instanceof RegExp || data instanceof Date) {
+			return data;
+		}
 
 		if (data instanceof Array) {
 			return data.map((o, i)=>serialize(o, path.concat(i), seen));
 		}
-
-		const clone = {};
-
-		const prototype = Object.getPrototypeOf(data);
-		const inspecting = allowedComplexObjects.has(data);
 
 		if (data instanceof Map || (prototype && prototype.isMobXObservableMap)) {
 			const result = {
@@ -93,19 +111,6 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?) {
 			return result;
 		}
 
-		// custom
-		if (data._serialize) {
-			return data._serialize(path, seen);
-		}
-		if (data._sendFull || prototype.constructor._sendFull) {
-			for (const prop in data) {
-				if (Object.prototype.hasOwnProperty.call(data, prop)) {
-					clone[prop] = serialize(data, path.concat(prop), seen, prop);
-				}
-			}
-			return clone;
-		}
-
 		if (prototype && prototype !== Object.prototype) {
 			// This is complex object (dom node or mobx.something)
 			// only short signature will be sent to prevent performance loss
@@ -132,12 +137,12 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?) {
 			return result;
 		}
 
+		const clone = {};
 		for (const prop in data) {
 			if (Object.prototype.hasOwnProperty.call(data, prop)) {
 				clone[prop] = serialize(data, path.concat(prop), seen, prop);
 			}
 		}
-
 		return clone;
 	} catch (error) {
 		return {

@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
+import {Button, Button_styles} from "react-vcomponents";
 import SecondaryPanel from "../SecondaryPanel";
 import ButtonPickComponent from "../SecondaryPanel/ButtonPickComponent";
 import SearchComponents from "./SearchComponents";
@@ -22,6 +23,16 @@ export function RehydrateCompTree(compTree: CompTreeNode) {
 }
 
 type State = {compTree: CompTreeNode, collapseNonMobX: boolean};
+
+// custom styling of components from react-vcomponents
+Object.assign(Button_styles.root, {
+	backgroundColor: "hsla(0,0%,85%,1)",
+	color: "hsla(0,0%,0%,1)",
+	border: "1px solid rgba(0,0,0,.3)",
+});
+Object.assign(Button_styles.root_override, {
+	padding: "0px 7px",
+});
 
 @InjectStores({
 	subscribe: {
@@ -51,14 +62,14 @@ export default class TabComponents extends React.PureComponent<{pickingComponent
 						active={this.props.pickingComponent}
 					/>
 					<SearchComponents />*/}
-					<button style={{marginLeft: 5, display: "inline-block"}} onClick={()=>{
+					<Button ml={5} text="Refresh" onClick={()=>{
 						bridge_.send("backend:getCompTree");
 						bridge_.once("frontend:receiveCompTree", ({compTree: newCompTree})=>{
 							RehydrateCompTree(newCompTree);
 							console.log("Got comp tree:", newCompTree);
 							this.setState({compTree: newCompTree});
 						});
-					}}>Refresh</button>
+					}}/>
 					<div style={{marginLeft: 5}}>Collapse non-MobX:</div>
 					<input type="checkbox" checked={collapseNonMobX} style={{marginLeft: 5, display: "inline-block"}} onChange={e=>{
 						this.setState({collapseNonMobX: !collapseNonMobX});

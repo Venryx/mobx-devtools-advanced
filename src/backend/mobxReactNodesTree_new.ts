@@ -32,7 +32,7 @@ export class CompTreeNode {
 		for (const prop in this) {
 			if (prop == "fiber") continue; // custom
 			if (Object.prototype.hasOwnProperty.call(this, prop)) {
-				clone[prop] = serialize(this, path.concat(prop), seen, prop);
+				clone[prop] = serialize(this, path.concat(prop), seen, prop, true);
 			}
 		}
 		return clone;
@@ -83,7 +83,26 @@ export default (bridge, hook)=>{
 	function MobXObservableToPlainObj(mobx) {
 		const result = {} as any;
 		result.name = mobx.name;
+		if ("value" in mobx) {
+			result.value = mobx.value;
+			/*if (mobx.value == null) result.value = mobx.value;
+			if (typeof mobx.value == "object") {
+				if (mobx.value.constructor.name == "ScalarNode") {
+					result.value = mobx.value.storedValue;
+				} else {
+					result.value = `[Object @type(${mobx.value.constructor.name}) @keys:${Object.keys(mobx.value).join(",")}]`;
+				}
+			} else {
+				result.value = mobx.value;
+			}*/
+		}
 		result.lastAccessedBy = mobx.lastAccessedBy;
+		if (mobx.values) {
+			result.values = mobx.values.toJSON().map(a=>a[1]).map(observable=>MobXObservableToPlainObj(observable));
+		}
+		if (mobx.observing) {
+			result.observing = mobx.observing.map(observable=>MobXObservableToPlainObj(observable));
+		}
 		return result;
 	}
 	function GetMobXObjectData(path: string) {

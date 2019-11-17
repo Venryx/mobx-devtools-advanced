@@ -85,6 +85,8 @@
         "react-dom": "^16.12.0",
         "react-test-renderer": "^16.12.0",
         "react-tiny-virtual-list": "^2.1.2",
+        "react-vcomponents": "^1.0.1",
+        "react-vextensions": "^1.0.0",
         "react-virtualized": "^9.21.2",
         "request": "^2.82.0",
         "selenium-webdriver": "^3.6.0",
