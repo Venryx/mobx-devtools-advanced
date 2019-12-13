@@ -93,19 +93,30 @@ export default bridge=>{
 	];
 
 	return {
-    setup(mobxid, collection) {
-    	if (collection.mobx) {
-    		disposables.push(
-    			collection.mobx.spy(change=>{
-    				if (logEnabled || consoleLogEnabled) {
-    					changesProcessor.push(change, collection.mobx);
-    				}
-    			}),
-    		);
-    	}
-    },
-    dispose() {
-    	disposables.forEach(fn=>fn());
-    },
+		setup(mobxid, collection) {
+			if (collection.mobx) {
+				disposables.push(
+					collection.mobx.spy(change=>{
+						if (logEnabled || consoleLogEnabled) {
+							const changeObj_mobxSym = change.object == null ? null : Object.getOwnPropertySymbols(change.object).filter(a=>a.toString() == "Symbol(mobx administration)")[0];
+							if (changeObj_mobxSym != null && changeObj_mobxSym != collection.mobx.$mobx) {
+								debugger;
+								throw new Error(`
+									MobX symbol is different between change.object[$mobx] and collection.mobx.$mobx.
+									This means there are multiple instances of MobX in the webpage.
+									To resolve, use dev-tools to find locations of two instances, then remove the extraneous one.
+									1) Find path to change.object MobX: inspect change.object.Symbol(mobx adminstration).defaultEnhancer.[[Function location]]
+									2) Find path to collection.mobx MobX: inspect collection.mobx.getDebugName.[[Function location]]
+								`);
+							}
+							changesProcessor.push(change, collection.mobx);
+						}
+					}),
+				);
+			}
+		},
+		dispose() {
+			disposables.forEach(fn=>fn());
+		},
 	};
 };

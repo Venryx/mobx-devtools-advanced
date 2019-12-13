@@ -59,7 +59,7 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?, sen
 		if (data._serialize) {
 			return data._serialize(path, seen);
 		}
-		if (sendFull || data._sendFull || prototype.constructor._sendFull) {
+		if (sendFull || data._sendFull || (prototype && prototype.constructor._sendFull)) {
 			if (typeof data == "object") {
 				// temp
 				//if (path.length > 10) return `Path too deep. @type(${data.constructor.name}) @keys(${Object.keys(data).join(",")})`;
