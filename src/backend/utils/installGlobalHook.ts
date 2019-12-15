@@ -95,12 +95,13 @@ export default function installGlobalHook(window) {
 					}
 				if (injectedProps.length > 0) this.emit('instances-injected', mobxid);
 			},
-			injectMobx(mobx) {
+			injectMobx(mobx: MobX) {
 				this.inject({mobx});
 			},
-			injectMobxReact(mobxReact, mobx) {
+			injectMobxReact(mobxReact: MobXReact, mobx: MobX) {
 				if (valid({mobxReact}, 'mobxReact')) {
-					mobxReact.trackComponents();
+					// new versions of mobx-react no longer support tracking components
+					if (mobxReact["trackComponents"]) mobxReact["trackComponents"]();
 					this.inject({mobxReact, mobx});
 				}
 			},

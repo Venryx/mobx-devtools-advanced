@@ -1,10 +1,10 @@
-import makeChangesProcessor from "../utils/changesProcessor";
+import makeChangesProcessor, {Change} from "../utils/changesProcessor";
 import consoleLogChange from "./utils/consoleLogChange";
 import makeInspector from "./utils/inspector";
 import storaTempValueInGlobalScope from "./utils/storaTempValueInGlobalScope";
 
-const summary = change=>{
-	const sum = Object.create(null);
+const summary = (change: Change)=>{
+	const sum = Object.create(null) as Change;
 	sum.summary = true;
 	sum.id = change.id;
 	sum.type = change.type;

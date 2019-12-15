@@ -1,3 +1,5 @@
+import {IObjectDidChange, IValueDidChange, IArrayChange, IArraySplice, ISetDidChange, IMapDidChange, ISetWillChange, IValueWillChange, IMapWillChange, IObjectWillChange, IArrayWillSplice, IArrayWillChange} from "mobx";
+
 const getId = (()=>{
 	let i = 0;
 	return ()=>{
@@ -6,7 +8,7 @@ const getId = (()=>{
 	};
 })();
 
-function observableName(mobx, object) {
+function observableName(mobx: MobX, object) {
 	if (!object || typeof object !== "object") {
 		return "";
 	}
@@ -23,7 +25,7 @@ function isPrimitive(value) {
 	);
 }
 
-function getNameForThis(mobx, who) {
+function getNameForThis(mobx: MobX, who) {
 	if (who === null || who === undefined) {
 		return "";
 	} if (who && typeof who === "object") {
@@ -37,7 +39,7 @@ function getNameForThis(mobx, who) {
 	return `${typeof who}`;
 }
 
-function formatValue(mobx, value) {
+function formatValue(mobx: MobX, value) {
 	if (isPrimitive(value)) {
 		if (typeof value === "string" && value.length > 100) {
 			return `${value.substr(0, 97)}...`;
@@ -49,11 +51,42 @@ function formatValue(mobx, value) {
 	return value;
 }
 
-export default onChange=>{
+/*export type ChangeType = "action" | "transaction" | "reaction" | "add" | "delete" | "update" | "splice" | "compute" | "error" | "scheduled-reaction" | "create";
+export class Change {
+	type: ChangeType;
+}*/
+export type Change_CombinedWithOr =
+	IValueWillChange<any> | IArrayWillChange<any> | IArrayWillSplice<any> | ISetWillChange<any> | IMapWillChange<any, any> | IObjectWillChange | // will X
+	IValueDidChange<any> | IArrayChange<any> | IArraySplice<any> | ISetDidChange<any> | IMapDidChange<any, any> | IObjectDidChange | // did X
+	{type: "action" | "transaction" | "scheduled-reaction" | "reaction" | "compute" | "error" | "create"}; // from Change types without an interface (eg. "scheduled-reaction" from mobx.module.js)
+export type Change = Partial<
+	Omit<
+		IValueWillChange<any> & IArrayWillChange<any> & IArrayWillSplice<any> & ISetWillChange<any> & IMapWillChange<any, any> & IObjectWillChange & // will X
+		IValueDidChange<any> & IArrayChange<any> & IArraySplice<any> & ISetDidChange<any> & IMapDidChange<any, any> & IObjectDidChange,
+	"type"> // did X
+	// fix "type" prop
+	& Pick<Change_CombinedWithOr, "type">
+	// custom props added
+	& {
+		id: number;
+		timestamp: number;
+		children: any[];
+		spyReportStart: boolean;
+		spyReportEnd: boolean;
+		time: number;
+		objectName: string;
+		targetName: string;
+		target: any;
+		summary: boolean;
+		hasChildren: boolean;
+	}
+>;
+
+export default (onChange: (change: Change)=>void)=>{
 	let path = [];
 
-	const push = (_change, mobx)=>{
-		const change = Object.create(null);
+	const push = (_change: Change, mobx: MobX)=>{
+		const change = Object.create(null) as Change;
 		for (const p in _change) {
 			if (Object.prototype.hasOwnProperty.call(_change, p)) {
 				change[p] = _change[p];
@@ -87,65 +120,65 @@ export default onChange=>{
 				path.push(change);
 			}
 			switch (change.type) {
-        case "action":
-          // name, target, arguments, fn
-          change.targetName = getNameForThis(mobx, change.target);
-          break;
-        case "transaction":
-          // name, target
-          change.targetName = getNameForThis(mobx, change.target);
-          break;
-        case "scheduled-reaction":
-          // object
-          change.objectName = observableName(mobx, change.object);
-          break;
-        case "reaction":
-          // object, fn
-          change.objectName = observableName(mobx, change.object);
-          break;
-        case "compute":
-          // object, target, fn
-          change.objectName = observableName(mobx, change.object);
-          change.targetName = getNameForThis(mobx, change.target);
-          break;
-        case "error":
-          // message
-          if (path.length > 0) {
-          	onChange(path[0]);
-          	reset();
-          } else {
-          	onChange(change);
-          }
-          return; // game over
-        case "update":
-          // (array) object, index, newValue, oldValue
-          // (map, obbject) object, name, newValue, oldValue
-          // (value) object, newValue, oldValue
-          change.objectName = observableName(mobx, change.object);
-          change.newValue = formatValue(mobx, change.newValue);
-          change.oldValue = formatValue(mobx, change.oldValue);
-          break;
-        case "splice":
-          change.objectName = observableName(mobx, change.object);
-          // (array) object, index, added, removed, addedCount, removedCount
-          break;
-        case "add":
-          // (map, object) object, name, newValue
-          change.objectName = observableName(mobx, change.object);
-          change.newValue = formatValue(mobx, change.newValue);
-          break;
-        case "delete":
-          // (map) object, name, oldValue
-          change.objectName = observableName(mobx, change.object);
-          change.oldValue = formatValue(mobx, change.oldValue);
-          break;
-        case "create":
-          // (value) object, newValue
-          change.objectName = observableName(mobx, change.object);
-          change.newValue = formatValue(mobx, change.newValue);
-          break;
-        default:
-          break;
+				case "action":
+					// name, target, arguments, fn
+					change.targetName = getNameForThis(mobx, change.target);
+					break;
+				case "transaction":
+					// name, target
+					change.targetName = getNameForThis(mobx, change.target);
+					break;
+				case "scheduled-reaction":
+					// object
+					change.objectName = observableName(mobx, change.object);
+					break;
+				case "reaction":
+					// object, fn
+					change.objectName = observableName(mobx, change.object);
+					break;
+				case "compute":
+					// object, target, fn
+					change.objectName = observableName(mobx, change.object);
+					change.targetName = getNameForThis(mobx, change.target);
+					break;
+				case "error":
+					// message
+					if (path.length > 0) {
+						onChange(path[0]);
+						reset();
+					} else {
+						onChange(change);
+					}
+					return; // game over
+				case "update":
+					// (array) object, index, newValue, oldValue
+					// (map, obbject) object, name, newValue, oldValue
+					// (value) object, newValue, oldValue
+					change.objectName = observableName(mobx, change.object);
+					change.newValue = formatValue(mobx, change.newValue);
+					change.oldValue = formatValue(mobx, change.oldValue);
+					break;
+				case "splice":
+					change.objectName = observableName(mobx, change.object);
+					// (array) object, index, added, removed, addedCount, removedCount
+					break;
+				case "add":
+					// (map, object) object, name, newValue
+					change.objectName = observableName(mobx, change.object);
+					change.newValue = formatValue(mobx, change.newValue);
+					break;
+				case "delete":
+					// (map) object, name, oldValue
+					change.objectName = observableName(mobx, change.object);
+					change.oldValue = formatValue(mobx, change.oldValue);
+					break;
+				case "create":
+					// (value) object, newValue
+					change.objectName = observableName(mobx, change.object);
+					change.newValue = formatValue(mobx, change.newValue);
+					break;
+				default:
+					break;
 			}
 
 			if (path.length === 0) {
