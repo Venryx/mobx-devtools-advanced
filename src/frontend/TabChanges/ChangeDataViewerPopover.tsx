@@ -1,14 +1,13 @@
 import React from "react";
-import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
 import {PreviewValue} from "../PreviewValue";
 import {InjectStores} from "../../utils/InjectStores";
 import Popover from "../Popover";
-import DataViewer from "../DataViewer/index";
+import {DataViewer} from "../DataViewer";
 
 const {css, StyleSheet} = Aphrodite;
 
-export function ChangeDataViewerPopover(props: {className?: string, displayName?: string, path: any[], getValueByPath: (path)=>any, inspect: Function, stopInspecting: Function, showMenu: Function}) {
+export function ChangeDataViewerPopover(props: {className?: string, displayName?: string, path: any[], getValueByPath: (path)=>any, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void, showMenu: Function}) {
 	const {className, displayName, path, getValueByPath, inspect, stopInspecting, showMenu} = props;
 	const value = getValueByPath(path);
 	//console.log("Value:", value);

@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes, {any} from "prop-types";
 import * as Aphrodite from "aphrodite";
 import "hack-font/build/web/hack.css";
+import {CheckBox} from "react-vcomponents";
 import Bridge from "../Bridge";
 import createStores from "./stores";
 import Blocker from "./Blocker";
@@ -145,7 +146,12 @@ const styles = StyleSheet.create({
 		height: "100%",
 		fontSize: 13,
 		fontFamily:
-			'-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+			'Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
 		fontWeight: 400,
 	},
 });
+
+// some modifications of react-vcomponents
+// ==========
+
+CheckBox.defaultProps["labelStyle"] = {marginLeft: 0};

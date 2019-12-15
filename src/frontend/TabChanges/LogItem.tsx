@@ -7,6 +7,7 @@ import {IconComputed, IconScheduledReaction, IconError} from "./icons";
 import {InjectStores} from "../../utils/InjectStores";
 import Popover from "../Popover";
 import {ChangeDataViewerPopover} from "./ChangeDataViewerPopover";
+import {Change} from "../../utils/changesProcessor";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -31,17 +32,14 @@ const getColor = type=>{
 		},
 	}),
 })
-export class LogItem extends React.Component<{change, path, getDetails, getValueByPath, inspect, stopInspecting, showMenu, preferredHeight, onHeightUpdate}, {open: boolean}> {
+export class LogItem extends React.Component<
+	{
+		change: Change, path: any[], getValueByPath: (path: string[])=>any, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void,
+		showMenu: (event, changeId: number, path: string[])=>void, preferredHeight?: number, onHeightUpdate: ()=>void
+	} & Partial<{getDetails: ()=>void}>,
+	{open: boolean}> {
 	static propTypes = {
-		getDetails: PropTypes.func,
-		path: PropTypes.array.isRequired,
-		getValueByPath: PropTypes.func,
-		inspect: PropTypes.func,
-		stopInspecting: PropTypes.func,
-		showMenu: PropTypes.func,
-		preferredHeight: PropTypes.number,
 		onHeightUpdate: PropTypes.func,
-		change: PropTypes.object.isRequired,
 	};
 
 	static defaultProps = {
@@ -132,7 +130,8 @@ export class LogItem extends React.Component<{change, path, getDetails, getValue
 							className={css(styles.headContentMisc)}
 							requireClick
 							// eslint-disable-next-line react/jsx-no-bind
-							onShown={()=>this.props.getDetails && this.props.getDetails(change.id)}
+							//onShown={()=>this.props.getDetails && this.props.getDetails(change.id)}
+							onShown={()=>this.props.getDetails && this.props.getDetails()}
 							content={(
 								<LObjDiff
 									change={change}

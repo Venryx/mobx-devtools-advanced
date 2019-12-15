@@ -1,10 +1,9 @@
 import React from "react";
-import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
 import {Button, Button_styles} from "react-vcomponents";
 import SecondaryPanel from "../SecondaryPanel";
 import ButtonPickComponent from "../SecondaryPanel/ButtonPickComponent";
-import SearchComponents from "./SearchComponents";
+import {SearchComponents} from "./SearchComponents";
 import {InjectStores} from "../../utils/InjectStores";
 import TreeView from "./TreeView";
 import SplitPane from "../SplitPane";

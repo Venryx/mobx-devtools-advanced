@@ -1,15 +1,12 @@
 import React from "react";
-import PropTypes from "prop-types";
-import DataView from "./DataView";
-import DataItem from "./DataItem";
+import {DataView} from "./DataView";
+import {DataItem} from "./DataItem";
 
-DataViewer.propTypes = {
-  decorator: PropTypes.func,
-};
-
-export default function DataViewer({decorator, ...otherProps}) {
-	const WrappedDataView = decorator(DataView);
-	const WrappedDataItem = decorator(DataItem);
+//type CompConstructor = new(...args)=>React.Component;
+type CompConstructor = new(...args)=>React.Component;
+export function DataViewer({decorator, ...otherProps}: React.ComponentProps<typeof DataView> & {decorator: (compClass: CompConstructor)=>CompConstructor}) {
+	const WrappedDataView = decorator(DataView) as new()=>DataView;
+	const WrappedDataItem = decorator(DataItem) as new()=>DataItem;
 
 	return (
     <WrappedDataView

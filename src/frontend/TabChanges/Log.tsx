@@ -3,8 +3,10 @@ import React from "react";
 import PropTypes from "prop-types";
 import List from "react-virtualized/dist/commonjs/List";
 import * as Aphrodite from "aphrodite";
+import {CE} from "js-vextensions";
 import {LogItem} from "./LogItem";
 import {InjectStores} from "../../utils/InjectStores";
+import {Change} from "../../utils/changesProcessor";
 
 const {css, StyleSheet} = Aphrodite;
 const ITEM_HEIGHT = 24;
@@ -14,8 +16,9 @@ const ITEM_HEIGHT = 24;
 		actionsLoggerStore: ["log"],
 	},
 	injectProps: ({actionsLoggerStore})=>({
-		logItemsById: actionsLoggerStore.logItemsById,
+		changeTypesToShow: actionsLoggerStore.changeTypesToShow,
 		logItemsIds: actionsLoggerStore.getFilteredLogItemsIds(),
+		logItemsById: actionsLoggerStore.logItemsById,
 		inspect(changeId, path) {
 			actionsLoggerStore.inspect(changeId, path);
 		},
@@ -34,7 +37,12 @@ const ITEM_HEIGHT = 24;
 		},
 	}),
 })
-export class Log extends React.Component<{logItemsById, logItemsIds, inspect, stopInspecting, getValueByPath, showMenu}> {
+export class Log extends React.Component<
+	Partial<{
+		changeTypesToShow: string[],
+		logItemsById: {[key: number]: Change}, logItemsIds: number[], inspect?: (changeId: number, path: string[])=>void, stopInspecting?: (changeId: number, path: string[])=>void, getValueByPath, showMenu,
+	}>
+> {
 	static propTypes = {
 		logItemsById: PropTypes.object.isRequired,
 		logItemsIds: PropTypes.array.isRequired,
@@ -84,10 +92,18 @@ export class Log extends React.Component<{logItemsById, logItemsIds, inspect, st
 		}
 	};
 
+	get filteredItems() {
+		const {changeTypesToShow, logItemsIds, logItemsById} = this.props;
+		const logItems = logItemsIds.map(changeID=>logItemsById[changeID]);
+		return logItems.filter(change=>changeTypesToShow.includes(change.type));
+	}
+
 	list;
 	renderItem = ({index, style})=>{
-		const id = this.props.logItemsIds[index];
-		const change = this.props.logItemsById[id];
+		/*const id = this.props.logItemsIds[index];
+		const change = this.props.logItemsById[id];*/
+		const change = this.filteredItems[index];
+		const id = CE(this.props.logItemsById).Pairs().find(a=>a.value == change).key;
 
 		if (!change.height) change.height = ITEM_HEIGHT;
 		return (
@@ -106,19 +122,12 @@ export class Log extends React.Component<{logItemsById, logItemsIds, inspect, st
 	};
 
 	render() {
-		const rowCount = this.props.logItemsIds.length;
+		//const rowCount = this.props.logItemsIds.length;
+		const rowCount = this.filteredItems.length;
 		const padding = 5;
 		return (
-			<div
-				className={css(styles.container)}
-				ref={el=>{
-					this.containerEl = el;
-				}}
-			>
-				<List
-					ref={list=>{
-						this.list = list;
-					}}
+			<div ref={el=>this.containerEl = el} className={css(styles.container)}>
+				<List ref={c=>this.list = c}
 					onScroll={this.handleScroll}
 					style={{width: "auto", padding, boxSizing: "content-box"}}
 					containerStyle={{width: "auto", maxWidth: "none"}}

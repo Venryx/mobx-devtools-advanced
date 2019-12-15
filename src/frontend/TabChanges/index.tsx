@@ -1,12 +1,15 @@
 import React from "react";
-import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
+import {Text, CheckBox} from "react-vcomponents";
+import {ModifyString, CE} from "js-vextensions";
 import SecondaryPanel from "../SecondaryPanel";
 import ButtonRecord from "../SecondaryPanel/ButtonRecord";
 import ButtonClear from "../SecondaryPanel/ButtonClear";
 import {Log} from "./Log";
 import {InjectStores} from "../../utils/InjectStores";
-import InputSearch from "../SecondaryPanel/InputSearch";
+import {InputSearch} from "../SecondaryPanel/InputSearch";
+import {Change_types, Change, ChangeType} from "../../utils/changesProcessor";
+import {ActionsStore} from "../stores/ActionsStore";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -14,10 +17,12 @@ const {css, StyleSheet} = Aphrodite;
 	subscribe: {
 		actionsLoggerStore: ["logEnabled", "log"],
 	},
-	injectProps: ({actionsLoggerStore})=>({
+	injectProps: ({actionsLoggerStore}: {actionsLoggerStore: ActionsStore})=>({
 		searchText: actionsLoggerStore.searchText,
+		changeTypesToShow: actionsLoggerStore.changeTypesToShow,
 		logEnabled: actionsLoggerStore.logEnabled,
 		logItemsIds: actionsLoggerStore.logItemsIds,
+		logItemsById: actionsLoggerStore.logItemsById,
 		clearLog() {
 			actionsLoggerStore.clearLog();
 		},
@@ -27,32 +32,43 @@ const {css, StyleSheet} = Aphrodite;
 		setSearchText(e) {
 			actionsLoggerStore.setSearchText(e.target.value);
 		},
+		setChangeTypesToShow(types: ChangeType[]) {
+			actionsLoggerStore.setChangeTypesToShow(types);
+		},
 	}),
 })
-export class TabChanges extends React.PureComponent<{searchText, logEnabled, logItemsIds, clearLog, toggleLogging, setSearchText}> {
-	static propTypes = {
-		searchText: PropTypes.string.isRequired,
-		logEnabled: PropTypes.bool.isRequired,
-		logItemsIds: PropTypes.array.isRequired,
-		clearLog: PropTypes.func.isRequired,
-		toggleLogging: PropTypes.func.isRequired,
-		setSearchText: PropTypes.func.isRequired,
-	};
-
+export class TabChanges extends React.PureComponent<
+	{} & Partial<{
+		searchText: string, changeTypesToShow: ChangeType[], logEnabled: boolean, clearLog: ()=>void, toggleLogging: ()=>void, setSearchText: (event)=>void, setChangeTypesToShow: (types: ChangeType[])=>void,
+		logItemsIds: number[], logItemsById: {[key: number]: Change},
+	}>
+> {
+	GetItemsOfType(type: ChangeType) {
+		const {logItemsIds, logItemsById} = this.props;
+		const logItems = logItemsIds.map(changeID=>logItemsById[changeID]);
+		return logItems.filter(change=>change.type == type);
+	}
 	render() {
+		const {logEnabled, toggleLogging, clearLog, searchText, changeTypesToShow, setSearchText, setChangeTypesToShow, logItemsIds} = this.props;
 		return (
 			<div className={css(styles.panel)}>
 				<SecondaryPanel>
-					<ButtonRecord
-						active={this.props.logEnabled}
-						onClick={this.props.toggleLogging}
-						showTipStartRecoding={!this.props.logEnabled && this.props.logItemsIds.length === 0}
-					/>
-					<ButtonClear onClick={this.props.clearLog} />
-					<InputSearch
-						searchText={this.props.searchText}
-						changeSearch={this.props.setSearchText}
-					/>
+					<ButtonRecord active={logEnabled} onClick={toggleLogging} showTipStartRecoding={!logEnabled && logItemsIds.length === 0}/>
+					<ButtonClear onClick={clearLog} />
+					<InputSearch searchText={searchText} changeSearch={setSearchText}/>
+					<Text ml={5}>Types:</Text>
+					{Change_types.map(type=>{
+						const typeStr = ModifyString(type, {firstLower_to_upper: true, hyphenLower_to_hyphenUpper: true});
+						const text = `${typeStr} (${this.GetItemsOfType(type).length})`;
+						return (
+							<CheckBox key={type} ml={3} text={text} checked={changeTypesToShow.includes(type)} onChange={checked=>{
+								const newTypes = changeTypesToShow.slice();
+								if (!checked) CE(newTypes).Remove(type);
+								else newTypes.push(type);
+								setChangeTypesToShow(newTypes);
+							}}/>
+						);
+					})}
 				</SecondaryPanel>
 				<Log />
 			</div>

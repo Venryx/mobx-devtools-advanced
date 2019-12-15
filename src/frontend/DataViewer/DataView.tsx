@@ -12,13 +12,17 @@ const renderSparseArrayHole = (count, key)=>(
 		<div className={css(styles.head)}>
 			<div className={css(styles.sparseArrayHole)}>
 				undefined ×
-        {count}
+				{count}
 			</div>
 		</div>
 	</li>
 );
 
-export default class DataView extends React.Component<Partial<{startOpen, change, className, path, getValueByPath, inspect, stopInspecting, showMenu, noSort, hidenKeysRegex, ChildDataView, ChildDataItem}>> {
+export class DataView extends React.Component<
+	Partial<{
+		startOpen, change, className, path, getValueByPath, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void, showMenu, noSort, hidenKeysRegex, ChildDataView, ChildDataItem}
+	>
+> {
 	static propTypes = {
 		startOpen: PropTypes.bool,
 		change: PropTypes.func,

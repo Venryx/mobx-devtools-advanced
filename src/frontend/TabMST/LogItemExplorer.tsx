@@ -2,7 +2,7 @@ import React from "react";
 import * as Aphrodite from "aphrodite";
 import PropTypes from "prop-types";
 import {InjectStores} from "../../utils/InjectStores";
-import DataViewer from "../DataViewer";
+import {DataViewer} from "../DataViewer";
 import Collapsible from "../Collapsible";
 import {PreviewValue} from "../PreviewValue";
 

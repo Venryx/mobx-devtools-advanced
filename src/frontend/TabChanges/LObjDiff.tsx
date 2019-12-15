@@ -5,7 +5,7 @@ import {ChangeDataViewerPopover} from "./ChangeDataViewerPopover";
 
 const {css, StyleSheet} = Aphrodite;
 
-export class LObjDiff extends React.PureComponent<{change, path: any[], getValueByPath: (path: string)=>any, inspect: Function, stopInspecting: Function, showMenu: Function}> {
+export class LObjDiff extends React.PureComponent<{change, path: any[], getValueByPath: (path: string[])=>any, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void, showMenu: Function}> {
 	getDiff() {
 		const {change} = this.props;
 		switch (change.type) {

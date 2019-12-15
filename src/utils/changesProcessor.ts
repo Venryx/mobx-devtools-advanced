@@ -51,6 +51,8 @@ function formatValue(mobx: MobX, value) {
 	return value;
 }
 
+export const Change_types: ChangeType[] = ["action", "transaction", "reaction", "add", "delete", "update", "splice", "compute", "error", "scheduled-reaction", "create"];
+export type ChangeType<T = Change> = T extends {type?: infer Subtype} ? Subtype : never;
 /*export type ChangeType = "action" | "transaction" | "reaction" | "add" | "delete" | "update" | "splice" | "compute" | "error" | "scheduled-reaction" | "create";
 export class Change {
 	type: ChangeType;
@@ -62,8 +64,8 @@ export type Change_CombinedWithOr =
 export type Change = Partial<
 	Omit<
 		IValueWillChange<any> & IArrayWillChange<any> & IArrayWillSplice<any> & ISetWillChange<any> & IMapWillChange<any, any> & IObjectWillChange & // will X
-		IValueDidChange<any> & IArrayChange<any> & IArraySplice<any> & ISetDidChange<any> & IMapDidChange<any, any> & IObjectDidChange,
-	"type"> // did X
+		IValueDidChange<any> & IArrayChange<any> & IArraySplice<any> & ISetDidChange<any> & IMapDidChange<any, any> & IObjectDidChange, // did X
+	"type">
 	// fix "type" prop
 	& Pick<Change_CombinedWithOr, "type">
 	// custom props added
@@ -79,6 +81,9 @@ export type Change = Partial<
 		target: any;
 		summary: boolean;
 		hasChildren: boolean;
+		open: boolean;
+		height: number;
+		message: string;
 	}
 >;
 

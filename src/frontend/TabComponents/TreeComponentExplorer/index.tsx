@@ -5,7 +5,7 @@ import {BaseComponentPlus} from "react-vextensions";
 import {Column, Row, Button, Text} from "react-vcomponents";
 import {observer} from "../../../../node_modules/mobx-react";
 import {InjectStores} from "../../../utils/InjectStores";
-import DataViewer_Old from "../../DataViewer";
+import {DataViewer as DataViewer_Old} from "../../DataViewer";
 import Collapsible from "../../Collapsible";
 import {store} from "../../Store";
 

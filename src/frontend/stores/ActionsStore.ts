@@ -1,18 +1,15 @@
 import AbstractStore from "./AbstractStore";
 import preferences from "../../preferences";
+import {Change_types, ChangeType} from "../../utils/changesProcessor";
 
-export default class ActionsStore extends AbstractStore {
+export class ActionsStore extends AbstractStore {
 	logEnabled = false;
-
 	consoleLogEnabled = false;
-
-	logFilter = undefined;
-
-	logItemsById = {};
-
-	logItemsIds = [];
-
 	searchText = "";
+	changeTypesToShow = Change_types.slice();
+	//logFilter = undefined;
+	logItemsById = {};
+	logItemsIds = [];
 
 	constructor(bridge) {
 		super();
@@ -89,11 +86,15 @@ export default class ActionsStore extends AbstractStore {
 		this.emit("log");
 	}
 
-	setLogFilter(logFilter) {
+	setChangeTypesToShow(types: ChangeType[]) {
+		this.changeTypesToShow = types;
+		this.emit("log");
+	}
+	/*setLogFilter(logFilter) {
 		this.setValueAndEmit("logFilter", logFilter);
 		this.logFilter = logFilter;
 		this.emit("logFilter");
-	}
+	}*/
 
 	showContextMenu(type, evt, ...args) {
 		evt.preventDefault();
