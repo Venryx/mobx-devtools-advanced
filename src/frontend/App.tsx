@@ -1,5 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
+import PropTypes, {any} from "prop-types";
 import * as Aphrodite from "aphrodite";
 import "hack-font/build/web/hack.css";
 import Bridge from "../Bridge";
@@ -11,6 +11,11 @@ import theme from "./theme";
 const {css, StyleSheet} = Aphrodite;
 
 declare global {
+	// we also have to declare built-in globals that we use (otherwise ts complains, eg. in _testHelpers.ts)
+	/*const window: any;
+	const document: any;
+	const navigator: any;*/
+
 	let bridge_: Bridge;
 	let $$frontendStores$$;
 }

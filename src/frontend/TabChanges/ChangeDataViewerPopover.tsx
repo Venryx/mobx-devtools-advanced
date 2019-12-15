@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
-import PreviewValue from "../PreviewValue";
+import {PreviewValue} from "../PreviewValue";
 import {InjectStores} from "../../utils/InjectStores";
 import Popover from "../Popover";
 import DataViewer from "../DataViewer/index";

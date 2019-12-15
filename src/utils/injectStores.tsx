@@ -9,7 +9,8 @@ export type InjectPropsFunc = (
 )=>any;
 
 export function InjectStores({subscribe, injectProps = (()=>{}) as InjectPropsFunc, shouldUpdate = null}) {
-	return (TargetComponent: Function): any=>{
+	//return (TargetComponent: new()=>React.Component): any=>{
+	return (TargetComponent: any): any=>{
 		return class StoreInjectorHOC extends React.Component {
 			static contextTypes = {
 				stores: PropTypes.object.isRequired,

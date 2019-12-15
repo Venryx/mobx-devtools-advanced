@@ -14,12 +14,12 @@ module.exports = {
 		//noEmitOnErrors: true, // NoEmitOnErrorsPlugin
 	},
 	entry: {
-		backend: path.join(__dirname, "backend.js"),
-		background: path.join(__dirname, "background.js"),
-		injectGlobalHook: path.join(__dirname, "injectGlobalHook.js"),
-		contentScript: path.join(__dirname, "contentScript.js"),
-		panel: path.join(__dirname, "panel.jsx"),
-		"panel-loader": path.join(__dirname, "panel-loader.js"),
+		backend: path.join(__dirname, "backend.ts"),
+		background: path.join(__dirname, "background.ts"),
+		injectGlobalHook: path.join(__dirname, "injectGlobalHook.ts"),
+		contentScript: path.join(__dirname, "contentScript.ts"),
+		panel: path.join(__dirname, "panel.tsx"),
+		"panel-loader": path.join(__dirname, "panel-loader.ts"),
 		window: path.join(__dirname, "window.tsx"),
 		icons: path.join(__dirname, "icons"),
 	},

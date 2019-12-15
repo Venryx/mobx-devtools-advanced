@@ -1,9 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
+import * as Aphrodite from "aphrodite";
 import Props from "./Props";
 import {InjectStores} from "../../../utils/InjectStores";
-//import {css, StyleSheet} from "aphrodite";
-const {css, StyleSheet} = require("aphrodite");
+
+const {css, StyleSheet} = Aphrodite;
 
 @InjectStores({
 	subscribe: (stores, props) => ({ // eslint-disable-line

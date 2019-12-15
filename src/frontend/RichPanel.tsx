@@ -29,8 +29,8 @@ import TabPerformance from "./TabPerformance";
 	}),
 })
 export class RichPanel extends React.Component<
-{mobxReactFound: boolean, mstFound: boolean, recordingActions: boolean, showingUpdates: boolean, mstLogEnabled: boolean},
-{preferredTab: string, activeTab: string}
+	Partial<{mobxReactFound: boolean, mstFound: boolean, recordingActions: boolean, showingUpdates: boolean, mstLogEnabled: boolean}>,
+	{preferredTab: string, activeTab: string}
 > {
 	UNSAFE_componentWillMount() {
 		this.setState({activeTab: this.getAvailableTabs()[0]});
