@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { css, StyleSheet } from 'aphrodite';
+import React from "react";
+import PropTypes from "prop-types";
+import {css, StyleSheet} from "aphrodite";
 
 TreeItem.propTypes = {
   dependencies: PropTypes.array,
@@ -9,19 +9,17 @@ TreeItem.propTypes = {
   name: PropTypes.string,
 };
 
-function TreeItem({ dependencies, isLast, isRoot, name }) {
-  return (
+function TreeItem({dependencies, isLast, isRoot, name}) {
+	return (
     <div className={css(styles.item)}>
       <span className={css(styles.box, isRoot && styles.box.root)}>{name}</span>
       {dependencies && (
         <div className={css(styles.tree)}>
-          {dependencies.map((d, i) =>
-            (<TreeItem
+          {dependencies.map((d, i)=>(<TreeItem
               key={d.name}
               dependencies={d.dependencies}
               isLast={i === dependencies.length - 1}
-            />)
-          )}
+            />))}
         </div>
       )}
       {!isRoot && <span className={css(styles.itemHorisontalDash)} />}
@@ -29,7 +27,7 @@ function TreeItem({ dependencies, isLast, isRoot, name }) {
         <span className={css(styles.itemVericalStick, isLast && styles.itemVericalStick.short)} />
       )}
     </div>
-  );
+	);
 }
 
 Graph.propTypes = {
@@ -39,9 +37,9 @@ Graph.propTypes = {
   }),
 };
 
-export default function Graph({ dependencyTree }) {
-  if (!dependencyTree) return null;
-  return (
+export default function Graph({dependencyTree}) {
+	if (!dependencyTree) return null;
+	return (
     <div style={styles.root}>
       <TreeItem
         key={dependencyTree.name}
@@ -50,52 +48,52 @@ export default function Graph({ dependencyTree }) {
         isRoot
       />
     </div>
-  );
+	);
 }
 
 const styles = StyleSheet.create({
   tree: {
-    position: 'relative',
-    paddingLeft: '20px',
+    position: "relative",
+    paddingLeft: "20px",
   },
 
-  root: { paddingLeft: 0 },
+  root: {paddingLeft: 0},
 
   item: {
-    position: 'relative',
+    position: "relative",
   },
 
   box: {
-    padding: '4px 10px',
-    background: 'rgba(0, 0, 0, 0.05)',
-    display: 'inline-block',
-    marginBottom: '8px',
-    color: '#000',
+    padding: "4px 10px",
+    background: "rgba(0, 0, 0, 0.05)",
+    display: "inline-block",
+    marginBottom: "8px",
+    color: "#000",
     root: {
-      fontSize: '15px',
-      fontWeight: 'bold',
-      padding: '6px 13px',
+      fontSize: "15px",
+      fontWeight: "bold",
+      padding: "6px 13px",
     },
   },
 
   itemHorisontalDash: {
-    position: 'absolute',
-    left: '-12px',
-    borderTop: '1px solid rgba(0, 0, 0, 0.2)',
-    top: '14px',
-    width: '12px',
-    height: '0',
+    position: "absolute",
+    left: "-12px",
+    borderTop: "1px solid rgba(0, 0, 0, 0.2)",
+    top: "14px",
+    width: "12px",
+    height: "0",
   },
 
   itemVericalStick: {
-    position: 'absolute',
-    left: '-12px',
-    borderLeft: '1px solid rgba(0, 0, 0, 0.2)',
-    height: '100%',
+    position: "absolute",
+    left: "-12px",
+    borderLeft: "1px solid rgba(0, 0, 0, 0.2)",
+    height: "100%",
     width: 0,
-    top: '-8px',
+    top: "-8px",
     short: {
-      height: '23px',
+      height: "23px",
     },
   },
 });

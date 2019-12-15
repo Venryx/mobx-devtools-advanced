@@ -18,7 +18,7 @@ describe("Global Hook", ()=>{
 		const instanceC = {a: {}};
 		hook.inject({instanceA});
 		hook.inject({instanceA, instanceB});
-		hook.inject({instanceB: { ...instanceB}, instanceC});
+		hook.inject({instanceB: {...instanceB}, instanceC});
 		expect(getCollections(), "to have length", 1);
 		expect(getCollection(0).instanceA, "to be", instanceA);
 		expect(getCollection(0).instanceB, "to be", instanceB);
