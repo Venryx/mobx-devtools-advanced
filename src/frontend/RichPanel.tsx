@@ -3,7 +3,7 @@ import preferences from "../preferences";
 import {InjectStores} from "../utils/InjectStores";
 import ContextMenu from "./ContextMenu";
 import MainMenu from "./MainMenu";
-import TabChanges from "./TabChanges";
+import {TabChanges} from "./TabChanges";
 import TabComponents from "./TabComponents";
 import TabMST from "./TabMST";
 import TabPerformance from "./TabPerformance";

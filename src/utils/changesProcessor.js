@@ -44,7 +44,9 @@ function formatValue(mobx, value) {
 		}
 		return value;
 	}
-	return `(${getNameForThis(mobx, value)})`;
+	//return `(${getNameForThis(mobx, value)})`;
+	//return JSON.stringify({"@typeName": getNameForThis(mobx, value), ...value});
+	return value;
 }
 
 export default onChange=>{
