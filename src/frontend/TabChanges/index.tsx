@@ -18,6 +18,7 @@ const {css, StyleSheet} = Aphrodite;
 		actionsLoggerStore: ["logEnabled", "log"],
 	},
 	injectProps: ({actionsLoggerStore}: {actionsLoggerStore: ActionsStore})=>({
+		store: actionsLoggerStore,
 		searchText: actionsLoggerStore.searchText,
 		changeTypesToShow: actionsLoggerStore.changeTypesToShow,
 		logEnabled: actionsLoggerStore.logEnabled,
@@ -39,12 +40,13 @@ const {css, StyleSheet} = Aphrodite;
 })
 export class TabChanges extends React.PureComponent<
 	{} & Partial<{
+		store: ActionsStore,
 		searchText: string, changeTypesToShow: ChangeType[], logEnabled: boolean, clearLog: ()=>void, toggleLogging: ()=>void, setSearchText: (event)=>void, setChangeTypesToShow: (types: ChangeType[])=>void,
 		logItemsIds: number[], logItemsById: {[key: number]: Change},
 	}>
 > {
 	GetItemsOfType(type: ChangeType) {
-		const {logItemsIds, logItemsById} = this.props;
+		const {logItemsIds, logItemsById} = this.props.store;
 		const logItems = logItemsIds.map(changeID=>logItemsById[changeID]);
 		return logItems.filter(change=>change.type == type);
 	}

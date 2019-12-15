@@ -1,6 +1,6 @@
 import AbstractStore from "./AbstractStore";
 import preferences from "../../preferences";
-import {Change_types, ChangeType} from "../../utils/changesProcessor";
+import {Change_types, ChangeType, Change} from "../../utils/changesProcessor";
 
 export class ActionsStore extends AbstractStore {
 	logEnabled = false;
@@ -8,7 +8,7 @@ export class ActionsStore extends AbstractStore {
 	searchText = "";
 	changeTypesToShow = Change_types.slice();
 	//logFilter = undefined;
-	logItemsById = {};
+	logItemsById = {} as {[key: number]: Change};
 	logItemsIds = [];
 
 	constructor(bridge) {
@@ -139,20 +139,23 @@ export class ActionsStore extends AbstractStore {
 	getFilteredLogItemsIds() {
 		return this.logItemsIds.filter(id=>{
 			const logItem = this.logItemsById[id];
-			if (!logItem || !logItem.name) {
-				return false;
-			}
+			if (!logItem || !logItem.name) return false;
 			if (this.searchText[0] !== "/") {
 				// case insensitive
-				return logItem.name.toUpperCase().indexOf(this.searchText.toUpperCase()) !== -1;
+				if (!logItem.name.toLowerCase().includes(this.searchText.toLowerCase())) return false;
 			}
+
 			try {
 				// regex expression may be invalid
 				const regex = new RegExp(this.searchText.slice(1), "i");
-				return regex.test(logItem.name);
+				if (!regex.test(logItem.name)) return false;
 			} catch (e) {
 				return false;
 			}
+
+			if (!this.changeTypesToShow.includes(logItem.type)) return false;
+
+			return true;
 		});
 	}
 }

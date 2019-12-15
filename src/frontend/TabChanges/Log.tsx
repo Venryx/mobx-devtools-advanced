@@ -92,18 +92,12 @@ export class Log extends React.Component<
 		}
 	};
 
-	get filteredItems() {
-		const {changeTypesToShow, logItemsIds, logItemsById} = this.props;
-		const logItems = logItemsIds.map(changeID=>logItemsById[changeID]);
-		return logItems.filter(change=>changeTypesToShow.includes(change.type));
-	}
-
 	list;
 	renderItem = ({index, style})=>{
-		/*const id = this.props.logItemsIds[index];
-		const change = this.props.logItemsById[id];*/
-		const change = this.filteredItems[index];
-		const id = CE(this.props.logItemsById).Pairs().find(a=>a.value == change).key;
+		const id = this.props.logItemsIds[index];
+		const change = this.props.logItemsById[id];
+		/*const change = this.filteredItems[index];
+		const id = CE(this.props.logItemsById).Pairs().find(a=>a.value == change).key;*/
 
 		if (!change.height) change.height = ITEM_HEIGHT;
 		return (
@@ -122,8 +116,8 @@ export class Log extends React.Component<
 	};
 
 	render() {
-		//const rowCount = this.props.logItemsIds.length;
-		const rowCount = this.filteredItems.length;
+		const rowCount = this.props.logItemsIds.length;
+		//const rowCount = this.filteredItems.length;
 		const padding = 5;
 		return (
 			<div ref={el=>this.containerEl = el} className={css(styles.container)}>
