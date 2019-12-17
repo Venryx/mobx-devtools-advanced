@@ -96,7 +96,7 @@ export default (bridge, hook)=>{
 		setup(mobxid, collection) {
 			if (collection.mobx) {
 				disposables.push(
-					collection.mobx.spy(change=>{
+					(collection.mobx as MobX).spy(change=>{
 						if (logEnabled || consoleLogEnabled) {
 							const changeObj_mobxSym = change.object == null ? null : Object.getOwnPropertySymbols(change.object).filter(a=>a.toString() == "Symbol(mobx administration)")[0];
 							if (changeObj_mobxSym != null && changeObj_mobxSym != collection.mobx.$mobx) {

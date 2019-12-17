@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 	propName: {
 		display: "table-cell",
 		minWidth: 70,
-		maxWidth: 180,
+		//maxWidth: 180,
 		overflow: "hidden",
 		textOverflow: "ellipsis",
 		whiteSpace: "nowrap",
