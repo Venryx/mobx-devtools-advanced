@@ -5,7 +5,7 @@
  */
 
 import {InitBackend} from "../../backend";
-import Bridge from "../../Bridge";
+import {Bridge} from "../../Bridge";
 import debugConnection from "../../utils/debugConnection";
 
 const backendId = Math.random()

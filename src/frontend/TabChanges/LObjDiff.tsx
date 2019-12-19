@@ -7,33 +7,33 @@ import {Change} from "../../utils/changesProcessor";
 const {css, StyleSheet} = Aphrodite;
 
 export class LObjDiff extends React.PureComponent<{
-	change: Change, path: any[], getValueByPath: (path: string[])=>any, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void, showMenu: (event, changeID: number, path: string[])=>void
+	change: Change, path: any[], getValueByPath: (path: string[]) => any, inspect: (path: string[]) => void, stopInspecting: (path: string[]) => void, showMenu: (event, changeID: number, path: string[]) => void
 }> {
 	getDiff() {
 		const {change} = this.props;
 		switch (change.type) {
 			case "add":
 				return {
-					added: [{name: `${change.name  } [key: ${change["key"]}]`, value: change.newValue, path: ["newValue"]}],
+					added: [{name: `${change.name} [key: ${change["key"]}]`, value: change.newValue, path: ["newValue"]}],
 				};
 			case "delete":
 				return {
-					removed: [{name: `${change.name  } [key: ${change["key"]}]`, value: change.oldValue, path: ["oldValue"]}],
+					removed: [{name: `${change.name} [key: ${change["key"]}]`, value: change.oldValue, path: ["oldValue"]}],
 				};
 			case "update":
 				return {
-					removed: [{name: `${change.name  } [key: ${change["key"]}]`, value: change.oldValue, path: ["oldValue"]}],
-					added: [{name: `${change.name  } [key: ${change["key"]}]`, value: change.newValue, path: ["newValue"]}],
+					removed: [{name: `${change.name} [key: ${change["key"]}]`, value: change.oldValue, path: ["oldValue"]}],
+					added: [{name: `${change.name} [key: ${change["key"]}]`, value: change.newValue, path: ["newValue"]}],
 				};
 			case "splice":
 				return {
 					added: (change.added || []).map((value, i)=>({
-						name: `${change.index + i as any  } [key: ${change["key"]}]`,
+						name: `${change.index + i as any} [key: ${change["key"]}]`,
 						value,
 						path: ["added", i] as string[],
 					})),
 					removed: (change.removed || []).map((value, i)=>({
-						name: `${change.index + i as any  } [key: ${change["key"]}]`,
+						name: `${change.index + i as any} [key: ${change["key"]}]`,
 						value,
 						path: ["removed", i] as string[],
 					})),

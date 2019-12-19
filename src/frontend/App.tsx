@@ -1,9 +1,8 @@
 import React from "react";
-import PropTypes, {any} from "prop-types";
 import * as Aphrodite from "aphrodite";
 import "hack-font/build/web/hack.css";
 import {CheckBox} from "react-vcomponents";
-import Bridge from "../Bridge";
+import {Bridge} from "../Bridge";
 import createStores from "./stores";
 import Blocker from "./Blocker";
 import ContextProvider from "../utils/ContextProvider";
@@ -24,7 +23,7 @@ declare global {
 type State = {
 	loaded: boolean, store: any, connected: boolean, mobxFound: boolean, contentScriptInstallationError: any,
 };
-export default class App extends React.PureComponent<
+export class App extends React.PureComponent<
 	{
 		quiet: boolean,
 		reloadSubscribe: (func: Function)=>any,

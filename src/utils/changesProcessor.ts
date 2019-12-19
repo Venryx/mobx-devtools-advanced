@@ -87,12 +87,12 @@ export type Change = Partial<
 	}
 >;
 
-function ProcessChange(change: Change) {
+/*function ProcessChange(change: Change) {
 	if (change.type == "add" || change.type == "update") {
 		if (typeof change.newValue == "object" && change.newValue != null) {
 			/*if (change.oldValue["_path"]) {
 				delete change.oldValue["_path"];
-			}*/
+			}*#/
 			const objPath = change.object[_path] || [];
 			//const newValuePath = objPath.concat(change.name);
 			const newValuePath = objPath.concat(change["key"] || "n/a");
@@ -115,7 +115,7 @@ function ProcessChange(change: Change) {
 			ProcessChange(child);
 		}
 	}
-}
+}*/
 
 export const _path = Symbol("_path");
 

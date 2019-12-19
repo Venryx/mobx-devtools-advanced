@@ -1,10 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
-import App from "./App";
+import {App} from "./App";
 import {RichPanel} from "./RichPanel";
 
-export default config=>{
+export function InitFrontend(config) {
 	const reload = ()=>{
 		ReactDOM.unmountComponentAtNode(config.node);
 		setTimeout(()=>{
@@ -29,4 +28,4 @@ export default config=>{
 	render();
 
 	return ()=>ReactDOM.unmountComponentAtNode(config.node);
-};
+}

@@ -66,6 +66,7 @@
         "eslint-plugin-only-warn": "github:Venryx/eslint-plugin-only-warn",
         "eslint-plugin-react": "^7.16.0",
         "file-loader": "^4.2.0",
+        "flatted": "^2.0.1",
         "hack-font": "^3.3.0",
         "html-webpack-plugin": "^3.2.0",
         "husky": "^0.14.3",

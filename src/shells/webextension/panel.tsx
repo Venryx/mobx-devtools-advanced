@@ -1,6 +1,6 @@
 /* global chrome */
 import debugConnection from "../../utils/debugConnection";
-import initFrontend from "../../frontend";
+import {InitFrontend} from "../../frontend";
 
 let disconnectListener;
 
@@ -30,7 +30,7 @@ const inject = done=>{
 		let disconnected = false;
 
 		const port = chrome.runtime.connect({
-      name: `${chrome.devtools.inspectedWindow.tabId}`,
+			name: `${chrome.devtools.inspectedWindow.tabId}`,
 		});
 
 		port.onDisconnect.addListener(()=>{
@@ -41,31 +41,31 @@ const inject = done=>{
 		});
 
 		const wall = {
-      listen(fn) {
-      	port.onMessage.addListener(message=>{
-      		debugConnection("[background -> FRONTEND]", message);
-      		fn(message);
-      	});
-      },
-      send(data) {
-      	if (disconnected) return;
-      	debugConnection("[FRONTEND -> background]", data);
-      	port.postMessage(data);
-      },
+			listen(fn) {
+				port.onMessage.addListener(message=>{
+					debugConnection("[background -> FRONTEND]", message);
+					fn(message);
+				});
+			},
+			send(data) {
+				if (disconnected) return;
+				debugConnection("[FRONTEND -> background]", data);
+				port.postMessage(data);
+			},
 		};
 
 		done(wall, ()=>port.disconnect());
 	});
 };
 
-initFrontend({
-  node: document.getElementById("container"),
-  debugName: "Panel UI",
-  inject,
-  reloadSubscribe: reloadFn=>{
-  	chrome.devtools.network.onNavigated.addListener(reloadFn);
-  	return ()=>{
-  		chrome.devtools.network.onNavigated.removeListener(reloadFn);
-  	};
-  },
+InitFrontend({
+	node: document.getElementById("container"),
+	debugName: "Panel UI",
+	inject,
+	reloadSubscribe: reloadFn=>{
+		chrome.devtools.network.onNavigated.addListener(reloadFn);
+		return ()=>{
+			chrome.devtools.network.onNavigated.removeListener(reloadFn);
+		};
+	},
 });

@@ -1,31 +1,33 @@
-const startServer = require("./startServer");
+import {parse, stringify} from "flatted";
+import ip from "ip";
+import {StartServer} from "./startServer";
 
 const port = process.env.PORT || 8098;
 const initFrontend = require('../lib/frontend').default; // eslint-disable-line
-const ip = require("ip");
 
 const node = document.getElementById("container");
 
 let onDisconnect; // eslint-disable-line
 let deinitFrontend;
 
-global.chrome = {};
+global["chrome"] = {};
 
-document.getElementById("localhost").value = `<script src="//localhost:${port}"></script>`;
-document.getElementById("byip").value = `<script src="//${ip.address()}:${port}"></script>`;
+const localHostEl = document.getElementById("localhost") as HTMLInputElement;
+const byIpEl = document.getElementById("localhost") as HTMLInputElement;
+localHostEl.value = `<script src="//localhost:${port}"></script>`;
+byIpEl.value = `<script src="//${ip.address()}:${port}"></script>`;
 
 [
-	document.getElementById("localhost"),
-	document.getElementById("byip"),
+	localHostEl,
+	byIpEl,
 ].forEach(el=>{
 	el.onclick = function() {
-		this.selectionStart = 0;
-		this.selectionEnd = this.value.length;
+		el.selectionStart = 0;
+		el.selectionEnd = el.value.length;
 	};
 });
 
-
-startServer({
+StartServer({
 	port,
 	onStarted() {
 		document.getElementById("loading-status").style.display = "none";
@@ -33,7 +35,8 @@ startServer({
 	onConnect(socket) {
 		const listeners = [];
 		socket.onmessage = evt=>{
-			const data = JSON.parse(evt.data);
+			//const data = JSON.parse(evt.data);
+			const data = parse(evt.data);
 			listeners.forEach(fn=>fn(data));
 		};
 
@@ -43,7 +46,8 @@ startServer({
 			},
 			send(data) {
 				if (socket.readyState === socket.OPEN) {
-					socket.send(JSON.stringify(data));
+					//socket.send(JSON.stringify(data));
+					socket.send(stringify(data));
 				}
 			},
 		};

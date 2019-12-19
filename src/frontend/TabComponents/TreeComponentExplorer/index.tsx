@@ -208,7 +208,7 @@ export class TreeComponentExplorer extends Component<{treeStore?: TreeExplorerSt
 		const expandable = data != null && typeof data == "object";
 		const childKeys = expandable ? Object.keys(data) : [];
 		// eslint-disable-next-line
-		const dataPreviewStr = expanded ? null : " " + CE(ToJSON_Advanced(data, {trimCircular: true})).KeepAtMost(100,
+		const dataPreviewStr = expanded ? null : " " + CE(ToJSON_Advanced(data, {trimDuplicates: true})).KeepAtMost(100,
 			!expandable ? "..." :
 			data instanceof Array ? "...]" :
 			"...}");

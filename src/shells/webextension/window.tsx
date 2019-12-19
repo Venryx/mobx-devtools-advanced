@@ -1,6 +1,6 @@
 /* global chrome */
 
-import initFrontend from "../../frontend";
+import {InitFrontend} from "../../frontend";
 import debugConnection from "../../utils/debugConnection";
 
 let onDisconnect;
@@ -32,7 +32,7 @@ const inject = (contentTabId, done)=>whenTabLoaded(contentTabId, ()=>{
 		let disconnected = false;
 
 		const port = chrome.runtime.connect({
-        name: `${contentTabId}`,
+			name: `${contentTabId}`,
 		});
 
 		port.onDisconnect.addListener(()=>{
@@ -44,30 +44,30 @@ const inject = (contentTabId, done)=>whenTabLoaded(contentTabId, ()=>{
 		});
 
 		const wall = {
-        listen(fn) {
-        	port.onMessage.addListener(message=>{
-        		debugConnection("[background -> FRONTEND]", message);
-        		fn(message);
-        	});
-        },
-        send(data) {
-        	if (disconnected) return;
-        	debugConnection("[FRONTEND -> background]", data);
-        	port.postMessage(data);
-        },
+			listen(fn) {
+				port.onMessage.addListener(message=>{
+					debugConnection("[background -> FRONTEND]", message);
+					fn(message);
+				});
+			},
+			send(data) {
+				if (disconnected) return;
+				debugConnection("[FRONTEND -> background]", data);
+				port.postMessage(data);
+			},
 		};
 		done(wall, ()=>port.disconnect());
 	});
 });
 
-chrome.runtime.getBackgroundPage(({contentTabId})=>initFrontend({
-    node: document.getElementById("container"),
-    debugName: "Window UI",
-    reloadSubscribe: reloadFn=>{
-    	onDisconnect = ()=>reloadFn();
-    	return ()=>{
-    		onDisconnect = undefined;
-    	};
-    },
-    inject: done=>inject(contentTabId, done),
+chrome.runtime.getBackgroundPage(({contentTabId})=>InitFrontend({
+	node: document.getElementById("container"),
+	debugName: "Window UI",
+	reloadSubscribe: reloadFn=>{
+		onDisconnect = ()=>reloadFn();
+		return ()=>{
+			onDisconnect = undefined;
+		};
+	},
+	inject: done=>inject(contentTabId, done),
 }));

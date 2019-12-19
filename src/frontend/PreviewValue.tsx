@@ -185,8 +185,8 @@ class PreviewComplexValue extends React.PureComponent<{data: any, displayName?: 
 			);
 		}
 		if (type == "object" || type == "map" || type == "set") {
-			//const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimCircular: true})).KeepAtMost(100, "…}")}`;
-			const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimCircular: true})).KeepAtMost(100, "...}")}`;
+			//const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimDuplicates: true})).KeepAtMost(100, "…}")}`;
+			const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimDuplicates: true})).KeepAtMost(100, "...}")}`;
 			return (
 				<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>
 					{`${this.props.displayName || data[symbols.name] || ""}${dataPreviewStr}`}
@@ -222,7 +222,7 @@ class PreviewComplexValue extends React.PureComponent<{data: any, displayName?: 
 			);
 		}
 		if (type == null) {
-			const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimCircular: true})).KeepAtMost(100, "...}")}`;
+			const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimDuplicates: true})).KeepAtMost(100, "...}")}`;
 			return (
 				//<span className={css(styles.previewComplex)}>{this.props.displayName || "{…}"}</span>
 				<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>
@@ -256,7 +256,7 @@ function valueToText(value) {
 	} if (value instanceof Date) {
 		return value.toString();
 	}
-	return ToJSON_Advanced(value, {trimCircular: true});
+	return ToJSON_Advanced(value, {trimDuplicates: true});
 }
 
 const styles = StyleSheet.create({

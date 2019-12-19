@@ -199,7 +199,7 @@ const requestIdleCallback = window["requestIdleCallback"]
 		}, delayMS);
 	};
 
-export default class Bridge {
+export class Bridge {
 	$listeners = [];
 
 	$buffer = [];

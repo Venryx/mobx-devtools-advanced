@@ -13,7 +13,7 @@ const clean = data=>{
 
 const stringify = data=>{
 	try {
-		return ToJSON_Advanced(data, {trimCircular: true});
+		return ToJSON_Advanced(data, {trimDuplicates: true});
 	} catch (e) {
 		return data;
 	}

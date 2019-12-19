@@ -1,13 +1,15 @@
-import initBackend from "../../../src/backend";
-import Bridge from "../../../src/Bridge";
+import {parse, stringify} from "flatted";
+import {InitBackend} from "../../../src/backend";
+import {Bridge} from "../../../src/Bridge";
 import debugConnection from "../../../src/utils/debugConnection";
 
 import installGlobalHook from "../../../src/backend/utils/installGlobalHook";
 
 installGlobalHook(window);
-const hook = window.__MOBX_DEVTOOLS_GLOBAL_HOOK__; // eslint-disable-line no-underscore-dangle
+const hook = window["__MOBX_DEVTOOLS_GLOBAL_HOOK__"]; // eslint-disable-line no-underscore-dangle
 
-const connectToDevTools = options=>{
+declare var __DEV__;
+export function connectToDevTools(options) {
 	const {host = "localhost", port = 8098} = options;
 	const messageListeners = [];
 	const uri = `ws://${host}:${port}`;
@@ -23,11 +25,12 @@ const connectToDevTools = options=>{
 				messageListeners.push(fn);
 			},
 			send(data) {
-				ws.send(JSON.stringify(data));
+				//ws.send(JSON.stringify(data));
+				ws.send(stringify(data));
 			},
 		});
 
-		const disposeBackend = initBackend(bridge, hook);
+		const disposeBackend = InitBackend(bridge, hook);
 
 		bridge.once("disconnect", ()=>{
 			debugConnection("[contentScript -x BACKEND]");
@@ -48,7 +51,8 @@ const connectToDevTools = options=>{
 	function handleMessage(evt) {
 		let data;
 		try {
-			data = JSON.parse(evt.data);
+			//data = JSON.parse(evt.data);
+			data = parse(evt.data);
 		} catch (e) {
 			if (__DEV__) {
 				console.error(e); // eslint-disable-line no-console
@@ -66,6 +70,4 @@ const connectToDevTools = options=>{
 			}
 		});
 	}
-};
-
-module.exports = {connectToDevTools};
+}

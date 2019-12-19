@@ -1,7 +1,7 @@
 import installGlobalHook from "../../backend/utils/installGlobalHook";
 import {InitBackend} from "../../backend";
-import initFrontend from "../../frontend";
-import Bridge from "../../Bridge";
+import {InitFrontend} from "../../frontend";
+import {Bridge} from "../../Bridge";
 
 installGlobalHook(window);
 
@@ -17,8 +17,8 @@ const listenersB = [];
 const randomDelay = fn=>setTimeout(fn, Math.ceil(Math.random() * 30));
 
 const bridgeA = new Bridge({
-  listen: fn=>listenersA.push(fn),
-  send: data=>randomDelay(()=>listenersB.forEach(fn=>fn(data))),
+	listen: fn=>listenersA.push(fn),
+	send: data=>randomDelay(()=>listenersB.forEach(fn=>fn(data))),
 });
 
 InitBackend(bridgeA, hook);
@@ -50,14 +50,14 @@ const createNode = ()=>{
 	return node;
 };
 
-initFrontend({
-  node: createNode(),
-  inject: done=>{
-  	const wall = {
-      listen: fn=>listenersB.push(fn),
-      send: data=>randomDelay(()=>listenersA.forEach(fn=>fn(data))),
-  	};
-  	done(wall, ()=>{});
-  },
-  reloadSubscribe: ()=>()=>{},
+InitFrontend({
+	node: createNode(),
+	inject: done=>{
+		const wall = {
+			listen: fn=>listenersB.push(fn),
+			send: data=>randomDelay(()=>listenersA.forEach(fn=>fn(data))),
+		};
+		done(wall, ()=>{});
+	},
+	reloadSubscribe: ()=>()=>{},
 });
