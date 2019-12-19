@@ -1,4 +1,3 @@
-import {symbols, allowedComplexObjects} from "../../Bridge";
 import {GetNextValueInPath, GetValueByPath} from "../../utils/General";
 
 export default onResult=>{
@@ -114,10 +113,10 @@ export default onResult=>{
 	};
 
 	const fireResult = (path, data)=>{
-		if (data && typeof data === "object") {
+		/*if (data && typeof data === "object") {
 			console.log("Marking obj directly-inspected:", data);
 			allowedComplexObjects.add(data);
-		}
+		}*/
 		console.log("About to send inspection obj:", path, data);
 		onResult({inspectedObject, data, path});
 	};

@@ -1,8 +1,9 @@
 import {observable, autorun, reaction} from "mobx";
 import {Bridge} from "../../Bridge";
 
+// todo: have store persist (some props globally, some per domain)
 export class Store {
-	@observable autoSerializeDepth = 5;
+	@observable autoSerializeDepth = 7;
 
 	@observable selectedMobXObjectPath: string;
 }

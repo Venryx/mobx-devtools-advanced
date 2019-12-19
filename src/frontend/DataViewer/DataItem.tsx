@@ -123,7 +123,8 @@ export class DataItem extends React.Component<DataItemProps, {open: boolean}> {
 			const pathToAncestor = path.slice(0, index + 1);
 			return accessors.getValueByPath(pathToAncestor);
 		});
-		const inspecting = (value != null && value[symbols.inspected] == true) || ancestors.find(a=>a[symbols.inspected] == true);
+		//const inspecting = (value != null && value[symbols.inspected] == true) || ancestors.find(a=>a[symbols.inspected] == true);
+		const dataGetsLoadedDynamically = (value != null && value[symbols.inspected] != null) || ancestors.find(a=>a[symbols.inspected] != null);
 
 		return (
 			<li>
@@ -133,7 +134,7 @@ export class DataItem extends React.Component<DataItemProps, {open: boolean}> {
 						{truncate(this.props.name)}:
 					</div>
 					<div onContextMenu={this.handleContextMenu} className={css(styles.preview)} onClick={this.toggleOpen}>
-						{inspecting && <span title="Displaying current data, *not* the data when the change occurred. (based on auto-serialize depth)">⚠️</span>}
+						{dataGetsLoadedDynamically && <span title="Displaying late-loaded data, *not* the data when the change occurred. (based on auto-serialize depth)">⚠️</span>}
 						<PreviewValue accessors={accessors} path={this.props.path} editable={this.props.editable && this.isSimple()}/>
 					</div>
 				</div>

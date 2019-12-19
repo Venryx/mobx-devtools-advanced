@@ -1,4 +1,4 @@
-import {E} from "js-vextensions";
+import {E, Assert} from "js-vextensions";
 import {_path} from "./utils/changesProcessor";
 import {GetValueByPath} from "./utils/General";
 
@@ -6,7 +6,7 @@ const now = typeof window.performance === "object" && window.performance.now
 	? ()=>window.performance.now()
 	: ()=>Date.now();
 
-export const allowedComplexObjects = new Set();
+//export const allowedComplexObjects = new Set();
 
 export const symbols = {
 	type: "@@type",
@@ -21,23 +21,20 @@ export const symbols = {
 };
 
 export class SerializeOptions {
-	autoSerializeDepth? = 5;
+	autoSerializeDepth? = 7;
 }
 export class SerializeExtras {
-	propToExtract?: string;
+	isObjProp?: boolean;
 	sendFull?: boolean;
-	inspecting?: boolean;
-	changeData_pathInSerializeRoot?: string[];
-	changeData_pathInChange?: string[];
+	lateInspecting?: boolean;
+	lateInspect_pathInSerializeRoot?: string[];
+	lateInspect_pathInChange?: string[];
 }
 export function Serialize(opt: SerializeOptions, data, path = [] as string[], seen = new Map(), extras?: SerializeExtras) {
 	opt = Object.assign(new SerializeOptions(), opt);
 	extras = extras || {};
 
 	try {
-		if (extras.propToExtract != null) {
-			data = data[extras.propToExtract]; // eslint-disable-line no-param-reassign
-		}
 		if (!data || typeof data !== "object") {
 			// custom removed
 			/*if (typeof data === "string" && data.length > 500) {
@@ -68,25 +65,38 @@ export function Serialize(opt: SerializeOptions, data, path = [] as string[], se
 
 		// start non-cached serializing
 		const prototype = Object.getPrototypeOf(data);
-		const directlyInspecting = allowedComplexObjects.has(data);
-		const inspecting = extras.inspecting || directlyInspecting;
+		//const directlyInspecting = allowedComplexObjects.has(data);
+		const lateInspecting_root = extras.lateInspect_pathInSerializeRoot != null && path.join("/") == extras.lateInspect_pathInSerializeRoot.join("/");
+		// if we're extracting a prop from the directly-inspecting obj, count the prop as directly-inspecting as well (else you get confusing empty obj, since you can't live-inspect a primitive)
+		/*if (extras.isObjProp && extras.changeData_pathInSerializeRoot != null && path.slice(0, -1).join("/") == extras.changeData_pathInSerializeRoot.join("/")) {
+			directlyInspecting = true;
+		}*/
+
+		const lateInspecting = extras.lateInspecting || lateInspecting_root;
 		//const serializingData = inAutoSerializeDepth || inspecting;
 		//let withinChange = extras.changeData_pathInSerializeRoot != null && path.slice(0, extras.changeData_pathInSerializeRoot.length).every((segment, index)=>segment == extras.changeData_pathInSerializeRoot[index]);
-		let serializingData;
-		const withinChange = extras.changeData_pathInSerializeRoot != null && path.join("/").startsWith(extras.changeData_pathInSerializeRoot.join("/"));
-		if (withinChange) {
-			const pathInChangeData = path.slice(extras.changeData_pathInChange.length);
-			const pathInChange = extras.changeData_pathInChange.concat(pathInChangeData);
-			var inAutoSerializeDepth = pathInChange.length <= opt.autoSerializeDepth;
-			serializingData = inAutoSerializeDepth || directlyInspecting; // if past auto-serialize depth, only serialize one new layer at a time
+		const withinLateInspect = extras.lateInspect_pathInSerializeRoot != null && path.join("/").startsWith(extras.lateInspect_pathInSerializeRoot.join("/"));
+		let serializeData: boolean;
+		if (withinLateInspect) {
+			/*const pathInChangeData = path.slice(extras.lateInspect_pathInChange.length);
+			const pathInLateInspect = extras.lateInspect_pathInChange.concat(pathInChangeData);
+			var inAutoSerializeDepth = pathInLateInspect.length <= opt.autoSerializeDepth;*/
+			serializeData = lateInspecting_root; // only serialize one new layer at a time
 		} else {
-			serializingData = path.length <= opt.autoSerializeDepth;
+			var inAutoSerializeDepth = path.length <= opt.autoSerializeDepth;
+			serializeData = inAutoSerializeDepth;
 		}
-		const childExtras_base = E(extras, {propToExtract: null, inspecting});
-		if (directlyInspecting) {
-			console.log("While serializing, found directlyInspecting data:", data, path, [...allowedComplexObjects.keys()]);
+
+		// if we're extracting a prop from the directly-inspecting obj, always serialize the prop (else you get confusing empty obj, since you can't live-inspect a primitive)
+		/*if (extras.isObjProp && extras.changeData_pathInSerializeRoot != null && path.slice(0, -1).join("/") == extras.changeData_pathInSerializeRoot.join("/")) {
+			serializingData = true;
+		}*/
+
+		const childExtras_base = E(extras, {isObjProp: null, inspecting: lateInspecting});
+		if (lateInspecting_root) {
+			console.log("While serializing, found directlyInspecting data:", data, path); //, [...allowedComplexObjects.keys()]);
 		} else {
-			console.log("While serializing, found NOT directlyInspecting data:", data, path, [...allowedComplexObjects.keys()]);
+			console.log("While serializing, found NOT directlyInspecting data:", data, path); //, [...allowedComplexObjects.keys()]);
 		}
 
 		// custom
@@ -101,7 +111,7 @@ export function Serialize(opt: SerializeOptions, data, path = [] as string[], se
 				const clone = data instanceof Array ? [] : {};
 				for (const prop in data) {
 					if (Object.prototype.hasOwnProperty.call(data, prop)) {
-						clone[prop] = Serialize(opt, data, path.concat(prop), seen, E(childExtras_base, {propToExtract: prop, sendFull: true}));
+						clone[prop] = Serialize(opt, data[prop], path.concat(prop), seen, E(childExtras_base, {isObjProp: true, sendFull: true}));
 					}
 				}
 				// special keys to copy, even though non-enumerable
@@ -128,21 +138,37 @@ export function Serialize(opt: SerializeOptions, data, path = [] as string[], se
 		};
 		const complexObject = prototype && prototype !== Object.prototype;
 		//const canBeInspected = complexObject || !inAutoSerializeDepth;
-		const canBeInspected = withinChange && !inAutoSerializeDepth;
+		//let canBeInspected = withinChange && !inAutoSerializeDepth;
+		const canBeLateInspected = !inAutoSerializeDepth || lateInspecting_root;
+		// if we're extracting a prop from the directly-inspecting obj, always serialize the prop (else you get confusing empty obj, since you can't live-inspect a primitive)
+		/*if (extras.isObjProp && extras.changeData_pathInSerializeRoot != null && path.slice(0, -1).join("/") == extras.changeData_pathInSerializeRoot.join("/")) {
+			canBeInspected = true;
+			directlyInspecting = true;
+			serializingData = true;
+		}*/
+		/*const pathLengthOfLastSerializedLayer = (extras.changeData_pathInSerializeRoot?.length ?? 0) + opt.autoSerializeDepth;
+		// if we're just past the last-serialized-layer, but we're a prop, serialize anyway (else you get confusing empty obj, since you can't live-inspect a primitive)
+		if (path.length == pathLengthOfLastSerializedLayer + 1 && extras.isObjProp) {
+			canBeInspected = true;
+			directlyInspecting = true;
+			serializingData = true;
+		}*/
 		// if can be inspected, we need to signify that by adding the "@@inspected" key, even if its value is false atm
-		if (canBeInspected) {
-			console.log("While serializing, found canBeInspected data:", data, "directlyInspecting", directlyInspecting);
+		if (canBeLateInspected) {
+			console.log("While serializing, found canBeInspected data:", data, "directlyInspecting", lateInspecting_root);
 			Object.assign(result, {
-				[symbols.inspected]: directlyInspecting,
+				[symbols.inspected]: lateInspecting_root,
 			});
-		}
+		} /*else {
+			Assert(!lateInspecting_root, "If directlyInspecting is true, canBeInspected must be true as well!");
+		}*/
 
 		if (data instanceof Map || (prototype && prototype.isMobXObservableMap)) {
 			Object.assign(result, {
 				[symbols.type]: "map",
 				[symbols.editable]: false, // TODO: figure out the way to edit maps
 			});
-			if (serializingData) {
+			if (serializeData) {
 				result[symbols.entries] = [...(data as Map<any, any>).entries()].map(([key, value], i)=>{
 					//console.log("Serializing Map entry...");
 					return [
@@ -156,7 +182,7 @@ export function Serialize(opt: SerializeOptions, data, path = [] as string[], se
 				[symbols.type]: "set",
 				[symbols.editable]: false, // TODO: figure out the way to edit sets
 			});
-			if (serializingData) {
+			if (serializeData) {
 				result[symbols.entries] = [...(data as Set<any>).entries()].map(([key, value], i)=>{
 					return [
 						Serialize(opt, key, path.concat(symbols.entries, `${i}`, "0"), seen, childExtras_base),
@@ -182,10 +208,10 @@ export function Serialize(opt: SerializeOptions, data, path = [] as string[], se
 					},
 				});
 			}
-			if (serializingData) {
+			if (serializeData) {
 				for (const key in data) {
 					if (Object.prototype.hasOwnProperty.call(data, key)) {
-						result[key] = Serialize(opt, data, path.concat(key), seen, E(childExtras_base, {propToExtract: key}));
+						result[key] = Serialize(opt, data[key], path.concat(key), seen, E(childExtras_base, {isObjProp: true}));
 					}
 				}
 			}
@@ -333,7 +359,7 @@ export class Bridge {
 		if (this.$buffer.length) {
 			this.scheduleFlush();
 		} else {
-			allowedComplexObjects.clear();
+			//allowedComplexObjects.clear();
 		}
 	}
 
@@ -341,8 +367,8 @@ export class Bridge {
 		const events = bufferSlice.map(({eventName, eventData})=>{
 			const extras = {} as SerializeExtras;
 			if (eventName == "inspect-change-result") {
-				extras.changeData_pathInSerializeRoot = ["data"];
-				extras.changeData_pathInChange = eventData.path;
+				extras.lateInspect_pathInSerializeRoot = ["data"];
+				extras.lateInspect_pathInChange = eventData.path;
 			}
 			return {
 				eventName,
