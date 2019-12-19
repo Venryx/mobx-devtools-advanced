@@ -2,6 +2,7 @@ import installGlobalHook from "../../backend/utils/installGlobalHook";
 import {InitBackend} from "../../backend";
 import {InitFrontend} from "../../frontend";
 import {Bridge} from "../../Bridge";
+import {store} from "../../frontend/Store";
 
 installGlobalHook(window);
 
@@ -16,7 +17,7 @@ const listenersB = [];
 
 const randomDelay = fn=>setTimeout(fn, Math.ceil(Math.random() * 30));
 
-const bridgeA = new Bridge({
+const bridgeA = new Bridge(store, {
 	listen: fn=>listenersA.push(fn),
 	send: data=>randomDelay(()=>listenersB.forEach(fn=>fn(data))),
 });

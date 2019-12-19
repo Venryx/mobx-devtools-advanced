@@ -2,6 +2,8 @@ import {E, Assert} from "js-vextensions";
 import {_path} from "./utils/changesProcessor";
 import {GetValueByPath} from "./utils/General";
 
+type BackendStore = import("./backend/Store").BackendStore;
+
 const now = typeof window.performance === "object" && window.performance.now
 	? ()=>window.performance.now()
 	: ()=>Date.now();
@@ -242,12 +244,13 @@ export class Bridge {
 
 	$buffer = [];
 
+	store: BackendStore; // backend-store is the "common denominator" of the two stores
 	$wall;
 	serialize = Serialize;
-	serializeOptions = new SerializeOptions();
 	deserialize = Deserialize;
-	constructor(wall) {
+	constructor(store: BackendStore, wall) {
 		Bridge.main = this;
+		this.store = store;
 		this.$wall = wall;
 		wall.listen(this.$handleMessage.bind(this));
 	}
@@ -334,9 +337,11 @@ export class Bridge {
 				extras.lateInspect_pathInSerializeRoot = ["data"];
 				extras.lateInspect_pathInChange = eventData.path;
 			}
+
+			//const store = window.location.href.startsWith("devtools://") ? require("./backend/Store").backendStore : require("./frontend/Store").store;
 			return {
 				eventName,
-				eventData: this.serialize(this.serializeOptions, eventData, undefined, undefined, extras),
+				eventData: this.serialize({autoSerializeDepth: this.store.autoSerializeDepth}, eventData, undefined, undefined, extras),
 			};
 		});
 		this.$wall.send({type: "many-events", events});

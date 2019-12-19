@@ -7,6 +7,7 @@ import createStores from "./stores";
 import Blocker from "./Blocker";
 import ContextProvider from "../utils/ContextProvider";
 import theme from "./theme";
+import {store} from "./Store";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -51,11 +52,12 @@ export class App extends React.PureComponent<
 		}
 		this.props.inject((wall, teardownWall)=>{
 			this.$teardownWall = teardownWall;
-			const bridge = new Bridge(wall);
+			const bridge = new Bridge(store, wall);
 			//window["bridge_"] = bridge; // custom
 
 			this.$disposables.push(
 				bridge.sub("capabilities", ({mobxFound})=>{
+					console.log("Got capabilities:", mobxFound);
 					this.setState({mobxFound});
 				}),
 				bridge.sub("content-script-installation-error", ()=>{

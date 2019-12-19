@@ -61,8 +61,10 @@ export class TabChanges extends React.PureComponent<
 					<ButtonRecord active={logEnabled} onClick={toggleLogging} showTipStartRecoding={!logEnabled && logItemsIds.length === 0}/>
 					<ButtonClear onClick={clearLog} />
 					<InputSearch searchText={searchText} changeSearch={setSearchText}/>
-					<Text ml={5}>Auto-serialize depth:</Text>
-					<Spinner min={0} max={500} value={store.autoSerializeDepth} onChange={val=>store.autoSerializeDepth = val}/>
+					<Text ml={5} title="When a change occurs, record/serialize the first X layers of its data-tree. (for stable inspection; only applies after top-level changes)">Auto-serialize depth: </Text>
+					<Spinner min={0} max={500} style={{width: 40}} value={store.autoSerializeDepth} onChange={val=>store.autoSerializeDepth = val}/>
+					<CheckBox ml={5} text="Infer paths" title="Attempts to infer the paths to MobX objects/values. (shown in change details; only works in some cases)"
+						checked={store.inferPaths} onChange={val=>store.inferPaths = val}/>
 					<Text ml={5}>Types:</Text>
 					{Change_types.map(type=>{
 						const typeStr = ModifyString(type, {firstLower_to_upper: true, hyphenLower_to_hyphenUpper: true});

@@ -7,6 +7,7 @@
 import {InitBackend} from "../../backend";
 import {Bridge, SerializeOptions} from "../../Bridge";
 import debugConnection from "../../utils/debugConnection";
+import {UpdateBackendStore, BackendStore, backendStore} from "../../backend/Store";
 
 const backendId = Math.random()
 	.toString(32)
@@ -15,7 +16,7 @@ const backendId = Math.random()
 function handshake(hook, contentScriptId) {
 	let listeners = [];
 
-	const bridge = new Bridge({
+	const bridge = new Bridge(backendStore, {
 		listen(fn) {
 			const listener = evt=>{
 				if (
@@ -50,10 +51,10 @@ function handshake(hook, contentScriptId) {
 		disposeBackend();
 	});
 
-	bridge.sub("notify-settings", (settings: SerializeOptions)=>{
+	bridge.sub("notify-settings", (settings: BackendStore)=>{
 		//backendStore.autoSerializeDepth = settings.autoSerializeDepth;
-		bridge.serializeOptions.autoSerializeDepth = settings.autoSerializeDepth;
-		//console.log("Auto-serialize depth set on backend to:", settings.autoSerializeDepth);
+		//bridge.serializeOptions.autoSerializeDepth = settings.autoSerializeDepth;
+		UpdateBackendStore(settings);
 	});
 }
 

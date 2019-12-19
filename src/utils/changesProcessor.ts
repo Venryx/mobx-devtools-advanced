@@ -87,16 +87,20 @@ export type Change = Partial<
 	}
 >;
 
-/*function ProcessChange(change: Change) {
+function ProcessChange(change: Change, firstCall: boolean) {
+	const objPath = change.object?.[_path] ?? [];
+	change["object_path"] = objPath.join("/");
 	if (change.type == "add" || change.type == "update") {
 		if (typeof change.newValue == "object" && change.newValue != null) {
 			/*if (change.oldValue["_path"]) {
 				delete change.oldValue["_path"];
-			}*#/
-			const objPath = change.object[_path] || [];
+			}*/
 			//const newValuePath = objPath.concat(change.name);
 			const newValuePath = objPath.concat(change["key"] || "n/a");
-			console.log(`Storing _path: ${newValuePath} on:`, change.newValue, "Change:", change);
+			change["newValue_path"] = newValuePath.join("/");
+
+			// also store path on the object, so we can build up information
+			//console.log(`Storing _path: ${newValuePath} on:`, change.newValue, "Change:", change);
 			//console.log(`Storing _path: ${newValuePath} on:`, change.newValue);
 			Object.defineProperty(change.newValue, _path, {configurable: true, value: newValuePath});
 			// temp
@@ -104,18 +108,22 @@ export type Change = Partial<
 			//Object.defineProperty(change.newValue, "__path", {configurable: true, enumerable: true, value: newValuePath.join("/")});
 			//Object.defineProperty(change.newValue, "__path", {configurable: true, value: newValuePath.join("/")});
 			//change.newValue["__path"] = newValuePath.join("/");
-			change["object_path"] = objPath.join("/");
-			change["newValue_path"] = newValuePath.join("/");
 		}
 	}
+
+	// hook letting the user modify the change object, before it's send to the dev-tools front-end
+	if (firstCall && window["mobxDevtools_processChange"]) {
+		window["mobxDevtools_processChange"](change);
+	}
+
 	//console.log("Children:", change.children);
 	if (change.children != null) {
 		for (const child of change.children) {
 			//console.log("Looping into:", child);
-			ProcessChange(child);
+			ProcessChange(child, firstCall);
 		}
 	}
-}*/
+}
 
 export const _path = Symbol("_path");
 
@@ -134,8 +142,8 @@ export function MakeChangesProcessor(onChange: (change: Change)=>void) {
 		change.children = [];
 
 		//console.log("Change:", change);
-		/*ProcessChange(change);
-		setTimeout(()=>ProcessChange(change));*/
+		ProcessChange(change, true);
+		setTimeout(()=>ProcessChange(change, false));
 
 		const isGroupStart = change.spyReportStart === true;
 		const isGroupEnd = change.spyReportEnd === true;

@@ -131,7 +131,7 @@ const console_safe = (()=>{
 			trace: ()=>{},
 			dir: ()=>{},
 		} as Console,
-		CE(console || {}).Including("log", "groupCollapsed", "groupEnd", "groupEnd", "warn", "trace", "dir"),
+		CE(console || {} as typeof console).Including("log", "groupCollapsed", "groupEnd", "groupEnd", "warn", "trace", "dir"),
 	);
 })();
 

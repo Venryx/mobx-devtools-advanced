@@ -6,6 +6,7 @@ import {InitBackend} from "../../../src/backend";
 import {Bridge, SerializeOptions} from "../../../src/Bridge";
 import debugConnection from "../../../src/utils/debugConnection";
 import installGlobalHook from "../../../src/backend/utils/installGlobalHook";
+import {backendStore, UpdateBackendStore, BackendStore} from "../../../src/backend/Store";
 
 installGlobalHook(window);
 const hook = window["__MOBX_DEVTOOLS_GLOBAL_HOOK__"]; // eslint-disable-line no-underscore-dangle
@@ -28,7 +29,7 @@ export function connectToDevTools(options) {
 	ws.onopen = ()=>{
 		let listeners = [];
 
-		const bridge = new Bridge({
+		const bridge = new Bridge(backendStore, {
 			listen(fn) {
 				messageListeners.push(fn);
 			},
@@ -47,10 +48,10 @@ export function connectToDevTools(options) {
 			disposeBackend();
 		});
 
-		bridge.sub("notify-settings", (settings: SerializeOptions)=>{
+		bridge.sub("notify-settings", (settings: BackendStore)=>{
 			//backendStore.autoSerializeDepth = settings.autoSerializeDepth;
-			bridge.serializeOptions.autoSerializeDepth = settings.autoSerializeDepth;
-			//console.log("Auto-serialize depth set on manual-backend to:", settings.autoSerializeDepth);
+			//bridge.serializeOptions.autoSerializeDepth = settings.autoSerializeDepth;
+			UpdateBackendStore(settings);
 		});
 	};
 
