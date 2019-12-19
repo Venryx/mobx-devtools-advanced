@@ -4,6 +4,7 @@ import * as Aphrodite from "aphrodite";
 import {BaseComponentPlus} from "react-vextensions";
 import {Column, Row, Button, Text} from "react-vcomponents";
 import {ToJSON, ToJSON_Advanced, CE} from "js-vextensions";
+import {autorun, reaction} from "mobx";
 import {observer} from "../../../../node_modules/mobx-react";
 import {InjectStores} from "../../../utils/InjectStores";
 //import {DataViewer as DataViewer_Old} from "../../DataViewer";
@@ -165,6 +166,30 @@ type State = {data: any};
 @observer
 export class TreeComponentExplorer extends Component<{treeStore?: TreeExplorerStore}, State> {
 	state = {} as State;
+
+	reaction_dispose: ()=>void;
+	componentDidMount() {
+		// whenever user clicks a new component, have data-viewer refresh
+		//this.autorun_dispose = autorun(()=>this.RefreshData());
+		this.reaction_dispose = reaction(()=>store.selectedMobXObjectPath, ()=>{
+			this.RefreshData();
+		});
+	}
+	componentWillUnmount() {
+		if (this.reaction_dispose) {
+			this.reaction_dispose();
+			this.reaction_dispose = null;
+		}
+	}
+
+	RefreshData() {
+		this.setState({data: null}); // clear data, till new data comes
+		bridge_.send("backend:GetMobXObjectData", {path: store.selectedMobXObjectPath});
+		bridge_.once("frontend:ReceiveMobXObjectData", ({data})=>{
+			//this.setState({dataStr: JSON.stringify(data, null, 2)});
+			this.setState({data});
+		});
+	}
 	render() {
 		//const {treeStore} = this.props;
 		const {data} = this.state;
@@ -190,11 +215,7 @@ export class TreeComponentExplorer extends Component<{treeStore?: TreeExplorerSt
 			<div>
 				Path: {store.selectedMobXObjectPath}
 				<Button text="Refresh" enabled={store.selectedMobXObjectPath != null} onClick={()=>{
-					bridge_.send("backend:GetMobXObjectData", {path: store.selectedMobXObjectPath});
-					bridge_.once("frontend:ReceiveMobXObjectData", ({data})=>{
-						//this.setState({dataStr: JSON.stringify(data, null, 2)});
-						this.setState({data});
-					});
+					this.RefreshData();
 				}}/>
 				{data && <DataViewer
 					path={[]}
