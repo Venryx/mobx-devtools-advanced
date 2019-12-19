@@ -1,3 +1,5 @@
+import {ToJSON, ToJSON_Advanced} from "js-vextensions";
+
 const clean = data=>{
 	if (!data) return [];
 	if (!data.eventName) {
@@ -11,7 +13,7 @@ const clean = data=>{
 
 const stringify = data=>{
 	try {
-		return JSON.stringify(data);
+		return ToJSON_Advanced(data, {trimCircular: true});
 	} catch (e) {
 		return data;
 	}

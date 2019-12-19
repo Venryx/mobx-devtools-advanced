@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
+import {ToJSON, ToJSON_Advanced} from "js-vextensions";
 import {symbols} from "../Bridge";
 import flash from "./TabComponents/TreeView/flash";
 
@@ -259,7 +260,7 @@ function valueToText(value) {
 	} if (value instanceof Date) {
 		return value.toString();
 	}
-	return JSON.stringify(value);
+	return ToJSON_Advanced(value, {trimCircular: true});
 }
 
 const styles = StyleSheet.create({

@@ -104,7 +104,7 @@ export default (bridge, hook)=>{
 								throw new Error(`
 									MobX symbol is different between change.object[$mobx] and collection.mobx.$mobx.
 									This means there are multiple instances of MobX in the webpage.
-									To resolve, use dev-tools to find locations of two instances, then remove the extraneous one.
+									To resolve, use dev-tools to find locations of the two instances, then remove the extraneous one.
 									1) Find path to change.object MobX: inspect change.object.Symbol(mobx adminstration).defaultEnhancer.[[Function location]]
 									2) Find path to collection.mobx MobX: inspect collection.mobx.getDebugName.[[Function location]]
 								`);

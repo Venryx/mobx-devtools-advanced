@@ -52,7 +52,6 @@ export default class TabComponents extends React.PureComponent<{pickingComponent
 	state = {collapseNonMobX: true} as State;
 	leftRenderer = ()=>{
 		const {compTree, collapseNonMobX} = this.state;
-		console.log("LeftRenderer...", compTree);
 		return (
 			<div className={css(styles.leftPane)}>
 				<SecondaryPanel>

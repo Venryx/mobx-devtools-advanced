@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
 import {BaseComponentPlus} from "react-vextensions";
 import {Column, Row, Button, Text} from "react-vcomponents";
+import {ToJSON, ToJSON_Advanced, CE} from "js-vextensions";
 import {observer} from "../../../../node_modules/mobx-react";
 import {InjectStores} from "../../../utils/InjectStores";
 import {DataViewer as DataViewer_Old} from "../../DataViewer";
@@ -93,7 +94,7 @@ export class TreeComponentExplorer_Old extends React.Component<any, any> {
 								Dependencies (
 									{node.dependencyTree.dependencies.length}
 								)
-             			</div>
+							</div>
 						)}
 					>
 						<div className={css(styles.block)}>
@@ -177,6 +178,11 @@ export class DataViewer extends BaseComponentPlus({depth: 0} as {data: any, dept
 		const {expanded} = this.state;
 		const expandable = data != null && typeof data == "object";
 		const childKeys = expandable ? Object.keys(data) : [];
+		// eslint-disable-next-line
+		const dataPreviewStr = expanded ? null : " " + CE(ToJSON_Advanced(data, {trimCircular: true})).KeepAtMost(100, 
+			!expandable ? "..." :
+			data instanceof Array ? "...]" :
+			"...}");
 		return (
 			<Column>
 				<Row style={{cursor: "pointer"}} onClick={()=>{
@@ -184,10 +190,10 @@ export class DataViewer extends BaseComponentPlus({depth: 0} as {data: any, dept
 				}}>
 					<div style={{width: 10}}>{expandable ? (!expanded ? ">" : "...") : ""}</div>
 					<div>{keyInTree}:</div>
-					{!expandable &&
-						<Text> {JSON.stringify(data)}</Text>}
-					{expandable && data && data.constructor &&
+					{expandable && data && data.constructor && data.constructor.name != "Object" &&
 						<Text> ({data.constructor.name})</Text>}
+					{!expanded &&
+						<Text>{dataPreviewStr}</Text>}
 				</Row>
 				{expandable && expanded &&
 				<Column style={{marginLeft: 10}}>
