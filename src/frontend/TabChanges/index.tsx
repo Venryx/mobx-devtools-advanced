@@ -81,6 +81,7 @@ export class TabChanges extends React.PureComponent<
 const styles = StyleSheet.create({
 	panel: {
 		flex: "1 1 auto",
+		minHeight: 0, // prevents {flex: 1} from setting {[minWidth/minHeight]: "auto"}
 		display: "flex",
 		flexDirection: "column",
 	},

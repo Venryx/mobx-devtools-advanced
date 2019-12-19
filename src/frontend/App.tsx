@@ -134,6 +134,11 @@ export default class App extends React.PureComponent<
 	render() {
 		return (
 			<div className={css(styles.app, theme.default)} onContextMenu={this.handleContextMenu}>
+				<style>{`
+				*, *:before, *:after {
+					box-sizing: inherit;
+				}
+				`}</style>
 				{this.renderContent()}
 			</div>
 		);
@@ -145,9 +150,9 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "100%",
 		fontSize: 13,
-		fontFamily:
-			'Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+		fontFamily: 'Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
 		fontWeight: 400,
+		boxSizing: "border-box",
 	},
 });
 

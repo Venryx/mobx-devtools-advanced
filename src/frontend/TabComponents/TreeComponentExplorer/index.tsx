@@ -159,7 +159,7 @@ export class TreeComponentExplorer extends Component<{}, State> {
 		return (
 			<div>
 				Path: {store.selectedMobXObjectPath}
-				<Button text="Refresh" enabled={data} onClick={()=>{
+				<Button text="Refresh" enabled={store.selectedMobXObjectPath != null} onClick={()=>{
 					bridge_.send("backend:GetMobXObjectData", {path: store.selectedMobXObjectPath});
 					bridge_.once("frontend:ReceiveMobXObjectData", ({data})=>{
 						//this.setState({dataStr: JSON.stringify(data, null, 2)});

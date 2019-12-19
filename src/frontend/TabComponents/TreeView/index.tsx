@@ -191,9 +191,9 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		lineHeight: 1.3,
 		flex: 1,
+		minHeight: 0, // prevents {flex: 1} from setting {[minWidth/minHeight]: "auto"}
 		display: "flex",
 		flexDirection: "column",
-		minHeight: 0,
 		userSelect: "none",
 
 		":after": {
@@ -211,8 +211,8 @@ const styles = StyleSheet.create({
 
 	scroll: {
 		overflow: "auto",
-		minHeight: 0,
 		flex: 1,
+		minHeight: 0, // prevents {flex: 1} from setting {[minWidth/minHeight]: "auto"}
 		display: "flex",
 		alignItems: "flex-start",
 	},

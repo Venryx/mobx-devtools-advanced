@@ -107,6 +107,7 @@ export default class TabComponents extends React.PureComponent<{pickingComponent
 const styles = StyleSheet.create({
 	panel: {
 		flex: "1 1 auto",
+		minHeight: 0, // prevents {flex: 1} from setting {[minWidth/minHeight]: "auto"}
 		display: "flex",
 		flexDirection: "column",
 	},

@@ -159,6 +159,7 @@ export default class TabMST extends React.PureComponent<Partial<{mstFound, mstLo
 const styles = StyleSheet.create({
   emptyState: {
     flex: "1 1 auto",
+    minHeight: 0, // prevents {flex: 1} from setting {[minWidth/minHeight]: "auto"}
     display: "flex",
     flexDirection: "column",
     padding: 20,
