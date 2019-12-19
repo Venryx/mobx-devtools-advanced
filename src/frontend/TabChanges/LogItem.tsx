@@ -9,6 +9,7 @@ import {PopoverTrigger} from "../Popover";
 import {ChangeDataViewerPopover} from "./ChangeDataViewerPopover";
 import {Change} from "../../utils/changesProcessor";
 import {ActionsStore} from "../stores/ActionsStore";
+import {GetValueByPath} from "../../utils/General";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -86,7 +87,7 @@ export class LogItem extends React.Component<
 
 		//const change_full = ActionsStore.main.logItemsById[change.id];
 		const changeViewer = (
-			<ChangeDataViewerPopover previewText="(details)" path={[]} getValueByPath={subpath=>subpath.reduce((acc, next)=>acc && acc[next], change)}
+			<ChangeDataViewerPopover previewText="(details)" path={[]} getValueByPath={subpath=>GetValueByPath(change, subpath)}
 				inspect={subpath=>ActionsStore.main.inspect(rootChange.id, path.concat(subpath))} stopInspecting={subpath=>ActionsStore.main.stopInspecting(rootChange.id, path.concat(subpath))}/>
 				//inspect={subpath=>ActionsStore.main.inspect(change.id, subpath)} stopInspecting={subpath=>ActionsStore.main.stopInspecting(change.id, subpath)}/>
 		);

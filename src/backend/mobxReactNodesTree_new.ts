@@ -1,6 +1,6 @@
 import {Component} from "react";
 import {GetBySymbol} from "../utils/General";
-import {serialize} from "../Bridge";
+import {Serialize} from "../Bridge";
 
 export class FiberRootNode {
 	current: FiberNode;
@@ -32,7 +32,7 @@ export class CompTreeNode {
 		for (const prop in this) {
 			if (prop == "fiber") continue; // custom
 			if (Object.prototype.hasOwnProperty.call(this, prop)) {
-				clone[prop] = serialize(this, path.concat(prop), seen, prop, true);
+				clone[prop] = Serialize(this, path.concat(prop), seen, prop, true);
 			}
 		}
 		return clone;

@@ -1,5 +1,5 @@
-import {CompTreeNode} from "./backend/mobxReactNodesTree_new";
 import {_path} from "./utils/changesProcessor";
+import {GetValueByPath} from "./utils/General";
 
 const now = typeof window.performance === "object" && window.performance.now
 	? ()=>window.performance.now()
@@ -19,7 +19,7 @@ export const symbols = {
 	serializationException: "@@serializationException",
 };
 
-export function serialize(data, path = [], seen = new Map(), propToExtract?, sendFull = false) {
+export function Serialize(data, path = [], seen = new Map(), propToExtract?, sendFull = false) {
 	try {
 		if (propToExtract !== undefined) {
 			data = data[propToExtract]; // eslint-disable-line no-param-reassign
@@ -68,7 +68,7 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?, sen
 				const clone = data instanceof Array ? [] : {};
 				for (const prop in data) {
 					if (Object.prototype.hasOwnProperty.call(data, prop)) {
-						clone[prop] = serialize(data, path.concat(prop), seen, prop, true);
+						clone[prop] = Serialize(data, path.concat(prop), seen, prop, true);
 					}
 				}
 				// special keys to copy, even though non-enumerable
@@ -83,7 +83,7 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?, sen
 		}
 
 		if (data instanceof Array) {
-			return data.map((o, i)=>serialize(o, path.concat(i), seen));
+			return data.map((o, i)=>Serialize(o, path.concat(i), seen));
 		}
 
 		if (data instanceof Map || (prototype && prototype.isMobXObservableMap)) {
@@ -95,7 +95,13 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?, sen
 				[symbols.mobxObject]: "$mobx" in data,
 			};
 			if (inspecting) {
-				result[symbols.entries] = [...data.entries()];
+				result[symbols.entries] = [...(data as Map<any, any>).entries()].map(([key, value], i)=>{
+					console.log("Serializing Map entry...");
+					return [
+						Serialize(key, path.concat(symbols.entries, i, 0), seen),
+						Serialize(value, path.concat(symbols.entries, i, 1), seen),
+					];
+				});
 			}
 			return result;
 		}
@@ -109,7 +115,12 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?, sen
 				[symbols.mobxObject]: "$mobx" in data,
 			};
 			if (inspecting) {
-				result[symbols.entries] = [...data.entries()];
+				result[symbols.entries] = [...(data as Set<any>).entries()].map(([key, value], i)=>{
+					return [
+						Serialize(key, path.concat(symbols.entries, i, 0), seen),
+						Serialize(value, path.concat(symbols.entries, i, 1), seen),
+					];
+				});
 			}
 			return result;
 		}
@@ -133,7 +144,7 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?, sen
 			if (inspecting) {
 				for (const p in data) {
 					if (Object.prototype.hasOwnProperty.call(data, p)) {
-						result[p] = serialize(data, path.concat(p), seen, p);
+						result[p] = Serialize(data, path.concat(p), seen, p);
 					}
 				}
 			}
@@ -143,7 +154,7 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?, sen
 		const clone = {};
 		for (const prop in data) {
 			if (Object.prototype.hasOwnProperty.call(data, prop)) {
-				clone[prop] = serialize(data, path.concat(prop), seen, prop);
+				clone[prop] = Serialize(data, path.concat(prop), seen, prop);
 			}
 		}
 		// special keys to copy, even though non-enumerable
@@ -157,21 +168,23 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?, sen
 	}
 }
 
-export const deserialize = (data, root)=>{
+export function Deserialize(data, root?) {
 	if (!data || typeof data !== "object") return data;
 	if (data instanceof Array) {
-		return data.map(o=>deserialize(o, root || data));
+		return data.map(o=>Deserialize(o, root || data));
 	}
 	if (data[symbols.reference]) {
-		return data[symbols.reference].reduce((acc, next)=>acc[next], root || data);
+		//return data[symbols.reference].reduce((acc, next)=>acc[next], root || data);
+		const path = data[symbols.reference];
+		return GetValueByPath(root || data, path);
 	}
 	for (const prop in data) {
 		if (Object.prototype.hasOwnProperty.call(data, prop)) {
-			data[prop] = deserialize(data[prop], root || data);
+			data[prop] = Deserialize(data[prop], root || data);
 		}
 	}
 	return data;
-};
+}
 
 // Custom polyfill that runs the queue with a backoff.
 // If you change it, make sure it behaves reasonably well in Firefox.
@@ -205,19 +218,17 @@ export class Bridge {
 	$buffer = [];
 
 	$wall;
-	$serialize;
-	$deserialize;
+	serialize = Serialize;
+	deserialize = Deserialize;
 	constructor(wall) {
 		this.$wall = wall;
-		this.$serialize = serialize;
-		this.$deserialize = deserialize;
 		wall.listen(this.$handleMessage.bind(this));
 	}
 
 	serializationOff() {
 		// When there is no need in serialization, dont waste resources
-		this.$serialize = a=>a;
-		this.$deserialize = a=>a;
+		this.serialize = a=>a;
+		this.deserialize = a=>a;
 	}
 
 	send(eventName, eventData = {}) {
@@ -292,7 +303,7 @@ export class Bridge {
 	flushBufferSlice(bufferSlice) {
 		const events = bufferSlice.map(({eventName, eventData})=>({
 			eventName,
-			eventData: this.$serialize(eventData),
+			eventData: this.serialize(eventData),
 		}));
 		this.$wall.send({type: "many-events", events});
 	}
@@ -331,7 +342,7 @@ export class Bridge {
 
 		if (payload.type === "event") {
 			const handlers = this.$listeners[payload.eventName];
-			const eventData = this.$deserialize(payload.eventData);
+			const eventData = this.deserialize(payload.eventData);
 			if (handlers) {
 				handlers.forEach(fn=>fn(eventData));
 			}
@@ -340,7 +351,7 @@ export class Bridge {
 		if (payload.type === "many-events") {
 			payload.events.forEach(event=>{
 				const handlers = this.$listeners[event.eventName];
-				const eventData = this.$deserialize(event.eventData);
+				const eventData = this.deserialize(event.eventData);
 				if (handlers) {
 					handlers.forEach(fn=>fn(eventData));
 				}

@@ -5,6 +5,7 @@ import {InjectStores} from "../../utils/InjectStores";
 import {DataViewer} from "../DataViewer";
 import Collapsible from "../Collapsible";
 import {PreviewValue} from "../PreviewValue";
+import {GetValueByPath} from "../../utils/General";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -26,7 +27,7 @@ const {css, StyleSheet} = Aphrodite;
 			logItem,
 			initial,
 			getValueByPath(path) {
-				return path.reduce((acc, next)=>acc && acc[next], logItem);
+				return GetValueByPath(logItem, path);
 			},
 		};
 	},

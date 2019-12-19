@@ -7,6 +7,7 @@ import {CE} from "js-vextensions";
 import {LogItem} from "./LogItem";
 import {InjectStores} from "../../utils/InjectStores";
 import {Change} from "../../utils/changesProcessor";
+import {GetValueByPath} from "../../utils/General";
 
 const {css, StyleSheet} = Aphrodite;
 const ITEM_HEIGHT = 24;
@@ -26,10 +27,11 @@ const ITEM_HEIGHT = 24;
 			actionsLoggerStore.stopInspecting(changeId, path);
 		},
 		getValueByPath(changeId, path) {
-			return path.reduce(
+			/*return path.reduce(
 				(acc, next)=>acc && acc[next],
 				actionsLoggerStore.logItemsById[changeId],
-			);
+			);*/
+			return GetValueByPath(actionsLoggerStore.logItemsById[changeId], path);
 		},
 		showMenu(e, changeId, path) {
 			e.preventDefault();

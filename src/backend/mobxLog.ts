@@ -4,6 +4,7 @@ import consoleLogChange from "./utils/consoleLogChange";
 import makeInspector from "./utils/inspector";
 import storaTempValueInGlobalScope from "./utils/storaTempValueInGlobalScope";
 import {Bridge} from "../Bridge";
+import {GetValueByPath} from "../utils/General";
 
 /*function GetChangeSummary(change: Change) {
 	const sum = Object.create(null) as Change;
@@ -99,7 +100,7 @@ export function InitMobxLogBackend(bridge: Bridge, hook) {
 		}),
 		bridge.sub("log:makeGlobal", ({changeId, path})=>{
 			const change = itemsById[changeId];
-			const value = path.reduce((acc, next)=>acc && acc[next], change);
+			const value = GetValueByPath(change, path);
 			storaTempValueInGlobalScope(value);
 		}),
 	];

@@ -1,4 +1,5 @@
 import {symbols, allowedComplexObjects} from "../../Bridge";
+import {GetNextValueInPath, GetValueByPath} from "../../utils/General";
 
 export default onResult=>{
 	let inspectedObject;
@@ -10,11 +11,14 @@ export default onResult=>{
 	const PARENT = Symbol("PARENT");
 	const KEY = Symbol("KEY");
 
-	const getNodeForPath = path=>path.reduce((acc, next)=>{
-		if (!acc[next]) {
-			acc[next] = {[KEY]: next, [PARENT]: acc, [PATH]: (acc[PATH] || []).concat(next)};
+	const getNodeForPath = path=>path.reduce((nextObj, nextSegment)=>{
+		let result = GetNextValueInPath(nextObj, nextSegment);
+		if (result == null) {
+			/*nextObj[nextSegment] = {[KEY]: nextSegment, [PARENT]: nextObj, [PATH]: (nextObj[PATH] || []).concat(nextSegment)};
+			result = nextObj[nextSegment];*/
+			result = {[KEY]: nextSegment, [PARENT]: nextObj, [PATH]: (nextObj[PATH] || []).concat(nextSegment)};
 		}
-		return acc[next];
+		return result;
 	}, inspectionTree);
 
 	const getInvalidatedParentForNode = node=>{
@@ -28,10 +32,11 @@ export default onResult=>{
 
 	const getPathsForObject = object=>(nodesByObject.get(object) || []).map(node=>node[PATH]);
 
-	const getObjectForPath = path=>path.reduce(
+	/*const getObjectForPath = path=>path.reduce(
 		(acc, next)=>acc && acc[next === symbols.proto ? "__proto__" : next],
 		inspectedObject,
-	);
+	);*/
+	const getObjectForPath = path=>GetValueByPath(inspectedObject, path);
 
 	const rememberPath = (path, object)=>{
 		const node = getNodeForPath(path);
@@ -118,6 +123,7 @@ export default onResult=>{
 	return {
 		handleUpdate(object) {
 			getPathsForObject(object).forEach(path=>{
+				// todo: have this handle complex paths, like "@@entries/entries()" in Map or Set
 				const node = path.reduce((acc, next)=>{
 					if (!acc[next]) {
 						acc[next] = {};

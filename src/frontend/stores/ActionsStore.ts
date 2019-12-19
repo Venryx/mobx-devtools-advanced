@@ -1,6 +1,7 @@
 import AbstractStore from "./AbstractStore";
 import preferences from "../../preferences";
 import {Change_types, ChangeType, Change} from "../../utils/changesProcessor";
+import {GetValueByPath} from "../../utils/General";
 
 export class ActionsStore extends AbstractStore {
 	static main: ActionsStore;
@@ -38,7 +39,8 @@ export class ActionsStore extends AbstractStore {
 				}
 			}),
 			bridge.sub("inspect-change-result", ({changeId, path, data})=>{
-				const obj = path.reduce((acc, next)=>acc && acc[next], this.logItemsById[changeId]);
+				//const obj = path.reduce((acc, next)=>acc && acc[next], this.logItemsById[changeId]);
+				const obj = GetValueByPath(this.logItemsById[changeId], path);
 				if (obj) {
 					Object.assign(obj, data);
 				}

@@ -3,6 +3,7 @@ import * as Aphrodite from "aphrodite";
 import {Assert} from "js-vextensions";
 import {symbols} from "../../Bridge";
 import Spinner from "../Spinner";
+import {GetValueByPath} from "../../utils/General";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -26,7 +27,8 @@ export function FinalizeDataViewerDataProps({path, getValueByPath, data}: Pick<R
 		Assert(getValueByPath == null, "If data prop supplied, getValueByPath must be null.");
 		return {
 			path: [],
-			getValueByPath: path=>path.reduce((acc, next)=>acc && acc[next], data),
+			//getValueByPath: path=>path.reduce((acc, next)=>acc && acc[next], data),
+			getValueByPath: path=>GetValueByPath(data, path),
 			//data: undefined,
 		};
 	}

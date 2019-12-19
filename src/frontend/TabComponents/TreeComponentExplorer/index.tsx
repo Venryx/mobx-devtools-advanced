@@ -12,6 +12,7 @@ import {DataViewer} from "../../DataViewer";
 import Collapsible from "../../Collapsible";
 import {store} from "../../Store";
 import {TreeExplorerStore} from "../../stores/TreeExplorerStore";
+import {GetValueByPath} from "../../../utils/General";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -46,10 +47,7 @@ const {css, StyleSheet} = Aphrodite;
 				treeExplorerStore.changeValue({path, value});
 			},
 			getValueByPath(path) {
-				return path.reduce(
-					(acc, next)=>acc && acc[next],
-					treeExplorerStore.nodesById[treeExplorerStore.selectedNodeId],
-				);
+				return GetValueByPath(treeExplorerStore.nodesById[treeExplorerStore.selectedNodeId], path);
 			},
 		};
 	},
