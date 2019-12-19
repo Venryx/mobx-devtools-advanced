@@ -18,7 +18,7 @@ export const store = new Store();
 });*/
 // we have to use reaction, since we can't make Bridge.main an observable (since backend uses it too, and backend can't use mobx)
 reaction(()=>store.autoSerializeDepth, ()=>{
-	console.log(`Maybe notifying of settings. @Bridge(${Bridge.main}) @store:`, store);
+	//console.log(`Maybe notifying of settings. @Bridge(${Bridge.main}) @store:`, store);
 	if (Bridge.main == null) return;
 	Bridge.main.send("notify-settings", {
 		autoSerializeDepth: store.autoSerializeDepth,

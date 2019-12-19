@@ -47,11 +47,10 @@ export function connectToDevTools(options) {
 			disposeBackend();
 		});
 
-		console.log("Test1");
 		bridge.sub("notify-settings", (settings: SerializeOptions)=>{
 			//backendStore.autoSerializeDepth = settings.autoSerializeDepth;
 			bridge.serializeOptions.autoSerializeDepth = settings.autoSerializeDepth;
-			console.log("Auto-serialize depth set on backend to:", settings.autoSerializeDepth);
+			//console.log("Auto-serialize depth set on manual-backend to:", settings.autoSerializeDepth);
 		});
 	};
 

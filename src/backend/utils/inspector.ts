@@ -117,7 +117,7 @@ export default onResult=>{
 			console.log("Marking obj directly-inspected:", data);
 			allowedComplexObjects.add(data);
 		}*/
-		console.log("About to send inspection obj:", path, data);
+		//console.log("About to send inspection obj:", path, data);
 		onResult({inspectedObject, data, path});
 	};
 

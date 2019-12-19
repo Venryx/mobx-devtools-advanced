@@ -18,7 +18,6 @@ export function ChangeDataViewerPopover(props: ChangeDataViewerPopover) {
 	const {className, displayName, accessors, path, previewText} = props;
 
 	const value = accessors.getValueByPath(path);
-	//console.log("Value:", value);
 	const otype = typeof value;
 	if (
 		otype === "number"

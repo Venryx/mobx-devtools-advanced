@@ -50,11 +50,10 @@ function handshake(hook, contentScriptId) {
 		disposeBackend();
 	});
 
-	console.log("Test2");
 	bridge.sub("notify-settings", (settings: SerializeOptions)=>{
 		//backendStore.autoSerializeDepth = settings.autoSerializeDepth;
 		bridge.serializeOptions.autoSerializeDepth = settings.autoSerializeDepth;
-		console.log("Auto-serialize depth set on backend2 to:", settings.autoSerializeDepth);
+		//console.log("Auto-serialize depth set on backend to:", settings.autoSerializeDepth);
 	});
 }
 

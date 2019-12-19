@@ -39,8 +39,7 @@ export class ActionsStore extends AbstractStore {
 				}
 			}),
 			bridge.sub("inspect-change-result", ({changeId, path, data})=>{
-				console.log("Got inspection result:", path, data);
-				//const obj = path.reduce((acc, next)=>acc && acc[next], this.logItemsById[changeId]);
+				//console.log("Got inspection result:", path, data);
 				const obj = GetValueByPath(this.logItemsById[changeId], path);
 				if (obj) {
 					Object.assign(obj, data);

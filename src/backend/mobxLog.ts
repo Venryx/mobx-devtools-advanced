@@ -1,32 +1,9 @@
-import {Clone, ToJSON_Advanced, FromJSON} from "js-vextensions";
 import {MakeChangesProcessor, Change, _path} from "../utils/changesProcessor";
 import consoleLogChange from "./utils/consoleLogChange";
 import makeInspector from "./utils/inspector";
 import storaTempValueInGlobalScope from "./utils/storaTempValueInGlobalScope";
 import {Bridge} from "../Bridge";
 import {GetValueByPath} from "../utils/General";
-
-/*function GetChangeSummary(change: Change) {
-	const sum = Object.create(null) as Change;
-	sum.summary = true;
-	sum.id = change.id;
-	sum.type = change.type;
-	sum.name = change.name;
-	sum.objectName = change.objectName;
-	sum.oldValue = change.oldValue;
-	sum.newValue = change.newValue;
-	sum.hasChildren = change.children.length > 0;
-	sum.timestamp = change.timestamp;
-	sum.addedCount = change.addedCount;
-	sum.removedCount = change.removedCount;
-	sum.object = change.object;
-	console.log("Checking for2:", change);
-	if (change.object != null && typeof change.object == "object" && change.object[_path] != null) {
-		console.log(`Found _path: ${change.object[_path]}`);
-		sum[_path] = change.object[_path];
-	}
-	return sum;
-}*/
 
 export function InitMobxLogBackend(bridge: Bridge, hook) {
 	let logEnabled = false;
@@ -51,11 +28,6 @@ export function InitMobxLogBackend(bridge: Bridge, hook) {
 		if (logEnabled) {
 			if (change) {
 				itemsById[change.id] = change;
-				//bridge.send("appended-log-item", GetChangeSummary(change));
-				//bridge.send("appended-log-item", Clone(change));
-				//bridge.send("appended-log-item", Clone_Advanced(change));
-				/*const json = ToJSON_Advanced(change, {trimDuplicates: true});
-				const clone = FromJSON(json);*/
 				bridge.send("appended-log-item", change);
 			}
 		}

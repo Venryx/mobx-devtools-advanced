@@ -62,11 +62,11 @@ export class ChangeAccessorPack extends AccessorPack {
 			//console.log("Canceling inspection for:", path);
 			return;
 		}
-		console.log("Inspecting:", path.join("/"));
+		//console.log("Inspecting:", path.join("/"));
 		ActionsStore.main.inspect(this.changeID, path);
 	}
 	stopInspecting(path: string[]) {
-		console.log("Stopping inspecting:", path.join("/"));
+		//console.log("Stopping inspecting:", path.join("/"));
 		ActionsStore.main.stopInspecting(this.changeID, path);
 	}
 	showMenu() {}
