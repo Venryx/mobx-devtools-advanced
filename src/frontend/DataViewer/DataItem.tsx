@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
 import {PreviewValue} from "../PreviewValue";
 import {symbols} from "../../Bridge";
@@ -8,21 +7,14 @@ const {css, StyleSheet} = Aphrodite;
 
 const truncate = str=>(str.length > 40 ? `${str.slice(0, 40)}…` : str);
 
-export class DataItem extends React.Component<{startOpen, name, path, editable, getValueByPath, change, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void, showMenu, ChildDataView, ChildDataItem}, {open: boolean}> {
-	static propTypes = {
-		startOpen: PropTypes.bool,
-		name: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-		path: PropTypes.array.isRequired,
-		editable: PropTypes.bool,
-		getValueByPath: PropTypes.func.isRequired,
-		change: PropTypes.func,
-		inspect: PropTypes.func,
-		stopInspecting: PropTypes.func,
-		showMenu: PropTypes.func,
-		ChildDataView: PropTypes.func.isRequired,
-		ChildDataItem: PropTypes.func.isRequired,
-	};
-
+export class DataItem extends React.Component<
+	{
+		startOpen: boolean, name: string | number, path: string[], editable: boolean,
+		getValueByPath: (path: string[])=>any, change: (path: string[], newValue: any)=>void, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void,
+		showMenu: (event, value: any, path: string[])=>void, ChildDataView: any, ChildDataItem: any,
+	},
+	{open: boolean}
+> {
 	constructor(props) {
 		super(props);
 		this.state = {open: Boolean(this.props.startOpen)};
@@ -121,16 +113,12 @@ export class DataItem extends React.Component<{startOpen, name, path, editable, 
 
 		return (
 			<li>
-				<div className={css(styles.head)}>
+				<div className={css(styles.head, complex && styles.headComplex)}>
 					{this.renderOpener()}
-					<div
-						className={css([styles.name, complex && styles.nameComplex])}
-						onClick={this.toggleOpen}
-					>
-						{truncate(this.props.name)}
-						:
-          </div>
-					<div onContextMenu={this.handleContextMenu} className={css(styles.preview)}>
+					<div className={css([styles.name, complex && styles.nameComplex])} onClick={this.toggleOpen}>
+						{truncate(this.props.name)}:
+					</div>
+					<div onContextMenu={this.handleContextMenu} className={css(styles.preview)} onClick={this.toggleOpen}>
 						<PreviewValue
 							editable={this.props.editable && this.isSimple()}
 							path={this.props.path}
@@ -139,21 +127,20 @@ export class DataItem extends React.Component<{startOpen, name, path, editable, 
 						/>
 					</div>
 				</div>
-				{complex
-					&& this.state.open && (
-						<div className={css(styles.children)}>
-							<this.props.ChildDataView
-								value={value}
-								path={this.props.path}
-								getValueByPath={this.props.getValueByPath}
-								inspect={this.props.inspect}
-								stopInspecting={this.props.stopInspecting}
-								change={this.props.change}
-								showMenu={this.props.showMenu}
-								ChildDataView={this.props.ChildDataView}
-								ChildDataItem={this.props.ChildDataItem}
-							/>
-						</div>
+				{complex && this.state.open && (
+					<div className={css(styles.children)}>
+						<this.props.ChildDataView
+							value={value}
+							path={this.props.path}
+							getValueByPath={this.props.getValueByPath}
+							inspect={this.props.inspect}
+							stopInspecting={this.props.stopInspecting}
+							change={this.props.change}
+							showMenu={this.props.showMenu}
+							ChildDataView={this.props.ChildDataView}
+							ChildDataItem={this.props.ChildDataItem}
+						/>
+					</div>
 				)}
 			</li>
 		);
@@ -181,6 +168,9 @@ const styles = StyleSheet.create({
 		display: "flex",
 		position: "relative",
 	},
+	headComplex: {
+		cursor: "pointer", // whole header is clickable, so mark it as such
+	},
 
 	value: {},
 
@@ -199,7 +189,7 @@ const styles = StyleSheet.create({
 		wordBreak: "break-word",
 		flex: 1,
 		color: "var(--dataview-preview-value)",
-		cursor: "default",
+		//cursor: "default",
 	},
 
 	collapsedArrow: {

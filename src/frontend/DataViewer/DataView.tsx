@@ -20,7 +20,7 @@ const renderSparseArrayHole = (count, key)=>(
 
 export class DataView extends React.Component<
 	Partial<{
-		startOpen, change, className, path, getValueByPath, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void, showMenu, noSort, hidenKeysRegex, ChildDataView, ChildDataItem}
+		startOpen, change, className, path, getValueByPath, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void, showMenu, noSort, hiddenKeysRegex, ChildDataView, ChildDataItem}
 	>
 > {
 	static propTypes = {
@@ -33,7 +33,7 @@ export class DataView extends React.Component<
 		stopInspecting: PropTypes.func,
 		showMenu: PropTypes.func,
 		noSort: PropTypes.func,
-		hidenKeysRegex: PropTypes.instanceOf(RegExp),
+		hiddenKeysRegex: PropTypes.instanceOf(RegExp),
 		ChildDataView: PropTypes.func.isRequired,
 		ChildDataItem: PropTypes.func.isRequired,
 	};
@@ -59,7 +59,7 @@ export class DataView extends React.Component<
 
 	render() {
 		const value = this.props.getValueByPath(this.props.path);
-		if (!value) {
+		if (value == null) {
 			return <div className={css(styles.missing)}>null</div>;
 		}
 		const editable = this.props.change && value[symbols.editable] === true;
@@ -120,8 +120,8 @@ export class DataView extends React.Component<
 		} else {
 			// Iterate over a regular object
 			let names = Object.keys(value).filter(n=>n[0] !== "@" || n[1] !== "@");
-			if (this.props.hidenKeysRegex) {
-				names = names.filter(n=>!this.props.hidenKeysRegex.test(n));
+			if (this.props.hiddenKeysRegex) {
+				names = names.filter(n=>!this.props.hiddenKeysRegex.test(n));
 			}
 			if (!this.props.noSort) {
 				names.sort(alphanumericSort);

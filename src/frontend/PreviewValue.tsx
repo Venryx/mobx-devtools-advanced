@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
-import {ToJSON, ToJSON_Advanced} from "js-vextensions";
+import {ToJSON, ToJSON_Advanced, CE} from "js-vextensions";
 import {symbols} from "../Bridge";
 import flash from "./TabComponents/TreeView/flash";
 
@@ -157,12 +157,7 @@ class PreviewSimpleValue extends React.PureComponent<{change?, data, path, edita
 	}
 }
 
-class PreviewComplexValue extends React.PureComponent<{data, displayName}> { // eslint-disable-line react/no-multi-comp
-	static propTypes = {
-		data: PropTypes.any,
-		displayName: PropTypes.string,
-	};
-
+class PreviewComplexValue extends React.PureComponent<{data: any, displayName?: string}> {
 	render() {
 		const {data} = this.props;
 		const mobxObject = data[symbols.mobxObject];
@@ -170,71 +165,72 @@ class PreviewComplexValue extends React.PureComponent<{data, displayName}> { // 
 			return (
 				<span className={css(styles.previewComplex)}>
 					{this.props.displayName || "Array"}
-					[
-          {data.length}
-					]
-        </span>
+					[{data.length}]
+				</span>
 			);
 		}
-		switch (data[symbols.type]) {
-			case "serializationError":
-				return <span className={css(styles.previewError)}>SerializerError</span>;
-
-			case "deptreeNode":
-				return <span className={css(styles.previewDeptreeNode)}>{data[symbols.name]}</span>;
-
-			case "function":
-				return (
-					<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>
-						{this.props.displayName || data[symbols.name] || "fn"}
-						()
-          </span>
-				);
-			case "object":
-			case "map":
-			case "set":
-				return (
-					<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>
-						{`${this.props.displayName || data[symbols.name]}{…}`}
-					</span>
-				);
-			case "date":
-				return (
-					<span className={css(styles.previewComplex)}>
-						{this.props.displayName || data[symbols.name]}
-					</span>
-				);
-			case "symbol":
-				return (
-					<span className={css(styles.previewComplex)}>
-						{this.props.displayName || data[symbols.name]}
-					</span>
-				);
-			case "iterator":
-				return (
-					<span className={css(styles.previewComplex)}>
-						{`${this.props.displayName || data[symbols.name]}(…)`}
-					</span>
-				);
-
-			case "array_buffer":
-			case "data_view":
-			case "array":
-			case "typed_array":
-				return (
-					<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>
-						{`${this.props.displayName || data[symbols.name]}[${/*data[symbols.meta].length*/"TODO"}]`}
-					</span>
-				);
-
-			case undefined:
-			case null:
-				return (
-					<span className={css(styles.previewComplex)}>{this.props.displayName || "{…}"}</span>
-				);
-			default:
-				return null;
+		const type = data[symbols.type];
+		if (type == "serializationError") {
+			return <span className={css(styles.previewError)}>SerializerError</span>;
 		}
+		if (type == "deptreeNode") {
+			return <span className={css(styles.previewDeptreeNode)}>{data[symbols.name]}</span>;
+		}
+		if (type == "function") {
+			return (
+				<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>
+					{this.props.displayName || data[symbols.name] || "fn"}
+					()
+				</span>
+			);
+		}
+		if (type == "object" || type == "map" || type == "set") {
+			//const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimCircular: true})).KeepAtMost(100, "…}")}`;
+			const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimCircular: true})).KeepAtMost(100, "...}")}`;
+			return (
+				<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>
+					{`${this.props.displayName || data[symbols.name] || ""}${dataPreviewStr}`}
+				</span>
+			);
+		}
+		if (type == "date") {
+			return (
+				<span className={css(styles.previewComplex)}>
+					{this.props.displayName || data[symbols.name]}
+				</span>
+			);
+		}
+		if (type == "symbol") {
+			return (
+				<span className={css(styles.previewComplex)}>
+					{this.props.displayName || data[symbols.name]}
+				</span>
+			);
+		}
+		if (type == "iterator") {
+			return (
+				<span className={css(styles.previewComplex)}>
+					{`${this.props.displayName || data[symbols.name]}(…)`}
+				</span>
+			);
+		}
+		if (type == "array_buffer" || type == "data_view" || type == "array" || type == "typed_array") {
+			return (
+				<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>
+					{`${this.props.displayName || data[symbols.name]}[${/*data[symbols.meta].length*/"TODO"}]`}
+				</span>
+			);
+		}
+		if (type == null) {
+			const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimCircular: true})).KeepAtMost(100, "...}")}`;
+			return (
+				//<span className={css(styles.previewComplex)}>{this.props.displayName || "{…}"}</span>
+				<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>
+					{`${this.props.displayName || data[symbols.name] || ""}${dataPreviewStr}`}
+				</span>
+			);
+		}
+		return null;
 	}
 }
 

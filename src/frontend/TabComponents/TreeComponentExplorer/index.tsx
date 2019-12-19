@@ -6,9 +6,11 @@ import {Column, Row, Button, Text} from "react-vcomponents";
 import {ToJSON, ToJSON_Advanced, CE} from "js-vextensions";
 import {observer} from "../../../../node_modules/mobx-react";
 import {InjectStores} from "../../../utils/InjectStores";
-import {DataViewer as DataViewer_Old} from "../../DataViewer";
+//import {DataViewer as DataViewer_Old} from "../../DataViewer";
+import {DataViewer} from "../../DataViewer";
 import Collapsible from "../../Collapsible";
 import {store} from "../../Store";
+import {TreeExplorerStore} from "../../stores/TreeExplorerStore";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -20,6 +22,7 @@ const {css, StyleSheet} = Aphrodite;
 		const node = treeExplorerStore.nodesById[treeExplorerStore.selectedNodeId];
 		return {
 			node,
+			store: treeExplorerStore,
 			selectedNodeId: treeExplorerStore.selectedNodeId,
 			showMenu(e, val, path) {
 				e.preventDefault();
@@ -98,7 +101,7 @@ export class TreeComponentExplorer_Old extends React.Component<any, any> {
 						)}
 					>
 						<div className={css(styles.block)}>
-							<DataViewer_Old
+							<DataViewer
 								path={["dependencyTree"]}
 								getValueByPath={this.props.getValueByPath}
 								inspect={this.props.inspect}
@@ -111,7 +114,7 @@ export class TreeComponentExplorer_Old extends React.Component<any, any> {
 					</Collapsible>
 				)}
 
-				<DataViewer_Old
+				<DataViewer
 					path={["component"]}
 					getValueByPath={this.props.getValueByPath}
 					inspect={this.props.inspect}
@@ -119,7 +122,7 @@ export class TreeComponentExplorer_Old extends React.Component<any, any> {
 					change={this.props.change}
 					showMenu={this.props.showMenu}
 					decorator={this.dataDecorator}
-					hidenKeysRegex={/^(__\$mobRenderEnd|__\$mobRenderStart|_reactInternalInstance|updater)$/}
+					hiddenKeysRegex={/^(__\$mobRenderEnd|__\$mobRenderStart|_reactInternalInstance|updater)$/}
 				/>
 			</div>
 		);
@@ -151,11 +154,38 @@ const styles = StyleSheet.create({
 
 type State = {data: any};
 
+@InjectStores({
+	subscribe: ({treeExplorerStore})=>({
+		treeExplorerStore: [treeExplorerStore.selectedNodeId, "selectedNodeId"],
+	}),
+	injectProps: ({treeExplorerStore})=>{
+		return {treeStore: treeExplorerStore};
+	},
+})
 @observer
-export class TreeComponentExplorer extends Component<{}, State> {
+export class TreeComponentExplorer extends Component<{treeStore?: TreeExplorerStore}, State> {
 	state = {} as State;
 	render() {
+		//const {treeStore} = this.props;
 		const {data} = this.state;
+
+		const temp = {
+			showMenu(e, val, path) {
+				// todo
+			},
+			inspect(path) {
+				// todo
+			},
+			stopInspecting(path) {
+				// todo
+			},
+			change(path, value) {
+				// todo
+			},
+			getValueByPath(path) {
+				return path.reduce((acc, next)=>acc && acc[next], data);
+			},
+		};
 		return (
 			<div>
 				Path: {store.selectedMobXObjectPath}
@@ -166,20 +196,37 @@ export class TreeComponentExplorer extends Component<{}, State> {
 						this.setState({data});
 					});
 				}}/>
-				{data && <DataViewer data={data} keyInTree="root"/>}
+				{data && <DataViewer
+					path={[]}
+					getValueByPath={temp.getValueByPath}
+					inspect={temp.inspect}
+					stopInspecting={temp.stopInspecting}
+					change={temp.change}
+					showMenu={temp.showMenu}
+					decorator={this.dataDecorator}
+					hiddenKeysRegex={/^(__\$mobRenderEnd|__\$mobRenderStart|_reactInternalInstance|updater|_sendFull)$/}
+				/>}
+				{/*data && <DataViewer_New data={data} keyInTree="root"/>*/}
 			</div>
 		);
 	}
+
+	dataDecorator = InjectStores({
+		subscribe: (stores, {path})=>({
+			treeExplorerStore: [`inspected--${path.join("/")}`],
+		}),
+		shouldUpdate: ()=>true,
+	});
 }
 
-export class DataViewer extends BaseComponentPlus({depth: 0} as {data: any, depth?: number, keyInTree?: string}, {expanded: false}) {
+/*export class DataViewer_New extends BaseComponentPlus({depth: 0} as {data: any, depth?: number, keyInTree?: string}, {expanded: false}) {
 	render() {
 		const {data, depth, keyInTree} = this.props;
 		const {expanded} = this.state;
 		const expandable = data != null && typeof data == "object";
 		const childKeys = expandable ? Object.keys(data) : [];
 		// eslint-disable-next-line
-		const dataPreviewStr = expanded ? null : " " + CE(ToJSON_Advanced(data, {trimCircular: true})).KeepAtMost(100, 
+		const dataPreviewStr = expanded ? null : " " + CE(ToJSON_Advanced(data, {trimCircular: true})).KeepAtMost(100,
 			!expandable ? "..." :
 			data instanceof Array ? "...]" :
 			"...}");
@@ -199,10 +246,10 @@ export class DataViewer extends BaseComponentPlus({depth: 0} as {data: any, dept
 				<Column style={{marginLeft: 10}}>
 					{childKeys.map(childKey=>{
 						//if (depth >= 50) return <div key={childKey}>Too deep.</div>;
-						return <DataViewer key={childKey} keyInTree={childKey} depth={depth + 1} data={data[childKey]}/>;
+						return <DataViewer_New key={childKey} keyInTree={childKey} depth={depth + 1} data={data[childKey]}/>;
 					})}
 				</Column>}
 			</Column>
 		);
 	}
-}
+}*/
