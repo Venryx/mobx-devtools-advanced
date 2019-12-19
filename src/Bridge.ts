@@ -94,15 +94,15 @@ export function Serialize(data, path = [], seen = new Map(), propToExtract?, sen
 				[symbols.editable]: false, // TODO: figure out the way to edit maps
 				[symbols.mobxObject]: "$mobx" in data,
 			};
-			if (inspecting) {
-				result[symbols.entries] = [...(data as Map<any, any>).entries()].map(([key, value], i)=>{
-					console.log("Serializing Map entry...");
-					return [
-						Serialize(key, path.concat(symbols.entries, i, 0), seen),
-						Serialize(value, path.concat(symbols.entries, i, 1), seen),
-					];
-				});
-			}
+			//if (inspecting) {
+			result[symbols.entries] = [...(data as Map<any, any>).entries()].map(([key, value], i)=>{
+				//console.log("Serializing Map entry...");
+				return [
+					Serialize(key, path.concat(symbols.entries, i, 0), seen),
+					Serialize(value, path.concat(symbols.entries, i, 1), seen),
+				];
+			});
+			//}
 			return result;
 		}
 
@@ -114,14 +114,14 @@ export function Serialize(data, path = [], seen = new Map(), propToExtract?, sen
 				[symbols.editable]: false, // TODO: figure out the way to edit sets
 				[symbols.mobxObject]: "$mobx" in data,
 			};
-			if (inspecting) {
-				result[symbols.entries] = [...(data as Set<any>).entries()].map(([key, value], i)=>{
-					return [
-						Serialize(key, path.concat(symbols.entries, i, 0), seen),
-						Serialize(value, path.concat(symbols.entries, i, 1), seen),
-					];
-				});
-			}
+			//if (inspecting) {
+			result[symbols.entries] = [...(data as Set<any>).entries()].map(([key, value], i)=>{
+				return [
+					Serialize(key, path.concat(symbols.entries, i, 0), seen),
+					Serialize(value, path.concat(symbols.entries, i, 1), seen),
+				];
+			});
+			//}
 			return result;
 		}
 
@@ -141,13 +141,13 @@ export function Serialize(data, path = [], seen = new Map(), propToExtract?, sen
 					[symbols.editable]: false,
 				},
 			};
-			if (inspecting) {
-				for (const p in data) {
-					if (Object.prototype.hasOwnProperty.call(data, p)) {
-						result[p] = Serialize(data, path.concat(p), seen, p);
-					}
+			//if (inspecting) {
+			for (const p in data) {
+				if (Object.prototype.hasOwnProperty.call(data, p)) {
+					result[p] = Serialize(data, path.concat(p), seen, p);
 				}
 			}
+			//}
 			return result;
 		}
 

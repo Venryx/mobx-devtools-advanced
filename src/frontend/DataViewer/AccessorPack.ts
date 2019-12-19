@@ -1,6 +1,7 @@
 import {GetValueByPath} from "../../utils/General";
 import {TreeExplorerStore} from "../stores/TreeExplorerStore";
 import {ActionsStore} from "../stores/ActionsStore";
+import {symbols} from "../../Bridge";
 
 export abstract class AccessorPack {
 	abstract getValueByPath(path): any;
@@ -54,6 +55,13 @@ export class ChangeAccessorPack extends AccessorPack {
 		//ActionsStore.main.changeValue(this.changeID, {path, value});
 	}
 	inspect(path: string[]) {
+		const currentVal = this.getValueByPath(path);
+		const alreadyHaveData = Object.keys(currentVal).find(a=>!a.startsWith("@@") || a == symbols.entries);
+		// if we already have the data for this path, cancel the inspection
+		if (alreadyHaveData) {
+			//console.log("Canceling inspection for:", path);
+			return;
+		}
 		ActionsStore.main.inspect(this.changeID, path);
 	}
 	stopInspecting(path: string[]) {

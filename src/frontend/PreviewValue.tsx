@@ -168,6 +168,15 @@ class PreviewComplexValue extends React.PureComponent<{accessors: AccessorPack, 
 		const {accessors, path} = this.props;
 		const data = accessors.getValueByPath(path);
 		const mobxObject = data[symbols.mobxObject];
+
+		const ToJSON_Trimmed = function(obj) {
+			const json = ToJSON_Advanced(obj, {
+				trimDuplicates: true,
+				keysToIgnore: CE(symbols).VValues(),
+			});
+			return CE(json).KeepAtMost(100, "...}");
+		};
+
 		if (Array.isArray(data)) {
 			return (
 				<span className={css(styles.previewComplex)}>
@@ -193,7 +202,7 @@ class PreviewComplexValue extends React.PureComponent<{accessors: AccessorPack, 
 		}
 		if (type == "object" || type == "map" || type == "set") {
 			//const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimDuplicates: true})).KeepAtMost(100, "…}")}`;
-			const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimDuplicates: true})).KeepAtMost(100, "...}")}`;
+			const dataPreviewStr = ` ${ToJSON_Trimmed(data)}`;
 			return (
 				<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>
 					{`${this.props.displayName || data[symbols.name] || ""}${dataPreviewStr}`}
@@ -229,7 +238,7 @@ class PreviewComplexValue extends React.PureComponent<{accessors: AccessorPack, 
 			);
 		}
 		if (type == null) {
-			const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimDuplicates: true})).KeepAtMost(100, "...}")}`;
+			const dataPreviewStr = ` ${ToJSON_Trimmed(data)}`;
 			return (
 				//<span className={css(styles.previewComplex)}>{this.props.displayName || "{…}"}</span>
 				<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>

@@ -133,7 +133,7 @@ export function MakeChangesProcessor(onChange: (change: Change)=>void) {
 		change.timestamp = Date.now();
 		change.children = [];
 
-		console.log("Change:", change);
+		//console.log("Change:", change);
 		/*ProcessChange(change);
 		setTimeout(()=>ProcessChange(change));*/
 

@@ -163,7 +163,7 @@ export class DataView extends React.Component<
 				{/* ChildDataItem={ChildDataItem} */}
 				{/* /> */}
 				{/* )} */}
-
+				{value[symbols.inspected] == true && "(Note: Displaying current data, not the data when the Change occurred."}
 				{elements}
 			</ul>
 		);
