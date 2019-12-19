@@ -1,146 +1,13 @@
+import {reaction} from "mobx";
 import React, {Component} from "react";
-import PropTypes from "prop-types";
-import * as Aphrodite from "aphrodite";
-import {BaseComponentPlus} from "react-vextensions";
-import {Column, Row, Button, Text} from "react-vcomponents";
-import {ToJSON, ToJSON_Advanced, CE} from "js-vextensions";
-import {autorun, reaction} from "mobx";
+import {Button} from "react-vcomponents";
 import {observer} from "../../../../node_modules/mobx-react";
 import {InjectStores} from "../../../utils/InjectStores";
 //import {DataViewer as DataViewer_Old} from "../../DataViewer";
 import {DataViewer} from "../../DataViewer";
-import Collapsible from "../../Collapsible";
 import {store} from "../../Store";
 import {TreeExplorerStore} from "../../stores/TreeExplorerStore";
-import {GetValueByPath} from "../../../utils/General";
-
-const {css, StyleSheet} = Aphrodite;
-
-@InjectStores({
-	subscribe: ({treeExplorerStore})=>({
-		treeExplorerStore: [treeExplorerStore.selectedNodeId, "selectedNodeId"],
-	}),
-	injectProps: ({treeExplorerStore})=>{
-		const node = treeExplorerStore.nodesById[treeExplorerStore.selectedNodeId];
-		return {
-			node,
-			store: treeExplorerStore,
-			selectedNodeId: treeExplorerStore.selectedNodeId,
-			showMenu(e, val, path) {
-				e.preventDefault();
-				treeExplorerStore.showContextMenu(
-					"attr",
-					e,
-					treeExplorerStore.selectedNodeId,
-					node,
-					val,
-					path,
-				);
-			},
-			inspect(path) {
-				treeExplorerStore.inspect(path);
-			},
-			stopInspecting(path) {
-				treeExplorerStore.stopInspecting(path);
-			},
-			change(path, value) {
-				treeExplorerStore.changeValue({path, value});
-			},
-			getValueByPath(path) {
-				return GetValueByPath(treeExplorerStore.nodesById[treeExplorerStore.selectedNodeId], path);
-			},
-		};
-	},
-})
-export class TreeComponentExplorer_Old extends React.Component<any, any> {
-	static propTypes = {
-		node: PropTypes.object,
-		change: PropTypes.func.isRequired,
-		getValueByPath: PropTypes.func,
-		inspect: PropTypes.func,
-		stopInspecting: PropTypes.func,
-		showMenu: PropTypes.func,
-	};
-
-	componentDidMount() {
-		window["e"] = this;
-	}
-
-	reload() {
-		this.props.inspect([], ()=>this.setState({}));
-	}
-
-	render() {
-		const {node} = this.props;
-		if (!node) return null;
-		return (
-			<div>
-				<div className={css(styles.heading)}>
-					<span className={css(styles.headingBracket)}>{"<"}</span>
-					{node.name}
-					<span className={css(styles.headingBracket)}>{"/>"}</span>
-					{__DEV__ && ` ${node.id}`}
-				</div>
-				{node.dependencyTree && (
-					<Collapsible
-						startOpen={false}
-						head={(
-							<div className={css(styles.subheading)}>
-								Dependencies (
-									{node.dependencyTree.dependencies.length}
-								)
-							</div>
-						)}
-					>
-						<div className={css(styles.block)}>
-							<DataViewer
-								path={["dependencyTree"]}
-								getValueByPath={this.props.getValueByPath}
-								inspect={this.props.inspect}
-								stopInspecting={this.props.stopInspecting}
-								change={this.props.change}
-								showMenu={this.props.showMenu}
-							/>
-						</div>
-					</Collapsible>
-				)}
-
-				<DataViewer
-					path={["component"]}
-					getValueByPath={this.props.getValueByPath}
-					inspect={this.props.inspect}
-					stopInspecting={this.props.stopInspecting}
-					change={this.props.change}
-					showMenu={this.props.showMenu}
-					hiddenKeysRegex={/^(__\$mobRenderEnd|__\$mobRenderStart|_reactInternalInstance|updater)$/}
-				/>
-			</div>
-		);
-	}
-}
-
-const styles = StyleSheet.create({
-	heading: {
-		fontSize: 17,
-		color: "var(--treenode-tag-name)",
-		fontFamily: "var(--font-family-monospace)",
-		fontWeight: 500,
-		marginBottom: 15,
-	},
-	headingBracket: {
-		color: "var(--treenode-bracket)",
-	},
-	block: {
-		marginBottom: 15,
-	},
-	subheading: {
-		color: "var(--lighter-text-color)",
-		textTransform: "uppercase",
-		fontSize: 13,
-		marginBottom: 5,
-		fontWeight: 500,
-	},
-});
+import {RawAccessorPack} from "../../DataViewer/AccessorPack";
 
 type State = {data: any};
 
@@ -189,10 +56,7 @@ export class TreeComponentExplorer extends Component<{treeStore?: TreeExplorerSt
 				<Button text="Refresh" enabled={store.selectedMobXObjectPath != null} onClick={()=>{
 					this.RefreshData();
 				}}/>
-				{data && <DataViewer
-					data={data}
-					hiddenKeysRegex={/^(__\$mobRenderEnd|__\$mobRenderStart|_reactInternalInstance|updater|_sendFull)$/}
-				/>}
+				{data && <DataViewer accessors={new RawAccessorPack(data)} path={[]} hiddenKeysRegex={/^(__\$mobRenderEnd|__\$mobRenderStart|_reactInternalInstance|updater|_sendFull)$/}/>}
 				{/*data && <DataViewer_New data={data} keyInTree="root"/>*/}
 			</div>
 		);

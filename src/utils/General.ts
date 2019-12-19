@@ -32,12 +32,16 @@ export function GetBySymbol(obj: Object, symbolName: string) {
 	return obj[symbol];
 }
 
-export function GetValueByPath(obj: any, path: string[]) {
+export function GetValueByPath(obj: any, path: string[], createObjIfMissing = false) {
 	//return path.reduce((acc, next)=>acc && acc[next], change);
 	let result = obj;
 	for (const segment of path) {
 		if (result != null) {
-			result = GetNextValueInPath(result, segment);
+			let nextValue = GetNextValueInPath(result, segment);
+			if (nextValue === undefined && createObjIfMissing) {
+				nextValue = SetNextValueInPath(result, segment, {});
+			}
+			result = nextValue;
 		}
 	}
 	return result;
@@ -50,4 +54,13 @@ export function GetNextValueInPath(currentObj: any, currentSegment: string) {
 		return currentObj.__proto__;
 	}
 	return currentObj[currentSegment];
+}
+export function SetNextValueInPath<T>(currentObj: any, currentSegment: string, newValue: T): T {
+	if (currentSegment == symbols.entries && (currentObj instanceof Map || currentObj instanceof Set)) {
+		throw new Error("Not yet implemented.");
+	}
+	if (currentSegment == symbols.proto) {
+		throw new Error("Not yet implemented.");
+	}
+	return currentObj[currentSegment] = newValue;
 }

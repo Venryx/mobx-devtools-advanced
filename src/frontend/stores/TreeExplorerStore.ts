@@ -3,6 +3,8 @@ import nodeMatchesText from "../../utils/nodeMatchesText";
 import AbstractStore from "./AbstractStore";
 
 export class TreeExplorerStore extends AbstractStore {
+	static main: TreeExplorerStore;
+
 	roots = [];
 	loaded = false;
 	selectedNodeId = undefined;
@@ -17,6 +19,7 @@ export class TreeExplorerStore extends AbstractStore {
 	bridge;
 	constructor(bridge) {
 		super();
+		TreeExplorerStore.main = this;
 		this.bridge = bridge;
 
 		this.addDisposer(

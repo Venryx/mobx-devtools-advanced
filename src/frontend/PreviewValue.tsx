@@ -5,36 +5,33 @@ import * as Aphrodite from "aphrodite";
 import {ToJSON, ToJSON_Advanced, CE} from "js-vextensions";
 import {symbols} from "../Bridge";
 import flash from "./TabComponents/TreeView/flash";
+import {AccessorPack} from "./DataViewer/AccessorPack";
 
 const {css, StyleSheet} = Aphrodite;
 
 const BAD_INPUT = Symbol("bad input");
 
-export class PreviewValue extends React.PureComponent<{change?, data, path?, editable?, className?, displayName?}> {
-	static propTypes = {
-		data: PropTypes.any,
-	};
-
+export class PreviewValue extends React.PureComponent<
+	{
+		accessors: AccessorPack, path: string[], editable?: boolean, className?: string, displayName?: string,
+	}
+> {
 	render() {
-		if (
-			!this.props.data
-			|| this.props.data instanceof Date
-			|| typeof this.props.data !== "object"
-		) {
+		const {accessors, path} = this.props;
+		const data = accessors.getValueByPath(path);
+		if (!data || data instanceof Date || typeof data !== "object") {
 			return <PreviewSimpleValue {...this.props} />;
 		}
 		return <PreviewComplexValue {...this.props} />;
 	}
 }
 
-class PreviewSimpleValue extends React.PureComponent<{change?, data, path, editable?, displayName?}, {editing: boolean, text: string}> { // eslint-disable-line react/no-multi-comp
-	static propTypes = {
-		change: PropTypes.func,
-		data: PropTypes.any,
-		path: PropTypes.array.isRequired,
-		editable: PropTypes.bool,
-	};
-
+class PreviewSimpleValue extends React.PureComponent<
+	{
+		path?: string[], accessors: AccessorPack, editable?: boolean, displayName?: string,
+	},
+	{editing: boolean, text: string}
+> {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -43,11 +40,16 @@ class PreviewSimpleValue extends React.PureComponent<{change?, data, path, edita
 		};
 	}
 
+	get data() {
+		const {accessors, path} = this.props;
+		return accessors.getValueByPath(path);
+	}
+
 	componentDidUpdate(prevProps, prevState) {
 		if (this.state.editing && !prevState.editing) {
 			this.selectAll();
 		}
-		if (!this.state.editing && this.props.data !== prevProps.data) {
+		if (!this.state.editing && this.data !== prevProps.data) {
 			// eslint-disable-next-line react/no-find-dom-node
 			flash(ReactDOM.findDOMNode(this), "#FFFF00", "transparent", 1);
 		}
@@ -76,7 +78,8 @@ class PreviewSimpleValue extends React.PureComponent<{change?, data, path, edita
 	handleSubmit = ()=>this.submit(false);
 
 	submit(editing) {
-		if (this.state.text === valueToText(this.props.data)) {
+		const {path, accessors} = this.props;
+		if (this.state.text === valueToText(this.data)) {
 			this.setState({
 				editing,
 			});
@@ -85,22 +88,23 @@ class PreviewSimpleValue extends React.PureComponent<{change?, data, path, edita
 		const value = textToValue(this.state.text);
 		if (value === BAD_INPUT) {
 			this.setState({
-				text: valueToText(this.props.data),
+				text: valueToText(this.data),
 				editing,
 			});
 			return;
 		}
-		this.props.change(this.props.path, value);
+		accessors.change(path, value);
 		this.setState({
 			editing,
 		});
 	}
 
 	handleStartEditing = ()=>{
-		if (this.props.editable) {
+		const {editable} = this.props;
+		if (editable) {
 			this.setState({
 				editing: true,
-				text: valueToText(this.props.data),
+				text: valueToText(this.data),
 			});
 		}
 	};
@@ -118,7 +122,8 @@ class PreviewSimpleValue extends React.PureComponent<{change?, data, path, edita
 
 	input;
 	render() {
-		const {editable} = this.props;
+		const {accessors, path, editable} = this.props;
+		let {data} = this;
 		const {editing, text} = this.state;
 
 		if (editing) {
@@ -134,9 +139,6 @@ class PreviewSimpleValue extends React.PureComponent<{change?, data, path, edita
 				/>
 			);
 		}
-
-		let {data} = this.props;
-
 		if (typeof data === "string" && data.length > 200) {
 			data = `${data.slice(0, 200)}…`;
 		}
@@ -157,9 +159,14 @@ class PreviewSimpleValue extends React.PureComponent<{change?, data, path, edita
 	}
 }
 
-class PreviewComplexValue extends React.PureComponent<{data: any, displayName?: string}> {
+class PreviewComplexValue extends React.PureComponent<{accessors: AccessorPack, path: string[], displayName?: string}> {
+	/*get data() {
+		const {accessors, path} = this.props;
+		return accessors.getValueByPath(path);
+	}*/
 	render() {
-		const {data} = this.props;
+		const {accessors, path} = this.props;
+		const data = accessors.getValueByPath(path);
 		const mobxObject = data[symbols.mobxObject];
 		if (Array.isArray(data)) {
 			return (

@@ -5,25 +5,19 @@ import {PreviewValue} from "../PreviewValue";
 import {InjectStores} from "../../utils/InjectStores";
 import {PopoverTrigger} from "../Popover";
 import {DataViewer} from "../DataViewer";
-import {FinalizeDataViewerDataProps} from "../DataViewer/DataView";
+import {AccessorPack} from "../DataViewer/AccessorPack";
 
 const {css, StyleSheet} = Aphrodite;
 
 type ChangeDataViewerPopover = {
 	className?: string, displayName?: string,
-	// data, option 1
-	path?: any[], getValueByPath?: (path)=>any,
-	// data, option 2
-	data?: any,
-	inspect?: (path: string[])=>void, stopInspecting?: (path: string[])=>void, showMenu?: (event, value: any, path: string[])=>void,
+	accessors: AccessorPack, path?: any[],
 	previewText?: string,
 };
 export function ChangeDataViewerPopover(props: ChangeDataViewerPopover) {
-	let {className, displayName, path, getValueByPath, data, inspect, stopInspecting, showMenu, previewText} = props;
+	const {className, displayName, accessors, path, previewText} = props;
 
-	({path, getValueByPath} = FinalizeDataViewerDataProps({path, getValueByPath, data}));
-
-	const value = getValueByPath(path);
+	const value = accessors.getValueByPath(path);
 	//console.log("Value:", value);
 	const otype = typeof value;
 	if (
@@ -33,20 +27,16 @@ export function ChangeDataViewerPopover(props: ChangeDataViewerPopover) {
 		|| value === undefined
 		|| otype === "boolean"
 	) {
-		return <PreviewValue data={value} className={className} path={path} />;
+		return <PreviewValue accessors={accessors} path={path} className={className}/>;
 	}
 
 	const dataViewer = (
 		<DataViewer
+			accessors={accessors}
 			path={path}
-			getValueByPath={getValueByPath}
-			data={data}
-			inspect={inspect}
-			stopInspecting={stopInspecting}
-			showMenu={showMenu}
 			decorator={InjectStores({
-				subscribe: (stores, props)=>({
-					actionsLoggerStore: [`inspected--${props.path.join("/")}`],
+				subscribe: (stores, props2)=>({
+					actionsLoggerStore: [`inspected--${props2.path.join("/")}`],
 				}),
 				shouldUpdate: ()=>true,
 			})}
@@ -57,18 +47,18 @@ export function ChangeDataViewerPopover(props: ChangeDataViewerPopover) {
 		<PopoverTrigger
 			requireClick
 			content={dataViewer}
-			onShown={()=>inspect(path)} // eslint-disable-line react/jsx-no-bind
+			onShown={()=>accessors.inspect(path)} // eslint-disable-line react/jsx-no-bind
 		>
 			<span
 				className={`${css(styles.trigger)} ${className}`}
 				onContextMenu={e=>{ // eslint-disable-line react/jsx-no-bind
-					if (typeof showMenu === "function") {
-						showMenu(e, undefined, path);
+					if (typeof accessors.showMenu === "function") {
+						accessors.showMenu(e, undefined, path);
 					}
 				}}
 			>
 				{previewText != null && previewText}
-				{previewText == null && <PreviewValue data={value} displayName={displayName} path={path}/>}
+				{previewText == null && <PreviewValue accessors={accessors} path={path} displayName={displayName}/>}
 			</span>
 		</PopoverTrigger>
 	);

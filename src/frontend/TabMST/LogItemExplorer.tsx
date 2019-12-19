@@ -6,6 +6,8 @@ import {DataViewer} from "../DataViewer";
 import Collapsible from "../Collapsible";
 import {PreviewValue} from "../PreviewValue";
 import {GetValueByPath} from "../../utils/General";
+import {Change} from "../../utils/changesProcessor";
+import {RawAccessorPack} from "../DataViewer/AccessorPack";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -32,13 +34,9 @@ const {css, StyleSheet} = Aphrodite;
 		};
 	},
 })
-export default class LogItemExplorer extends React.PureComponent<{logItem, getValueByPath, initial}> {
-	static propTypes = {
-		logItem: PropTypes.object,
-		initial: PropTypes.bool.isRequired,
-		getValueByPath: PropTypes.func.isRequired,
-	};
-
+export class LogItemExplorer extends React.PureComponent<
+	{} & Partial<{logItem: any, getValueByPath: (path: string[])=>any, initial: boolean}>
+> {
 	dataDecorator = InjectStores({
 		subscribe: (stores, {path})=>({
 			treeExplorerStore: [`inspected--${path.join("/")}`],
@@ -47,17 +45,14 @@ export default class LogItemExplorer extends React.PureComponent<{logItem, getVa
 	});
 
 	render() {
-		if (!this.props.logItem) return null;
+		const {logItem} = this.props;
+		if (!logItem) return null;
 		return (
 			<div className={css(styles.logExplorer)}>
-				{this.props.logItem.snapshot
+				{logItem.snapshot
 					&& (
 						<Collapsible head="State" startOpen>
-							<DataViewer
-								path={["snapshot"]}
-								getValueByPath={this.props.getValueByPath}
-								decorator={this.dataDecorator}
-							/>
+							<DataViewer accessors={new RawAccessorPack(logItem)} path={["snapshot"]} decorator={this.dataDecorator}/>
 						</Collapsible>
 					)}
 				{this.props.logItem.patches && !this.props.initial && (
@@ -78,8 +73,8 @@ export default class LogItemExplorer extends React.PureComponent<{logItem, getVa
 										{path}
 										{" "}
 										=
-                    {" "}
-										<PreviewValue data={patch.value} />
+										{" "}
+										<PreviewValue accessors={new RawAccessorPack(patch.value)} path={[]}/>
 									</div>
 								);
 							}

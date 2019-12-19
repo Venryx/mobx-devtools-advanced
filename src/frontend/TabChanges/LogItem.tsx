@@ -10,6 +10,7 @@ import {ChangeDataViewerPopover} from "./ChangeDataViewerPopover";
 import {Change} from "../../utils/changesProcessor";
 import {ActionsStore} from "../stores/ActionsStore";
 import {GetValueByPath} from "../../utils/General";
+import {AccessorPack, RawAccessorPack} from "../DataViewer/AccessorPack";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -36,8 +37,7 @@ const getColor = type=>{
 })
 export class LogItem extends React.Component<
 	{
-		rootChange: Change, change: Change, path: any[], getValueByPath: (path: string[])=>any, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void,
-		showMenu: (event, changeId: number, path: string[])=>void, preferredHeight?: number, onHeightUpdate: ()=>void
+		rootChange: Change, change: Change, accessors: AccessorPack, path: any[], preferredHeight?: number, onHeightUpdate: ()=>void
 	} & Partial<{getDetails: ()=>void}>,
 	{open: boolean}
 > {
@@ -83,12 +83,11 @@ export class LogItem extends React.Component<
 	}, 0);
 
 	renderChange() {
-		const {rootChange, change, path} = this.props;
+		const {change, accessors, path} = this.props;
 
 		//const change_full = ActionsStore.main.logItemsById[change.id];
 		const changeViewer = (
-			<ChangeDataViewerPopover previewText="(details)" path={[]} getValueByPath={subpath=>GetValueByPath(change, subpath)}
-				inspect={subpath=>ActionsStore.main.inspect(rootChange.id, path.concat(subpath))} stopInspecting={subpath=>ActionsStore.main.stopInspecting(rootChange.id, path.concat(subpath))}/>
+			<ChangeDataViewerPopover previewText="(details)" accessors={accessors} path={path}/>
 				//inspect={subpath=>ActionsStore.main.inspect(change.id, subpath)} stopInspecting={subpath=>ActionsStore.main.stopInspecting(change.id, subpath)}/>
 		);
 
@@ -105,15 +104,7 @@ export class LogItem extends React.Component<
 						</span>
 						{" "}
 						{change.object && (
-							<ChangeDataViewerPopover
-								path={this.props.path.concat(["object"])}
-								displayName={change.objectName}
-								getValueByPath={this.props.getValueByPath}
-								inspect={this.props.inspect}
-								stopInspecting={this.props.stopInspecting}
-								showMenu={this.props.showMenu}
-								className={css(styles.headContentMisc)}
-							/>
+							<ChangeDataViewerPopover accessors={accessors} path={path.concat("object")} displayName={change.objectName} className={css(styles.headContentMisc)}/>
 						)}
 						{changeViewer}
 					</div>
@@ -125,15 +116,7 @@ export class LogItem extends React.Component<
 			case "splice":
 				return (
 					<div className={css(styles.headContent)}>
-						<ChangeDataViewerPopover
-							path={this.props.path.concat(["object"])}
-							displayName={change.objectName}
-							getValueByPath={this.props.getValueByPath}
-							inspect={this.props.inspect}
-							stopInspecting={this.props.stopInspecting}
-							showMenu={this.props.showMenu}
-							className={css(styles.headContentMisc)}
-						/>
+						<ChangeDataViewerPopover accessors={accessors} path={path.concat("object")} displayName={change.objectName} className={css(styles.headContentMisc)}/>
 						<PopoverTrigger
 							className={css(styles.headContentMisc)}
 							requireClick
@@ -141,14 +124,7 @@ export class LogItem extends React.Component<
 							//onShown={()=>this.props.getDetails && this.props.getDetails(change.id)}
 							onShown={()=>this.props.getDetails && this.props.getDetails()}
 							content={(
-								<LObjDiff
-									change={change}
-									path={this.props.path}
-									getValueByPath={this.props.getValueByPath}
-									inspect={this.props.inspect}
-									stopInspecting={this.props.stopInspecting}
-									showMenu={this.props.showMenu}
-								/>
+								<LObjDiff accessors={accessors} path={path} change={change}/>
 							)}
 						>
 							<div>
@@ -167,14 +143,7 @@ export class LogItem extends React.Component<
 							{change.targetName}
 						</span>
 						{change.object && (
-							<ChangeDataViewerPopover
-								path={this.props.path.concat(["object"])}
-								displayName={change.objectName}
-								getValueByPath={this.props.getValueByPath}
-								inspect={this.props.inspect}
-								stopInspecting={this.props.stopInspecting}
-								showMenu={this.props.showMenu}
-							/>
+							<ChangeDataViewerPopover accessors={accessors} path={path.concat("object")} displayName={change.objectName}/>
 						)}
 						<span className={css(styles.headContentMisc)}>fn:</span>
 						{/*<ChangeDataViewerPopover
@@ -204,15 +173,7 @@ export class LogItem extends React.Component<
 					<div className={css(styles.headContent, styles.headContentWithIcon)}>
 						<IconScheduledReaction className={css(styles.headContentIcon)} />
 						<span className={css(styles.headContentTitle)}>Scheduled async reaction</span>
-						<ChangeDataViewerPopover
-							path={this.props.path.concat(["object"])}
-							displayName={change.objectName}
-							getValueByPath={this.props.getValueByPath}
-							inspect={this.props.inspect}
-							stopInspecting={this.props.stopInspecting}
-							showMenu={this.props.showMenu}
-							className={css(styles.headContentMisc)}
-						/>
+						<ChangeDataViewerPopover accessors={accessors} path={path.concat("object")} displayName={change.objectName} className={css(styles.headContentMisc)}/>
 						{changeViewer}
 					</div>
 				);
@@ -221,24 +182,9 @@ export class LogItem extends React.Component<
 				return (
 					<div>
 						<span className={css(styles.headContentTitle)}>Create</span>
-						<ChangeDataViewerPopover
-							path={this.props.path.concat(["object"])}
-							displayName={change.objectName}
-							getValueByPath={this.props.getValueByPath}
-							inspect={this.props.inspect}
-							stopInspecting={this.props.stopInspecting}
-							showMenu={this.props.showMenu}
-							className={css(styles.headContentMisc)}
-						/>
+						<ChangeDataViewerPopover accessors={accessors} path={path.concat("object")} displayName={change.objectName} className={css(styles.headContentMisc)}/>
 						:
-						<ChangeDataViewerPopover
-							path={this.props.path.concat(["newValue"])}
-							getValueByPath={this.props.getValueByPath}
-							inspect={this.props.inspect}
-							stopInspecting={this.props.stopInspecting}
-							showMenu={this.props.showMenu}
-							className={css(styles.headContentMisc)}
-						/>
+						<ChangeDataViewerPopover accessors={accessors} path={path.concat("newValue")} className={css(styles.headContentMisc)}/>
 						{changeViewer}
 					</div>
 				);
@@ -252,7 +198,7 @@ export class LogItem extends React.Component<
 	}
 
 	render() {
-		const {change} = this.props;
+		const {accessors, path, change} = this.props;
 		const {open} = this.state;
 		const openable = this.props.change.hasChildren || (this.props.change.children || []).length > 0;
 		return (
@@ -272,17 +218,7 @@ export class LogItem extends React.Component<
 					<div className={css(styles.body)}>
 						{change.children
 							&& change.children.map((c, i)=>(
-								<LogItem
-									getValueByPath={this.props.getValueByPath}
-									inspect={this.props.inspect}
-									stopInspecting={this.props.stopInspecting}
-									showMenu={this.props.showMenu}
-									key={c.id}
-									rootChange={change}
-									change={c}
-									onHeightUpdate={this.recomputeHeight}
-									path={this.props.path.concat(["children", i])}
-								/>
+								<LogItem key={c.id} accessors={accessors} path={path.concat("children", i)} rootChange={change} change={c} onHeightUpdate={this.recomputeHeight}/>
 							))}
 					</div>
 				)}

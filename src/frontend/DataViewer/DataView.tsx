@@ -4,6 +4,10 @@ import {Assert} from "js-vextensions";
 import {symbols} from "../../Bridge";
 import Spinner from "../Spinner";
 import {GetValueByPath} from "../../utils/General";
+import {ActionsStore} from "../stores/ActionsStore";
+import {DataItem} from "./DataItem";
+import {TreeExplorerStore} from "../stores/TreeExplorerStore";
+import {AccessorPack} from "./AccessorPack";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -18,46 +22,12 @@ const renderSparseArrayHole = (count, key)=>(
 	</li>
 );
 
-export function FinalizeDataViewerDataProps({path, getValueByPath, data}: Pick<React.ComponentProps<typeof DataView>, "path" | "getValueByPath" | "data">) {
-	if (path != null && getValueByPath != null) {
-		return {path, getValueByPath}; //, data};
-	}
-	if (data !== undefined) {
-		Assert(path == null, "If data prop supplied, path must be null.");
-		Assert(getValueByPath == null, "If data prop supplied, getValueByPath must be null.");
-		return {
-			path: [],
-			//getValueByPath: path=>path.reduce((acc, next)=>acc && acc[next], data),
-			getValueByPath: path=>GetValueByPath(data, path),
-			//data: undefined,
-		};
-	}
-	return {
-		path: [],
-		getValueByPath: path=>null,
-		//data: undefined,
-	};
-}
-/*export function CreateHelpers(changeID: number, path: string[]) {
-	if (changeID != null) {
-		const data = ActionsStore.main.logItemsById[changeID];
-		return {
-			getValueByPath: path=>path.reduce((acc, next)=>acc && acc[next], data),
-			inspect: path=>ActionsStore.main.inspect(changeID, path),
-			stopInspecting: path=>ActionsStore.main.stopInspecting(changeID, path),
-		};
-	}
-}*/
-
 export class DataView extends React.Component<
 	{
-		startOpen?: boolean, change?: (path: string[], value: any)=>void,
-		// data, option 1 (if one is present, all must be)
-		path?: any[], getValueByPath?: (path)=>any, inspect?: (path: string[])=>void, stopInspecting?: (path: string[])=>void,
-		// data, option 2
-		data?: any,
+		startOpen?: boolean,
+		accessors: AccessorPack, path: string[],
 		className?: string, showMenu?: (event, value: any, path: string[])=>void,
-		noSort?: boolean, hiddenKeysRegex?: RegExp, ChildDataView: any, ChildDataItem: any
+		noSort?: boolean, hiddenKeysRegex?: RegExp, ChildDataView: typeof DataView, ChildDataItem: typeof DataItem
 	}
 > {
 	/*_helpers: ReturnType<typeof CreateHelpers>;
@@ -69,20 +39,15 @@ export class DataView extends React.Component<
 		return this._helpers;
 	}*/
 
-	renderItem(name, key, editable, subpath?) {
-		let {startOpen, inspect, stopInspecting, change, showMenu, path, getValueByPath, data, ChildDataView, ChildDataItem} = this.props;
-		({path, getValueByPath} = FinalizeDataViewerDataProps({path, getValueByPath, data}));
+	renderItem(name, key, editable, itemPath?) {
+		const {startOpen, path, accessors, ChildDataView, ChildDataItem} = this.props;
 		return (
 			<ChildDataItem
 				key={key}
 				name={name}
-				path={subpath || path.concat([name])}
+				path={itemPath || path.concat([name])}
+				accessors={accessors}
 				startOpen={startOpen}
-				getValueByPath={getValueByPath}
-				inspect={inspect}
-				stopInspecting={stopInspecting}
-				change={change}
-				showMenu={showMenu}
 				editable={editable}
 				ChildDataView={ChildDataView}
 				ChildDataItem={ChildDataItem}
@@ -91,14 +56,13 @@ export class DataView extends React.Component<
 	}
 
 	render() {
-		let {startOpen, inspect, stopInspecting, change, showMenu, path, getValueByPath, data, ChildDataView, ChildDataItem, noSort, hiddenKeysRegex, className} = this.props;
-		({path, getValueByPath} = FinalizeDataViewerDataProps({path, getValueByPath, data}));
+		const {startOpen, showMenu, path, accessors, ChildDataView, ChildDataItem, noSort, hiddenKeysRegex, className} = this.props;
 
-		const value = getValueByPath(path);
+		const value = accessors.getValueByPath(path);
 		if (value == null) {
 			return <div className={css(styles.missing)}>null</div>;
 		}
-		const editable = change && value[symbols.editable] === true;
+		const editable = accessors.change && value[symbols.editable] === true;
 
 		const isArray = Array.isArray(value);
 		const isDeptreeNode = value[symbols.type] === "deptreeNode";
@@ -129,12 +93,8 @@ export class DataView extends React.Component<
 						key={i}
 						name={i}
 						path={path.concat(["dependencies", i])}
+						accessors={accessors}
 						startOpen={startOpen}
-						getValueByPath={getValueByPath}
-						inspect={inspect}
-						stopInspecting={stopInspecting}
-						change={change}
-						showMenu={showMenu}
 						editable={editable}
 						ChildDataView={ChildDataView}
 						ChildDataItem={ChildDataItem}

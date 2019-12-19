@@ -366,8 +366,10 @@ export class PopoverTrigger extends Component<Partial<{onShown, children, placem
 			document.addEventListener("touchstart", this.handleFinishInteractionAnywhere, true);
 			document.addEventListener("click", this.handleFinishInteractionAnywhere, true);
 
-			window.addEventListener("resize", this.popup.reposition);
-			document.addEventListener("scroll", this.popup.reposition, true);
+			if (this.popup) {
+				window.addEventListener("resize", this.popup.reposition);
+				document.addEventListener("scroll", this.popup.reposition, true);
+			}
 
 			this.setState({shown: true}, this.props.onShown);
 		}
@@ -383,8 +385,10 @@ export class PopoverTrigger extends Component<Partial<{onShown, children, placem
 			document.body.removeChild(this.htmlPortal);
 			const idx = activeHtmlPortals.indexOf(this.htmlPortal);
 			if (idx !== -1) activeHtmlPortals.splice(idx, 1);
-			window.removeEventListener("resize", this.popup.reposition);
-			document.removeEventListener("scroll", this.popup.reposition, true);
+			if (this.popup) {
+				window.removeEventListener("resize", this.popup.reposition);
+				document.removeEventListener("scroll", this.popup.reposition, true);
+			}
 			unmountComponentAtNode(this.htmlPortal);
 			this.popup = undefined;
 			this.setState({shown: false});

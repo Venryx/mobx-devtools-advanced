@@ -123,13 +123,7 @@ export default onResult=>{
 	return {
 		handleUpdate(object) {
 			getPathsForObject(object).forEach(path=>{
-				// todo: have this handle complex paths, like "@@entries/entries()" in Map or Set
-				const node = path.reduce((acc, next)=>{
-					if (!acc[next]) {
-						acc[next] = {};
-					}
-					return acc[next];
-				}, inspectionTree);
+				const node = GetValueByPath(inspectionTree, path, true);
 				invalidatedNodes.add(node);
 				scheduleFlush();
 			});

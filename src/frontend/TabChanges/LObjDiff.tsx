@@ -3,12 +3,11 @@ import React from "react";
 import * as Aphrodite from "aphrodite";
 import {ChangeDataViewerPopover} from "./ChangeDataViewerPopover";
 import {Change} from "../../utils/changesProcessor";
+import {AccessorPack} from "../DataViewer/AccessorPack";
 
 const {css, StyleSheet} = Aphrodite;
 
-export class LObjDiff extends React.PureComponent<{
-	change: Change, path: any[], getValueByPath: (path: string[]) => any, inspect: (path: string[]) => void, stopInspecting: (path: string[]) => void, showMenu: (event, changeID: number, path: string[]) => void
-}> {
+export class LObjDiff extends React.PureComponent<{change: Change, accessors: AccessorPack, path: any[]}> {
 	getDiff() {
 		const {change} = this.props;
 		switch (change.type) {
@@ -44,6 +43,7 @@ export class LObjDiff extends React.PureComponent<{
 	}
 
 	render() {
+		const {accessors, path} = this.props;
 		const {added = [], removed = []} = this.getDiff();
 		return (
 			<div className={css(styles.container)}>
@@ -52,13 +52,7 @@ export class LObjDiff extends React.PureComponent<{
 						<div className={css(styles.diffRow, styles.removed)} key={i}>
 							<div className={css(styles.propName, styles.propNameRemoved)}>{diff.name}</div>
 							<div className={css(styles.propValue, styles.propValueRemoved)}>
-								<ChangeDataViewerPopover
-									path={this.props.path.concat(diff.path)}
-									getValueByPath={this.props.getValueByPath}
-									inspect={this.props.inspect}
-									stopInspecting={this.props.stopInspecting}
-									showMenu={this.props.showMenu}
-								/>
+								<ChangeDataViewerPopover accessors={accessors} path={path.concat(diff.path)}/>
 							</div>
 						</div>
 					))}
@@ -66,13 +60,7 @@ export class LObjDiff extends React.PureComponent<{
 						<div className={css(styles.diffRow, styles.added)} key={i}>
 							<div className={css(styles.propName, styles.propNameAdded)}>{diff.name}</div>
 							<div className={css(styles.propValue, styles.propValueAdded)}>
-								<ChangeDataViewerPopover
-									path={this.props.path.concat(diff.path)}
-									getValueByPath={this.props.getValueByPath}
-									inspect={this.props.inspect}
-									stopInspecting={this.props.stopInspecting}
-									showMenu={this.props.showMenu}
-								/>
+								<ChangeDataViewerPopover accessors={accessors} path={path.concat(diff.path)}/>
 							</div>
 						</div>
 					))}

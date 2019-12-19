@@ -2,19 +2,21 @@ import React from "react";
 import * as Aphrodite from "aphrodite";
 import {PreviewValue} from "../PreviewValue";
 import {symbols} from "../../Bridge";
+import {GetValueByPath} from "../../utils/General";
+import {ActionsStore} from "../stores/ActionsStore";
+import {AccessorPack} from "./AccessorPack";
+import {DataView} from "./DataView";
 
 const {css, StyleSheet} = Aphrodite;
 
 const truncate = str=>(str.length > 40 ? `${str.slice(0, 40)}…` : str);
 
-export class DataItem extends React.Component<
-	{
-		startOpen: boolean, name: string | number, path: string[], editable: boolean,
-		getValueByPath: (path: string[])=>any, change: (path: string[], newValue: any)=>void, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void,
-		showMenu: (event, value: any, path: string[])=>void, ChildDataView: any, ChildDataItem: any,
-	},
-	{open: boolean}
-> {
+export type DataItemProps = {
+	startOpen: boolean, name: string | number, editable: boolean,
+	path: string[], accessors: AccessorPack,
+	ChildDataView: new(..._)=>DataView, ChildDataItem: new(..._)=>DataItem,
+};
+export class DataItem extends React.Component<DataItemProps, {open: boolean}> {
 	constructor(props) {
 		super(props);
 		this.state = {open: Boolean(this.props.startOpen)};
@@ -22,7 +24,8 @@ export class DataItem extends React.Component<
 
 	value;
 	UNSAFE_componentWillMount() {
-		this.value = this.props.getValueByPath(this.props.path);
+		const {path, accessors} = this.props;
+		this.value = accessors.getValueByPath(path);
 		if (this.state.open && this.value && this.value[symbols.inspected] === false) {
 			this.setState({open: false});
 		} else if (!this.state.open && this.value && this.value[symbols.inspected] === true) {
@@ -30,8 +33,8 @@ export class DataItem extends React.Component<
 		}
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		this.value = nextProps.getValueByPath(nextProps.path);
+	UNSAFE_componentWillReceiveProps(nextProps: DataItemProps) {
+		this.value = nextProps.accessors.getValueByPath(nextProps.path);
 		if (this.state.open && this.value && this.value[symbols.inspected] === false) {
 			this.setState({open: false});
 		} else if (!this.state.open && this.value && this.value[symbols.inspected] === true) {
@@ -40,21 +43,23 @@ export class DataItem extends React.Component<
 	}
 
 	toggleOpen = ()=>{
+		const {path, accessors} = this.props;
 		if (this.state.open) {
 			this.setState({open: false});
 			if (this.value && this.value[symbols.inspected] === true) {
-				this.props.stopInspecting(this.props.path);
+				accessors.stopInspecting(path);
 			}
 		} else {
 			this.setState({open: true});
 			if (this.value && this.value[symbols.inspected] === false) {
-				this.props.inspect(this.props.path);
+				accessors.inspect(path);
 			}
 		}
 	};
 
 	toggleBooleanValue = e=>{
-		this.props.change(this.props.path, e.target.checked);
+		const {path, accessors} = this.props;
+		accessors.change(path, e.target.checked);
 	};
 
 	isSimple() {
@@ -76,8 +81,9 @@ export class DataItem extends React.Component<
 	}
 
 	handleContextMenu = e=>{
-		if (typeof this.props.showMenu === "function") {
-			this.props.showMenu(e, this.value, this.props.path);
+		const {accessors} = this.props;
+		if (typeof accessors.showMenu === "function") {
+			accessors.showMenu(e, this.value, this.props.path);
 		}
 	};
 
@@ -108,6 +114,7 @@ export class DataItem extends React.Component<
 	}
 
 	render() {
+		const {accessors, ChildDataView} = this.props;
 		const {value} = this;
 		const complex = !this.isSimple();
 
@@ -119,24 +126,14 @@ export class DataItem extends React.Component<
 						{truncate(this.props.name)}:
 					</div>
 					<div onContextMenu={this.handleContextMenu} className={css(styles.preview)} onClick={this.toggleOpen}>
-						<PreviewValue
-							editable={this.props.editable && this.isSimple()}
-							path={this.props.path}
-							data={value}
-							change={this.props.change}
-						/>
+						<PreviewValue accessors={accessors} path={this.props.path} editable={this.props.editable && this.isSimple()}/>
 					</div>
 				</div>
 				{complex && this.state.open && (
 					<div className={css(styles.children)}>
-						<this.props.ChildDataView
-							value={value}
+						<ChildDataView
+							accessors={accessors}
 							path={this.props.path}
-							getValueByPath={this.props.getValueByPath}
-							inspect={this.props.inspect}
-							stopInspecting={this.props.stopInspecting}
-							change={this.props.change}
-							showMenu={this.props.showMenu}
 							ChildDataView={this.props.ChildDataView}
 							ChildDataItem={this.props.ChildDataItem}
 						/>

@@ -8,6 +8,7 @@ import {LogItem} from "./LogItem";
 import {InjectStores} from "../../utils/InjectStores";
 import {Change} from "../../utils/changesProcessor";
 import {GetValueByPath} from "../../utils/General";
+import {ChangeAccessorPack} from "../DataViewer/AccessorPack";
 
 const {css, StyleSheet} = Aphrodite;
 const ITEM_HEIGHT = 24;
@@ -96,16 +97,8 @@ export class Log extends React.Component<
 		if (!change.height) change.height = ITEM_HEIGHT;
 		return (
 			<div style={style} key={id}>
-				<LogItem
-					getValueByPath={path=>this.props.getValueByPath(change.id, path)}
-					inspect={path=>this.props.inspect(change.id, path)}
-					stopInspecting={path=>this.props.stopInspecting(change.id, path)}
-					showMenu={(e, _val, path)=>this.props.showMenu(e, change.id, path)}
-					rootChange={change}
-					change={change}
-					onHeightUpdate={()=>this.list && this.list.recomputeRowHeights(index)}
-					preferredHeight={ITEM_HEIGHT}
-				/>
+				<LogItem accessors={new ChangeAccessorPack(id)} path={[]} rootChange={change} change={change}
+					onHeightUpdate={()=>this.list && this.list.recomputeRowHeights(index)} preferredHeight={ITEM_HEIGHT}/>
 			</div>
 		);
 	};
