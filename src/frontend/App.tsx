@@ -16,7 +16,7 @@ declare global {
 	const document: any;
 	const navigator: any;*/
 
-	let bridge_: Bridge;
+	//let bridge_: Bridge;
 	let $$frontendStores$$;
 }
 
@@ -52,7 +52,7 @@ export class App extends React.PureComponent<
 		this.props.inject((wall, teardownWall)=>{
 			this.$teardownWall = teardownWall;
 			const bridge = new Bridge(wall);
-			window["bridge_"] = bridge; // custom
+			//window["bridge_"] = bridge; // custom
 
 			this.$disposables.push(
 				bridge.sub("capabilities", ({mobxFound})=>{

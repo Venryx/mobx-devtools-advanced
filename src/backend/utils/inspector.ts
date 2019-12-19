@@ -79,7 +79,7 @@ export default onResult=>{
 		}
 	};
 
-	const allowChildren = node=>{
+	/*const allowChildren = node=>{
 		for (const p in node) {
 			if (Object.prototype.hasOwnProperty.call(node, p)) {
 				const obj = getObjectForPath(node[p][PATH]);
@@ -87,7 +87,7 @@ export default onResult=>{
 				allowChildren(node[p]);
 			}
 		}
-	};
+	};*/
 
 	const flush = ()=>{
 		if (invalidatedNodes.size === 0) return;
@@ -98,7 +98,7 @@ export default onResult=>{
 			}
 		});
 		invalidatedNodes.forEach(node=>{
-			allowChildren(node);
+			//allowChildren(node);
 			fireResult(node[PATH], getObjectForPath(node[PATH]));
 		});
 		invalidatedNodes.clear();
@@ -115,8 +115,10 @@ export default onResult=>{
 
 	const fireResult = (path, data)=>{
 		if (data && typeof data === "object") {
+			console.log("Marking obj directly-inspected:", data);
 			allowedComplexObjects.add(data);
 		}
+		console.log("About to send inspection obj:", path, data);
 		onResult({inspectedObject, data, path});
 	};
 
@@ -133,7 +135,7 @@ export default onResult=>{
 				const data = getObjectForPath(path);
 				const node = getNodeForPath(path);
 				rememberPath(path, data);
-				allowChildren(node);
+				//allowChildren(node);
 				fireResult(path, data);
 			}
 		},

@@ -1,7 +1,8 @@
 import React from "react";
 import * as Aphrodite from "aphrodite";
-import {Text, CheckBox} from "react-vcomponents";
+import {Text, CheckBox, Spinner} from "react-vcomponents";
 import {ModifyString, CE} from "js-vextensions";
+import {observer} from "mobx-react";
 import SecondaryPanel from "../SecondaryPanel";
 import ButtonRecord from "../SecondaryPanel/ButtonRecord";
 import ButtonClear from "../SecondaryPanel/ButtonClear";
@@ -10,6 +11,7 @@ import {InjectStores} from "../../utils/InjectStores";
 import {InputSearch} from "../SecondaryPanel/InputSearch";
 import {Change_types, Change, ChangeType} from "../../utils/changesProcessor";
 import {ActionsStore} from "../stores/ActionsStore";
+import {store} from "../Store";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -38,6 +40,7 @@ const {css, StyleSheet} = Aphrodite;
 		},
 	}),
 })
+@observer
 export class TabChanges extends React.PureComponent<
 	{} & Partial<{
 		store: ActionsStore,
@@ -58,6 +61,8 @@ export class TabChanges extends React.PureComponent<
 					<ButtonRecord active={logEnabled} onClick={toggleLogging} showTipStartRecoding={!logEnabled && logItemsIds.length === 0}/>
 					<ButtonClear onClick={clearLog} />
 					<InputSearch searchText={searchText} changeSearch={setSearchText}/>
+					<Text ml={5}>Auto-serialize depth:</Text>
+					<Spinner min={0} max={500} value={store.autoSerializeDepth} onChange={val=>store.autoSerializeDepth = val}/>
 					<Text ml={5}>Types:</Text>
 					{Change_types.map(type=>{
 						const typeStr = ModifyString(type, {firstLower_to_upper: true, hyphenLower_to_hyphenUpper: true});

@@ -1,12 +1,20 @@
+// I'm assuming this file is for if the app page wants to manually control initialization of the backend / connection to the dev-tools frontend?
+// Anyway, it's not used in the default setup. (just installing devtools, without [app/project]-specific setup)
+
 import {parse, stringify} from "flatted";
 import {InitBackend} from "../../../src/backend";
-import {Bridge} from "../../../src/Bridge";
+import {Bridge, SerializeOptions} from "../../../src/Bridge";
 import debugConnection from "../../../src/utils/debugConnection";
-
 import installGlobalHook from "../../../src/backend/utils/installGlobalHook";
 
 installGlobalHook(window);
 const hook = window["__MOBX_DEVTOOLS_GLOBAL_HOOK__"]; // eslint-disable-line no-underscore-dangle
+
+// not recommended to use mobx store in backend; it creates another instance in page, which can cause conflicts
+/*export class BackendStore {
+	@observable autoSerializeDepth: number;
+}
+export const backendStore = new BackendStore();*/
 
 declare var __DEV__;
 export function connectToDevTools(options) {
@@ -37,6 +45,13 @@ export function connectToDevTools(options) {
 			listeners.forEach(listener=>window.removeEventListener("message", listener));
 			listeners = [];
 			disposeBackend();
+		});
+
+		console.log("Test1");
+		bridge.sub("notify-settings", (settings: SerializeOptions)=>{
+			//backendStore.autoSerializeDepth = settings.autoSerializeDepth;
+			bridge.serializeOptions.autoSerializeDepth = settings.autoSerializeDepth;
+			console.log("Auto-serialize depth set on backend to:", settings.autoSerializeDepth);
 		});
 	};
 

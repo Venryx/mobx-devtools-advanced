@@ -145,6 +145,12 @@ export class DataView extends React.Component<
 			);
 		}
 
+		/*const ancestors = path.map((segment, index)=>{
+			const pathToAncestor = path.slice(0, index + 1);
+			return accessors.getValueByPath(pathToAncestor);
+		});
+		const inspecting = value[symbols.inspected] == true || ancestors.find(a=>a[symbols.inspected]);*/
+
 		return (
 			<ul className={`${css(styles.container)} ${className}`}>
 				{/* {value[symbols.proto] && ( */}
@@ -163,7 +169,7 @@ export class DataView extends React.Component<
 				{/* ChildDataItem={ChildDataItem} */}
 				{/* /> */}
 				{/* )} */}
-				{value[symbols.inspected] == true && "(Note: Displaying current data, not the data when the Change occurred."}
+				{/*inspecting && "(Note: Displaying current data, not the data when the Change occurred.)"*/}
 				{elements}
 			</ul>
 		);

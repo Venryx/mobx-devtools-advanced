@@ -10,6 +10,7 @@ import SplitPane from "../SplitPane";
 import Breadcrumb from "./TreeView/Breadcrumb";
 import {TreeComponentExplorer} from "./TreeComponentExplorer";
 import {CompTreeNode} from "../../backend/mobxReactNodesTree_new";
+import {Bridge} from "../../Bridge";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -61,8 +62,8 @@ export default class TabComponents extends React.PureComponent<{pickingComponent
 					/>
 					<SearchComponents />*/}
 					<Button ml={5} text="Refresh" onClick={()=>{
-						bridge_.send("backend:getCompTree");
-						bridge_.once("frontend:receiveCompTree", ({compTree: newCompTree})=>{
+						Bridge.main.send("backend:getCompTree");
+						Bridge.main.once("frontend:receiveCompTree", ({compTree: newCompTree})=>{
 							RehydrateCompTree(newCompTree);
 							console.log("Got comp tree:", newCompTree);
 							this.setState({compTree: newCompTree});

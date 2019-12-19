@@ -8,6 +8,7 @@ import {DataViewer} from "../../DataViewer";
 import {store} from "../../Store";
 import {TreeExplorerStore} from "../../stores/TreeExplorerStore";
 import {RawAccessorPack} from "../../DataViewer/AccessorPack";
+import {Bridge} from "../../../Bridge";
 
 type State = {data: any};
 
@@ -40,8 +41,8 @@ export class TreeComponentExplorer extends Component<{treeStore?: TreeExplorerSt
 
 	RefreshData() {
 		this.setState({data: null}); // clear data, till new data comes
-		bridge_.send("backend:GetMobXObjectData", {path: store.selectedMobXObjectPath});
-		bridge_.once("frontend:ReceiveMobXObjectData", ({data})=>{
+		Bridge.main.send("backend:GetMobXObjectData", {path: store.selectedMobXObjectPath});
+		Bridge.main.once("frontend:ReceiveMobXObjectData", ({data})=>{
 			//this.setState({dataStr: JSON.stringify(data, null, 2)});
 			this.setState({data});
 		});

@@ -1,3 +1,4 @@
+import {E} from "js-vextensions";
 import {_path} from "./utils/changesProcessor";
 import {GetValueByPath} from "./utils/General";
 
@@ -19,10 +20,23 @@ export const symbols = {
 	serializationException: "@@serializationException",
 };
 
-export function Serialize(data, path = [], seen = new Map(), propToExtract?, sendFull = false) {
+export class SerializeOptions {
+	autoSerializeDepth? = 5;
+}
+export class SerializeExtras {
+	propToExtract?: string;
+	sendFull?: boolean;
+	inspecting?: boolean;
+	changeData_pathInSerializeRoot?: string[];
+	changeData_pathInChange?: string[];
+}
+export function Serialize(opt: SerializeOptions, data, path = [] as string[], seen = new Map(), extras?: SerializeExtras) {
+	opt = Object.assign(new SerializeOptions(), opt);
+	extras = extras || {};
+
 	try {
-		if (propToExtract !== undefined) {
-			data = data[propToExtract]; // eslint-disable-line no-param-reassign
+		if (extras.propToExtract != null) {
+			data = data[extras.propToExtract]; // eslint-disable-line no-param-reassign
 		}
 		if (!data || typeof data !== "object") {
 			// custom removed
@@ -54,13 +68,32 @@ export function Serialize(data, path = [], seen = new Map(), propToExtract?, sen
 
 		// start non-cached serializing
 		const prototype = Object.getPrototypeOf(data);
-		const inspecting = allowedComplexObjects.has(data);
+		const directlyInspecting = allowedComplexObjects.has(data);
+		const inspecting = extras.inspecting || directlyInspecting;
+		//const serializingData = inAutoSerializeDepth || inspecting;
+		//let withinChange = extras.changeData_pathInSerializeRoot != null && path.slice(0, extras.changeData_pathInSerializeRoot.length).every((segment, index)=>segment == extras.changeData_pathInSerializeRoot[index]);
+		let serializingData;
+		const withinChange = extras.changeData_pathInSerializeRoot != null && path.join("/").startsWith(extras.changeData_pathInSerializeRoot.join("/"));
+		if (withinChange) {
+			const pathInChangeData = path.slice(extras.changeData_pathInChange.length);
+			const pathInChange = extras.changeData_pathInChange.concat(pathInChangeData);
+			var inAutoSerializeDepth = pathInChange.length <= opt.autoSerializeDepth;
+			serializingData = inAutoSerializeDepth || directlyInspecting; // if past auto-serialize depth, only serialize one new layer at a time
+		} else {
+			serializingData = path.length <= opt.autoSerializeDepth;
+		}
+		const childExtras_base = E(extras, {propToExtract: null, inspecting});
+		if (directlyInspecting) {
+			console.log("While serializing, found directlyInspecting data:", data, path, [...allowedComplexObjects.keys()]);
+		} else {
+			console.log("While serializing, found NOT directlyInspecting data:", data, path, [...allowedComplexObjects.keys()]);
+		}
 
 		// custom
 		if (data._serialize) {
 			return data._serialize(path, seen);
 		}
-		if (sendFull || data._sendFull || (prototype && prototype.constructor._sendFull)) {
+		if (extras.sendFull || data._sendFull || (prototype && prototype.constructor._sendFull)) {
 			if (typeof data == "object") {
 				// temp
 				//if (path.length > 10) return `Path too deep. @type(${data.constructor.name}) @keys(${Object.keys(data).join(",")})`;
@@ -68,7 +101,7 @@ export function Serialize(data, path = [], seen = new Map(), propToExtract?, sen
 				const clone = data instanceof Array ? [] : {};
 				for (const prop in data) {
 					if (Object.prototype.hasOwnProperty.call(data, prop)) {
-						clone[prop] = Serialize(data, path.concat(prop), seen, prop, true);
+						clone[prop] = Serialize(opt, data, path.concat(prop), seen, E(childExtras_base, {propToExtract: prop, sendFull: true}));
 					}
 				}
 				// special keys to copy, even though non-enumerable
@@ -83,83 +116,82 @@ export function Serialize(data, path = [], seen = new Map(), propToExtract?, sen
 		}
 
 		if (data instanceof Array) {
-			return data.map((o, i)=>Serialize(o, path.concat(i), seen));
+			return data.map((o, i)=>Serialize(opt, o, path.concat(`${i}`), seen, childExtras_base));
+		}
+
+		// object-like (meaning we can add metadata)
+		// ==========
+
+		const result = {
+			[symbols.name]: data.constructor && data.constructor.name,
+			[symbols.mobxObject]: "$mobx" in data,
+		};
+		const complexObject = prototype && prototype !== Object.prototype;
+		//const canBeInspected = complexObject || !inAutoSerializeDepth;
+		const canBeInspected = withinChange && !inAutoSerializeDepth;
+		// if can be inspected, we need to signify that by adding the "@@inspected" key, even if its value is false atm
+		if (canBeInspected) {
+			console.log("While serializing, found canBeInspected data:", data, "directlyInspecting", directlyInspecting);
+			Object.assign(result, {
+				[symbols.inspected]: directlyInspecting,
+			});
 		}
 
 		if (data instanceof Map || (prototype && prototype.isMobXObservableMap)) {
-			const result = {
+			Object.assign(result, {
 				[symbols.type]: "map",
-				[symbols.name]: data.constructor && data.constructor.name,
-				[symbols.inspected]: inspecting,
 				[symbols.editable]: false, // TODO: figure out the way to edit maps
-				[symbols.mobxObject]: "$mobx" in data,
-			};
-			//if (inspecting) {
-			result[symbols.entries] = [...(data as Map<any, any>).entries()].map(([key, value], i)=>{
-				//console.log("Serializing Map entry...");
-				return [
-					Serialize(key, path.concat(symbols.entries, i, 0), seen),
-					Serialize(value, path.concat(symbols.entries, i, 1), seen),
-				];
 			});
-			//}
-			return result;
-		}
-
-		if (data instanceof Set || (prototype && prototype.isMobXObservableSet)) {
-			const result = {
+			if (serializingData) {
+				result[symbols.entries] = [...(data as Map<any, any>).entries()].map(([key, value], i)=>{
+					//console.log("Serializing Map entry...");
+					return [
+						Serialize(opt, key, path.concat(symbols.entries, `${i}`, "0"), seen, childExtras_base),
+						Serialize(opt, value, path.concat(symbols.entries, `${i}`, "1"), seen, childExtras_base),
+					];
+				});
+			}
+		} else if (data instanceof Set || (prototype && prototype.isMobXObservableSet)) {
+			Object.assign(result, {
 				[symbols.type]: "set",
-				[symbols.name]: data.constructor && data.constructor.name,
-				[symbols.inspected]: inspecting,
 				[symbols.editable]: false, // TODO: figure out the way to edit sets
-				[symbols.mobxObject]: "$mobx" in data,
-			};
-			//if (inspecting) {
-			result[symbols.entries] = [...(data as Set<any>).entries()].map(([key, value], i)=>{
-				return [
-					Serialize(key, path.concat(symbols.entries, i, 0), seen),
-					Serialize(value, path.concat(symbols.entries, i, 1), seen),
-				];
 			});
-			//}
-			return result;
-		}
-
-		if (prototype && prototype !== Object.prototype) {
-			// This is complex object (dom node or mobx.something)
-			// only short signature will be sent to prevent performance loss
-			const result = {
+			if (serializingData) {
+				result[symbols.entries] = [...(data as Set<any>).entries()].map(([key, value], i)=>{
+					return [
+						Serialize(opt, key, path.concat(symbols.entries, `${i}`, "0"), seen, childExtras_base),
+						Serialize(opt, value, path.concat(symbols.entries, `${i}`, "1"), seen, childExtras_base),
+					];
+				});
+			}
+		} else {
+			//const complexObject = prototype && prototype !== Object.prototype;
+			Object.assign(result, {
 				[symbols.type]: "object",
-				[symbols.name]: data.constructor && data.constructor.name,
-				[symbols.inspected]: inspecting,
-				[symbols.editable]: true,
-				[symbols.mobxObject]: "$mobx" in data,
-				[symbols.proto]: {
-					[symbols.type]: "object",
-					[symbols.name]: prototype.constructor && prototype.constructor.name,
-					[symbols.inspected]: false,
-					[symbols.editable]: false,
-				},
-			};
-			//if (inspecting) {
-			for (const p in data) {
-				if (Object.prototype.hasOwnProperty.call(data, p)) {
-					result[p] = Serialize(data, path.concat(p), seen, p);
+			});
+			// If value is complex object (dom node or mobx.something), add some extra metadata
+			if (complexObject) {
+				Object.assign(result, {
+					//[symbols.type]: "object",
+					[symbols.editable]: true,
+					[symbols.proto]: {
+						[symbols.type]: "object",
+						[symbols.name]: prototype.constructor && prototype.constructor.name,
+						[symbols.inspected]: false,
+						[symbols.editable]: false,
+					},
+				});
+			}
+			if (serializingData) {
+				for (const key in data) {
+					if (Object.prototype.hasOwnProperty.call(data, key)) {
+						result[key] = Serialize(opt, data, path.concat(key), seen, E(childExtras_base, {propToExtract: key}));
+					}
 				}
 			}
-			//}
-			return result;
 		}
 
-		const clone = {};
-		for (const prop in data) {
-			if (Object.prototype.hasOwnProperty.call(data, prop)) {
-				clone[prop] = Serialize(data, path.concat(prop), seen, prop);
-			}
-		}
-		// special keys to copy, even though non-enumerable
-		//if (data[_path]) clone["_path"] = data[_path];
-		return clone;
+		return result;
 	} catch (error) {
 		return {
 			[symbols.type]: "serializationError",
@@ -213,14 +245,19 @@ const requestIdleCallback = window["requestIdleCallback"]
 	};
 
 export class Bridge {
+	//@observable static main: Bridge;
+	static main: Bridge;
+
 	$listeners = [];
 
 	$buffer = [];
 
 	$wall;
 	serialize = Serialize;
+	serializeOptions = new SerializeOptions();
 	deserialize = Deserialize;
 	constructor(wall) {
+		Bridge.main = this;
 		this.$wall = wall;
 		wall.listen(this.$handleMessage.bind(this));
 	}
@@ -301,10 +338,17 @@ export class Bridge {
 	}
 
 	flushBufferSlice(bufferSlice) {
-		const events = bufferSlice.map(({eventName, eventData})=>({
-			eventName,
-			eventData: this.serialize(eventData),
-		}));
+		const events = bufferSlice.map(({eventName, eventData})=>{
+			const extras = {} as SerializeExtras;
+			if (eventName == "inspect-change-result") {
+				extras.changeData_pathInSerializeRoot = ["data"];
+				extras.changeData_pathInChange = eventData.path;
+			}
+			return {
+				eventName,
+				eventData: this.serialize(this.serializeOptions, eventData, undefined, undefined, extras),
+			};
+		});
 		this.$wall.send({type: "many-events", events});
 	}
 

@@ -1,5 +1,6 @@
 import React from "react";
 import * as Aphrodite from "aphrodite";
+import {symbol} from "prop-types";
 import {PreviewValue} from "../PreviewValue";
 import {symbols} from "../../Bridge";
 import {GetValueByPath} from "../../utils/General";
@@ -114,9 +115,15 @@ export class DataItem extends React.Component<DataItemProps, {open: boolean}> {
 	}
 
 	render() {
-		const {accessors, ChildDataView} = this.props;
+		const {accessors, path, ChildDataView} = this.props;
 		const {value} = this;
 		const complex = !this.isSimple();
+
+		const ancestors = path.slice(0, path.length - 1).map((segment, index)=>{
+			const pathToAncestor = path.slice(0, index + 1);
+			return accessors.getValueByPath(pathToAncestor);
+		});
+		const inspecting = (value != null && value[symbols.inspected] == true) || ancestors.find(a=>a[symbols.inspected] == true);
 
 		return (
 			<li>
@@ -126,9 +133,11 @@ export class DataItem extends React.Component<DataItemProps, {open: boolean}> {
 						{truncate(this.props.name)}:
 					</div>
 					<div onContextMenu={this.handleContextMenu} className={css(styles.preview)} onClick={this.toggleOpen}>
+						{inspecting && <span title="Displaying current data, *not* the data when the change occurred. (based on auto-serialize depth)">⚠️</span>}
 						<PreviewValue accessors={accessors} path={this.props.path} editable={this.props.editable && this.isSimple()}/>
 					</div>
 				</div>
+				{/*inspecting && <div style={{marginLeft: "0.75rem"}}>(Note: Displaying current data, not the data when the Change occurred.)</div>*/}
 				{complex && this.state.open && (
 					<div className={css(styles.children)}>
 						<ChildDataView

@@ -5,7 +5,7 @@
  */
 
 import {InitBackend} from "../../backend";
-import {Bridge} from "../../Bridge";
+import {Bridge, SerializeOptions} from "../../Bridge";
 import debugConnection from "../../utils/debugConnection";
 
 const backendId = Math.random()
@@ -48,6 +48,13 @@ function handshake(hook, contentScriptId) {
 		listeners.forEach(listener=>window.removeEventListener("message", listener));
 		listeners = [];
 		disposeBackend();
+	});
+
+	console.log("Test2");
+	bridge.sub("notify-settings", (settings: SerializeOptions)=>{
+		//backendStore.autoSerializeDepth = settings.autoSerializeDepth;
+		bridge.serializeOptions.autoSerializeDepth = settings.autoSerializeDepth;
+		console.log("Auto-serialize depth set on backend2 to:", settings.autoSerializeDepth);
 	});
 }
 

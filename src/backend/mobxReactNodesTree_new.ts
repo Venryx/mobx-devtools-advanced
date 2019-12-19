@@ -32,7 +32,7 @@ export class CompTreeNode {
 		for (const prop in this) {
 			if (prop == "fiber") continue; // custom
 			if (Object.prototype.hasOwnProperty.call(this, prop)) {
-				clone[prop] = Serialize(this, path.concat(prop), seen, prop, true);
+				clone[prop] = Serialize({}, this, path.concat(prop), seen, {propToExtract: prop, sendFull: true});
 			}
 		}
 		return clone;
