@@ -1,9 +1,9 @@
-import makeChangesProcessor, {Change} from "../utils/changesProcessor";
+import {MakeChangesProcessor, Change, _path} from "../utils/changesProcessor";
 import consoleLogChange from "./utils/consoleLogChange";
 import makeInspector from "./utils/inspector";
 import storaTempValueInGlobalScope from "./utils/storaTempValueInGlobalScope";
 
-const summary = (change: Change)=>{
+function GetChangeSummary(change: Change) {
 	const sum = Object.create(null) as Change;
 	sum.summary = true;
 	sum.id = change.id;
@@ -17,10 +17,15 @@ const summary = (change: Change)=>{
 	sum.addedCount = change.addedCount;
 	sum.removedCount = change.removedCount;
 	sum.object = change.object;
+	console.log("Checking for2:", change);
+	if (change.object != null && typeof change.object == "object" && change.object[_path] != null) {
+		console.log(`Found _path: ${change.object[_path]}`);
+		sum[_path] = change.object[_path];
+	}
 	return sum;
-};
+}
 
-export default (bridge, hook)=>{
+export function InitMobxLogBackend(bridge, hook) {
 	let logEnabled = false;
 	let consoleLogEnabled = false;
 	const logFilter = undefined;
@@ -31,7 +36,7 @@ export default (bridge, hook)=>{
 		bridge.send("inspect-change-result", {changeId: inspectedObject.id, path, data});
 	});
 
-	const changesProcessor = makeChangesProcessor(change=>{
+	const changesProcessor = MakeChangesProcessor(change=>{
 		if (logFilter) {
 			try {
 				const accept = logFilter(change);
@@ -43,7 +48,7 @@ export default (bridge, hook)=>{
 		if (logEnabled) {
 			if (change) {
 				itemsById[change.id] = change;
-				bridge.send("appended-log-item", summary(change));
+				bridge.send("appended-log-item", GetChangeSummary(change));
 			}
 		}
 		if (consoleLogEnabled) {
@@ -119,4 +124,4 @@ export default (bridge, hook)=>{
 			disposables.forEach(fn=>fn());
 		},
 	};
-};
+}

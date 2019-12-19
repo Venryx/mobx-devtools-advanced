@@ -227,7 +227,7 @@ class PopoverBubble extends Component<Partial<{placement, withArrow, triggerHtml
 }
 
 // eslint-disable-next-line react/no-multi-comp
-export default class PopoverTrigger extends Component<Partial<{onShown, children, placement, content, withArrow, requireClick, shown, className}>, {hovered: boolean, bubbleHovered: boolean, shown: boolean}> {
+export class PopoverTrigger extends Component<Partial<{onShown, children, placement, content, withArrow, requireClick, shown, className}>, {hovered: boolean, bubbleHovered: boolean, shown: boolean}> {
 	static propTypes = {
 		onShown: PropTypes.func,
 		children: PropTypes.node,

@@ -87,19 +87,55 @@ export type Change = Partial<
 	}
 >;
 
-export default (onChange: (change: Change)=>void)=>{
+function ProcessChange(change: Change) {
+	if (change.type == "add" || change.type == "update") {
+		if (typeof change.newValue == "object" && change.newValue != null) {
+			/*if (change.oldValue["_path"]) {
+				delete change.oldValue["_path"];
+			}*/
+			const objPath = change.object[_path] || [];
+			//const newValuePath = objPath.concat(change.name);
+			const newValuePath = objPath.concat(change["key"] || "n/a");
+			console.log(`Storing _path: ${newValuePath} on:`, change.newValue, "Change:", change);
+			//console.log(`Storing _path: ${newValuePath} on:`, change.newValue);
+			Object.defineProperty(change.newValue, _path, {configurable: true, value: newValuePath});
+			// temp
+			//Object.defineProperty(change.newValue, "__path", {configurable: true, enumerable: true, value: newValuePath});
+			//Object.defineProperty(change.newValue, "__path", {configurable: true, enumerable: true, value: newValuePath.join("/")});
+			//Object.defineProperty(change.newValue, "__path", {configurable: true, value: newValuePath.join("/")});
+			//change.newValue["__path"] = newValuePath.join("/");
+			change["object_path"] = objPath.join("/");
+			change["newValue_path"] = newValuePath.join("/");
+		}
+	}
+	//console.log("Children:", change.children);
+	if (change.children != null) {
+		for (const child of change.children) {
+			//console.log("Looping into:", child);
+			ProcessChange(child);
+		}
+	}
+}
+
+export const _path = Symbol("_path");
+
+export function MakeChangesProcessor(onChange: (change: Change)=>void) {
 	let path = [];
 
-	const push = (_change: Change, mobx: MobX)=>{
+	const push = (change_basic: Change, mobx: MobX)=>{
 		const change = Object.create(null) as Change;
-		for (const p in _change) {
-			if (Object.prototype.hasOwnProperty.call(_change, p)) {
-				change[p] = _change[p];
+		for (const p in change_basic) {
+			if (Object.prototype.hasOwnProperty.call(change_basic, p)) {
+				change[p] = change_basic[p];
 			}
 		}
 		change.id = getId();
 		change.timestamp = Date.now();
 		change.children = [];
+
+		console.log("Change:", change);
+		/*ProcessChange(change);
+		setTimeout(()=>ProcessChange(change));*/
 
 		const isGroupStart = change.spyReportStart === true;
 		const isGroupEnd = change.spyReportEnd === true;
@@ -199,4 +235,4 @@ export default (onChange: (change: Change)=>void)=>{
 	};
 
 	return {push, reset};
-};
+}

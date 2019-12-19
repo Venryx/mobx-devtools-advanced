@@ -1,7 +1,6 @@
-/* eslint-disable react/no-array-index-key */
 import React from "react";
-import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
+import {Assert} from "js-vextensions";
 import {symbols} from "../../Bridge";
 import Spinner from "../Spinner";
 
@@ -18,51 +17,86 @@ const renderSparseArrayHole = (count, key)=>(
 	</li>
 );
 
-export class DataView extends React.Component<
-	Partial<{
-		startOpen, change, className, path, getValueByPath, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void, showMenu, noSort, hiddenKeysRegex, ChildDataView, ChildDataItem}
-	>
-> {
-	static propTypes = {
-		startOpen: PropTypes.bool,
-		change: PropTypes.func,
-		className: PropTypes.string,
-		path: PropTypes.array.isRequired,
-		getValueByPath: PropTypes.func,
-		inspect: PropTypes.func,
-		stopInspecting: PropTypes.func,
-		showMenu: PropTypes.func,
-		noSort: PropTypes.func,
-		hiddenKeysRegex: PropTypes.instanceOf(RegExp),
-		ChildDataView: PropTypes.func.isRequired,
-		ChildDataItem: PropTypes.func.isRequired,
+export function FinalizeDataViewerDataProps({path, getValueByPath, data}: Pick<React.ComponentProps<typeof DataView>, "path" | "getValueByPath" | "data">) {
+	if (path != null && getValueByPath != null) {
+		return {path, getValueByPath}; //, data};
+	}
+	if (data !== undefined) {
+		Assert(path == null, "If data prop supplied, path must be null.");
+		Assert(getValueByPath == null, "If data prop supplied, getValueByPath must be null.");
+		return {
+			path: [],
+			getValueByPath: path=>path.reduce((acc, next)=>acc && acc[next], data),
+			//data: undefined,
+		};
+	}
+	return {
+		path: [],
+		getValueByPath: path=>null,
+		//data: undefined,
 	};
+}
+/*export function CreateHelpers(changeID: number, path: string[]) {
+	if (changeID != null) {
+		const data = ActionsStore.main.logItemsById[changeID];
+		return {
+			getValueByPath: path=>path.reduce((acc, next)=>acc && acc[next], data),
+			inspect: path=>ActionsStore.main.inspect(changeID, path),
+			stopInspecting: path=>ActionsStore.main.stopInspecting(changeID, path),
+		};
+	}
+}*/
 
-	renderItem(name, key, editable, path?) {
+export class DataView extends React.Component<
+	{
+		startOpen?: boolean, change?: (path: string[], value: any)=>void,
+		// data, option 1 (if one is present, all must be)
+		path?: any[], getValueByPath?: (path)=>any, inspect?: (path: string[])=>void, stopInspecting?: (path: string[])=>void,
+		// data, option 2
+		data?: any,
+		className?: string, showMenu?: (event, value: any, path: string[])=>void,
+		noSort?: boolean, hiddenKeysRegex?: RegExp, ChildDataView: any, ChildDataItem: any
+	}
+> {
+	/*_helpers: ReturnType<typeof CreateHelpers>;
+	get helpers() {
+		const {changeID, path} = this.props;
+		if (this._helpers == null) {
+			this._helpers = CreateHelpers(changeID, path);
+		}
+		return this._helpers;
+	}*/
+
+	renderItem(name, key, editable, subpath?) {
+		let {startOpen, inspect, stopInspecting, change, showMenu, path, getValueByPath, data, ChildDataView, ChildDataItem} = this.props;
+		({path, getValueByPath} = FinalizeDataViewerDataProps({path, getValueByPath, data}));
 		return (
-			<this.props.ChildDataItem
+			<ChildDataItem
 				key={key}
 				name={name}
-				path={path || this.props.path.concat([name])}
-				startOpen={this.props.startOpen}
-				getValueByPath={this.props.getValueByPath}
-				inspect={this.props.inspect}
-				stopInspecting={this.props.stopInspecting}
-				change={this.props.change}
-				showMenu={this.props.showMenu}
+				path={subpath || path.concat([name])}
+				startOpen={startOpen}
+				getValueByPath={getValueByPath}
+				inspect={inspect}
+				stopInspecting={stopInspecting}
+				change={change}
+				showMenu={showMenu}
 				editable={editable}
-				ChildDataView={this.props.ChildDataView}
-				ChildDataItem={this.props.ChildDataItem}
+				ChildDataView={ChildDataView}
+				ChildDataItem={ChildDataItem}
 			/>
 		);
 	}
 
 	render() {
-		const value = this.props.getValueByPath(this.props.path);
+		let {startOpen, inspect, stopInspecting, change, showMenu, path, getValueByPath, data, ChildDataView, ChildDataItem, noSort, hiddenKeysRegex, className} = this.props;
+		({path, getValueByPath} = FinalizeDataViewerDataProps({path, getValueByPath, data}));
+
+		const value = getValueByPath(path);
 		if (value == null) {
 			return <div className={css(styles.missing)}>null</div>;
 		}
-		const editable = this.props.change && value[symbols.editable] === true;
+		const editable = change && value[symbols.editable] === true;
 
 		const isArray = Array.isArray(value);
 		const isDeptreeNode = value[symbols.type] === "deptreeNode";
@@ -89,41 +123,41 @@ export class DataView extends React.Component<
 		} else if (isDeptreeNode) {
 			value.dependencies.forEach((node, i)=>{
 				elements.push(
-					<this.props.ChildDataItem
+					<ChildDataItem
 						key={i}
 						name={i}
-						path={this.props.path.concat(["dependencies", i])}
-						startOpen={this.props.startOpen}
-						getValueByPath={this.props.getValueByPath}
-						inspect={this.props.inspect}
-						stopInspecting={this.props.stopInspecting}
-						change={this.props.change}
-						showMenu={this.props.showMenu}
+						path={path.concat(["dependencies", i])}
+						startOpen={startOpen}
+						getValueByPath={getValueByPath}
+						inspect={inspect}
+						stopInspecting={stopInspecting}
+						change={change}
+						showMenu={showMenu}
 						editable={editable}
-						ChildDataView={this.props.ChildDataView}
-						ChildDataItem={this.props.ChildDataItem}
+						ChildDataView={ChildDataView}
+						ChildDataItem={ChildDataItem}
 					/>,
 				);
 			});
 		} else if (isMap) {
 			if (value[symbols.entries]) {
 				value[symbols.entries].forEach(([key], i)=>elements.push(
-					this.renderItem(key, key, editable, this.props.path.concat([symbols.entries, i, 1])),
+					this.renderItem(key, key, editable, path.concat([symbols.entries, i, 1])),
 				));
 			}
 		} else if (isSet) {
 			if (value[symbols.entries]) {
 				value[symbols.entries].forEach(([key], i)=>elements.push(
-					this.renderItem(key, key, editable, this.props.path.concat([symbols.entries, i, 1])),
+					this.renderItem(key, key, editable, path.concat([symbols.entries, i, 1])),
 				));
 			}
 		} else {
 			// Iterate over a regular object
 			let names = Object.keys(value).filter(n=>n[0] !== "@" || n[1] !== "@");
-			if (this.props.hiddenKeysRegex) {
-				names = names.filter(n=>!this.props.hiddenKeysRegex.test(n));
+			if (hiddenKeysRegex) {
+				names = names.filter(n=>!hiddenKeysRegex.test(n));
 			}
-			if (!this.props.noSort) {
+			if (!noSort) {
 				names.sort(alphanumericSort);
 			}
 			names.forEach(name=>elements.push(this.renderItem(name, name, editable)));
@@ -150,21 +184,21 @@ export class DataView extends React.Component<
 		}
 
 		return (
-			<ul className={`${css(styles.container)} ${this.props.className}`}>
+			<ul className={`${css(styles.container)} ${className}`}>
 				{/* {value[symbols.proto] && ( */}
-				{/* <this.props.ChildDataItem */}
+				{/* <ChildDataItem */}
 				{/* key={symbols.proto} */}
 				{/* name={symbols.proto} */}
-				{/* path={this.props.path.concat([symbols.proto])} */}
-				{/* startOpen={this.props.startOpen} */}
-				{/* getValueByPath={this.props.getValueByPath} */}
-				{/* inspect={this.props.inspect} */}
-				{/* stopInspecting={this.props.stopInspecting} */}
-				{/* change={this.props.change} */}
-				{/* showMenu={this.props.showMenu} */}
-				{/* editable={this.props.editable} */}
-				{/* ChildDataView={this.props.ChildDataView} */}
-				{/* ChildDataItem={this.props.ChildDataItem} */}
+				{/* path={path.concat([symbols.proto])} */}
+				{/* startOpen={startOpen} */}
+				{/* getValueByPath={getValueByPath} */}
+				{/* inspect={inspect} */}
+				{/* stopInspecting={stopInspecting} */}
+				{/* change={change} */}
+				{/* showMenu={showMenu} */}
+				{/* editable={editable} */}
+				{/* ChildDataView={ChildDataView} */}
+				{/* ChildDataItem={ChildDataItem} */}
 				{/* /> */}
 				{/* )} */}
 

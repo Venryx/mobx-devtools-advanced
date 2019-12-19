@@ -1,4 +1,5 @@
 import {CompTreeNode} from "./backend/mobxReactNodesTree_new";
+import {_path} from "./utils/changesProcessor";
 
 const now = typeof window.performance === "object" && window.performance.now
 	? ()=>window.performance.now()
@@ -70,6 +71,8 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?, sen
 						clone[prop] = serialize(data, path.concat(prop), seen, prop, true);
 					}
 				}
+				// special keys to copy, even though non-enumerable
+				//if (data[_path]) clone["_path"] = data[_path];
 				return clone;
 			}
 			return data;
@@ -143,6 +146,8 @@ export function serialize(data, path = [], seen = new Map(), propToExtract?, sen
 				clone[prop] = serialize(data, path.concat(prop), seen, prop);
 			}
 		}
+		// special keys to copy, even though non-enumerable
+		//if (data[_path]) clone["_path"] = data[_path];
 		return clone;
 	} catch (error) {
 		return {

@@ -56,17 +56,6 @@ export class TreeExplorerStore extends AbstractStore {
 				this.stopPickingComponent();
 			}),
 		);
-
-		this.addDisposer(
-			bridge.sub("inspect-component-result", ({componentId, path, data})=>{
-				const obj = path.reduce((acc, next)=>acc && acc[next], this.nodesById[componentId]);
-				if (obj) {
-					Object.assign(obj, data);
-				}
-				// if (__DEV__) console.log(`inspected--${path.join('/')}`, data);
-				this.emit(`inspected--${path.join("/")}`);
-			}),
-		);
 	}
 
 	prevSelectedNodeId;

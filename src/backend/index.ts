@@ -1,9 +1,8 @@
 import initCapabilitiesBackend from "./cababilities";
 import initMSTBackend from "./mst";
-import initMobxReactNodesTreeBackend from "./mobxReactNodesTree";
 import initMobxReactNodesTreeBackend_new from "./mobxReactNodesTree_new";
 import initMobxReactUpdatesHighlighter from "./mobxReactUpdatesHighlighter";
-import initMobxLogBackend from "./mobxLog";
+import {InitMobxLogBackend} from "./mobxLog";
 
 export function InitBackend(bridge, hook) {
 	if (!hook) {
@@ -18,10 +17,10 @@ export function InitBackend(bridge, hook) {
 	const backends = [
 		initCapabilitiesBackend(bridge, hook),
 		initMSTBackend(bridge, hook),
-		initMobxReactNodesTreeBackend(bridge, hook),
+		//initMobxReactNodesTreeBackend(bridge, hook),
 		initMobxReactNodesTreeBackend_new(bridge, hook),
 		initMobxReactUpdatesHighlighter(bridge, hook),
-		initMobxLogBackend(bridge, hook),
+		InitMobxLogBackend(bridge, hook),
 	];
 
 	backends.forEach(({dispose})=>disposables.push(dispose));

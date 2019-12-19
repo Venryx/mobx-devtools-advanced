@@ -40,18 +40,10 @@ const ITEM_HEIGHT = 24;
 export class Log extends React.Component<
 	Partial<{
 		changeTypesToShow: string[],
-		logItemsById: {[key: number]: Change}, logItemsIds: number[], inspect?: (changeId: number, path: string[])=>void, stopInspecting?: (changeId: number, path: string[])=>void, getValueByPath, showMenu,
+		logItemsById: {[key: number]: Change}, logItemsIds: number[], inspect?: (changeID: number, path: string[])=>void, stopInspecting?: (changeID: number, path: string[])=>void,
+		getValueByPath: (changeID: number, path: string[])=>any, showMenu(event, changeID: number, path: string[]),
 	}>
 > {
-	static propTypes = {
-		logItemsById: PropTypes.object.isRequired,
-		logItemsIds: PropTypes.array.isRequired,
-		inspect: PropTypes.func.isRequired,
-		stopInspecting: PropTypes.func.isRequired,
-		getValueByPath: PropTypes.func.isRequired,
-		showMenu: PropTypes.func.isRequired,
-	};
-
 	state = {
 		listHeight: 400,
 		listWidth: 400,
@@ -107,6 +99,7 @@ export class Log extends React.Component<
 					inspect={path=>this.props.inspect(change.id, path)}
 					stopInspecting={path=>this.props.stopInspecting(change.id, path)}
 					showMenu={(e, _val, path)=>this.props.showMenu(e, change.id, path)}
+					rootChange={change}
 					change={change}
 					onHeightUpdate={()=>this.list && this.list.recomputeRowHeights(index)}
 					preferredHeight={ITEM_HEIGHT}

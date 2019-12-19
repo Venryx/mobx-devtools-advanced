@@ -5,9 +5,10 @@ import {LObjDiff} from "./LObjDiff";
 import {LObjDiffPreview} from "./LObjDiffPreview";
 import {IconComputed, IconScheduledReaction, IconError} from "./icons";
 import {InjectStores} from "../../utils/InjectStores";
-import Popover from "../Popover";
+import {PopoverTrigger} from "../Popover";
 import {ChangeDataViewerPopover} from "./ChangeDataViewerPopover";
 import {Change} from "../../utils/changesProcessor";
+import {ActionsStore} from "../stores/ActionsStore";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -34,14 +35,11 @@ const getColor = type=>{
 })
 export class LogItem extends React.Component<
 	{
-		change: Change, path: any[], getValueByPath: (path: string[])=>any, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void,
+		rootChange: Change, change: Change, path: any[], getValueByPath: (path: string[])=>any, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void,
 		showMenu: (event, changeId: number, path: string[])=>void, preferredHeight?: number, onHeightUpdate: ()=>void
 	} & Partial<{getDetails: ()=>void}>,
-	{open: boolean}> {
-	static propTypes = {
-		onHeightUpdate: PropTypes.func,
-	};
-
+	{open: boolean}
+> {
 	static defaultProps = {
 		path: [],
 	};
@@ -84,7 +82,15 @@ export class LogItem extends React.Component<
 	}, 0);
 
 	renderChange() {
-		const {change} = this.props;
+		const {rootChange, change, path} = this.props;
+
+		//const change_full = ActionsStore.main.logItemsById[change.id];
+		const changeViewer = (
+			<ChangeDataViewerPopover previewText="(details)" path={[]} getValueByPath={subpath=>subpath.reduce((acc, next)=>acc && acc[next], change)}
+				inspect={subpath=>ActionsStore.main.inspect(rootChange.id, path.concat(subpath))} stopInspecting={subpath=>ActionsStore.main.stopInspecting(rootChange.id, path.concat(subpath))}/>
+				//inspect={subpath=>ActionsStore.main.inspect(change.id, subpath)} stopInspecting={subpath=>ActionsStore.main.stopInspecting(change.id, subpath)}/>
+		);
+
 		switch (change.type) {
 			case "action":
 			case "transaction":
@@ -108,6 +114,7 @@ export class LogItem extends React.Component<
 								className={css(styles.headContentMisc)}
 							/>
 						)}
+						{changeViewer}
 					</div>
 				);
 
@@ -126,7 +133,7 @@ export class LogItem extends React.Component<
 							showMenu={this.props.showMenu}
 							className={css(styles.headContentMisc)}
 						/>
-						<Popover
+						<PopoverTrigger
 							className={css(styles.headContentMisc)}
 							requireClick
 							// eslint-disable-next-line react/jsx-no-bind
@@ -146,7 +153,8 @@ export class LogItem extends React.Component<
 							<div>
 								<LObjDiffPreview change={change} />
 							</div>
-						</Popover>
+						</PopoverTrigger>
+						{changeViewer}
 					</div>
 				);
 			case "compute":
@@ -155,7 +163,7 @@ export class LogItem extends React.Component<
 						<IconComputed className={css(styles.headContentIcon)} />
 						<span className={css(styles.headContentTitle)}>
 							Computed
-              {change.targetName}
+							{change.targetName}
 						</span>
 						{change.object && (
 							<ChangeDataViewerPopover
@@ -168,14 +176,16 @@ export class LogItem extends React.Component<
 							/>
 						)}
 						<span className={css(styles.headContentMisc)}>fn:</span>
-						<ChangeDataViewerPopover
+						{/*<ChangeDataViewerPopover
 							path={this.props.path.concat(["fn"])}
 							getValueByPath={this.props.getValueByPath}
 							inspect={this.props.inspect}
 							stopInspecting={this.props.stopInspecting}
 							showMenu={this.props.showMenu}
 							className={css(styles.headContentMisc)}
-						/>
+						/>*/}
+						<span>{change.name}</span>
+						{changeViewer}
 					</div>
 				);
 
@@ -184,6 +194,7 @@ export class LogItem extends React.Component<
 					<div className={css(styles.headContent, styles.headContentWithIcon)}>
 						<IconError className={css(styles.headContentIcon)} />
 						<span className={css(styles.headContentTitle)}>{change.message}</span>
+						{changeViewer}
 					</div>
 				);
 
@@ -201,6 +212,7 @@ export class LogItem extends React.Component<
 							showMenu={this.props.showMenu}
 							className={css(styles.headContentMisc)}
 						/>
+						{changeViewer}
 					</div>
 				);
 
@@ -218,7 +230,7 @@ export class LogItem extends React.Component<
 							className={css(styles.headContentMisc)}
 						/>
 						:
-            <ChangeDataViewerPopover
+						<ChangeDataViewerPopover
 							path={this.props.path.concat(["newValue"])}
 							getValueByPath={this.props.getValueByPath}
 							inspect={this.props.inspect}
@@ -226,11 +238,15 @@ export class LogItem extends React.Component<
 							showMenu={this.props.showMenu}
 							className={css(styles.headContentMisc)}
 						/>
+						{changeViewer}
 					</div>
 				);
 
 			default:
-				return <div className={css(styles.headContent)}>{change.type}</div>;
+				return <div>
+					<div className={css(styles.headContent)}>{change.type}</div>
+					{changeViewer}
+				</div>;
 		}
 	}
 
@@ -239,15 +255,8 @@ export class LogItem extends React.Component<
 		const {open} = this.state;
 		const openable = this.props.change.hasChildren || (this.props.change.children || []).length > 0;
 		return (
-			<div
-				ref={el=>{
-					this.el = el;
-				}}
-				className={css(styles.container, open && styles.containerOpen)}
-				style={{borderColor: getColor(change.type)}}
-			>
-				<div
-					className={css(styles.head, openable && styles.headCollapsible)}
+			<div ref={el=>this.el = el} className={css(styles.container, open && styles.containerOpen)} style={{borderColor: getColor(change.type)}}>
+				<div className={css(styles.head, openable && styles.headCollapsible)}
 					style={{lineHeight: `${this.props.preferredHeight}px`}}
 					onClick={openable ? this.toggleOpen : undefined}
 				>
@@ -268,6 +277,7 @@ export class LogItem extends React.Component<
 									stopInspecting={this.props.stopInspecting}
 									showMenu={this.props.showMenu}
 									key={c.id}
+									rootChange={change}
 									change={c}
 									onHeightUpdate={this.recomputeHeight}
 									path={this.props.path.concat(["children", i])}

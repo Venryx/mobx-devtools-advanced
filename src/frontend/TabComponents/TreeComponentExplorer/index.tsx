@@ -72,13 +72,6 @@ export class TreeComponentExplorer_Old extends React.Component<any, any> {
 		this.props.inspect([], ()=>this.setState({}));
 	}
 
-	dataDecorator = InjectStores({
-		subscribe: (stores, {path})=>({
-			treeExplorerStore: [`inspected--${path.join("/")}`],
-		}),
-		shouldUpdate: ()=>true,
-	});
-
 	render() {
 		const {node} = this.props;
 		if (!node) return null;
@@ -109,7 +102,6 @@ export class TreeComponentExplorer_Old extends React.Component<any, any> {
 								stopInspecting={this.props.stopInspecting}
 								change={this.props.change}
 								showMenu={this.props.showMenu}
-								decorator={this.dataDecorator}
 							/>
 						</div>
 					</Collapsible>
@@ -122,7 +114,6 @@ export class TreeComponentExplorer_Old extends React.Component<any, any> {
 					stopInspecting={this.props.stopInspecting}
 					change={this.props.change}
 					showMenu={this.props.showMenu}
-					decorator={this.dataDecorator}
 					hiddenKeysRegex={/^(__\$mobRenderEnd|__\$mobRenderStart|_reactInternalInstance|updater)$/}
 				/>
 			</div>
@@ -194,23 +185,6 @@ export class TreeComponentExplorer extends Component<{treeStore?: TreeExplorerSt
 		//const {treeStore} = this.props;
 		const {data} = this.state;
 
-		const temp = {
-			showMenu(e, val, path) {
-				// todo
-			},
-			inspect(path) {
-				// todo
-			},
-			stopInspecting(path) {
-				// todo
-			},
-			change(path, value) {
-				// todo
-			},
-			getValueByPath(path) {
-				return path.reduce((acc, next)=>acc && acc[next], data);
-			},
-		};
 		return (
 			<div>
 				Path: {store.selectedMobXObjectPath}
@@ -218,26 +192,13 @@ export class TreeComponentExplorer extends Component<{treeStore?: TreeExplorerSt
 					this.RefreshData();
 				}}/>
 				{data && <DataViewer
-					path={[]}
-					getValueByPath={temp.getValueByPath}
-					inspect={temp.inspect}
-					stopInspecting={temp.stopInspecting}
-					change={temp.change}
-					showMenu={temp.showMenu}
-					decorator={this.dataDecorator}
+					data={data}
 					hiddenKeysRegex={/^(__\$mobRenderEnd|__\$mobRenderStart|_reactInternalInstance|updater|_sendFull)$/}
 				/>}
 				{/*data && <DataViewer_New data={data} keyInTree="root"/>*/}
 			</div>
 		);
 	}
-
-	dataDecorator = InjectStores({
-		subscribe: (stores, {path})=>({
-			treeExplorerStore: [`inspected--${path.join("/")}`],
-		}),
-		shouldUpdate: ()=>true,
-	});
 }
 
 /*export class DataViewer_New extends BaseComponentPlus({depth: 0} as {data: any, depth?: number, keyInTree?: string}, {expanded: false}) {

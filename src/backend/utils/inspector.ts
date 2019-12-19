@@ -116,38 +116,38 @@ export default onResult=>{
 	};
 
 	return {
-    handleUpdate(object) {
-    	getPathsForObject(object).forEach(path=>{
-    		const node = path.reduce((acc, next)=>{
-    			if (!acc[next]) {
-    				acc[next] = {};
-    			}
-    			return acc[next];
-    		}, inspectionTree);
-    		invalidatedNodes.add(node);
-    		scheduleFlush();
-    	});
-    },
-    inspect(path) {
-    	if (inspectedObject) {
-    		const data = getObjectForPath(path);
-    		const node = getNodeForPath(path);
-    		rememberPath(path, data);
-    		allowChildren(node);
-    		fireResult(path, data);
-    	}
-    },
-    forget(path) {
-    	forgetPath(path);
-    },
-    setInspectedObject(obj) {
-    	if (!obj) {
-    		forgetPath([]);
-    	}
-    	inspectedObject = obj;
-    },
-    get inspectedObject() {
-    	return inspectedObject;
-    },
+		handleUpdate(object) {
+			getPathsForObject(object).forEach(path=>{
+				const node = path.reduce((acc, next)=>{
+					if (!acc[next]) {
+						acc[next] = {};
+					}
+					return acc[next];
+				}, inspectionTree);
+				invalidatedNodes.add(node);
+				scheduleFlush();
+			});
+		},
+		inspect(path) {
+			if (inspectedObject) {
+				const data = getObjectForPath(path);
+				const node = getNodeForPath(path);
+				rememberPath(path, data);
+				allowChildren(node);
+				fireResult(path, data);
+			}
+		},
+		forget(path) {
+			forgetPath(path);
+		},
+		setInspectedObject(obj) {
+			if (!obj) {
+				forgetPath([]);
+			}
+			inspectedObject = obj;
+		},
+		get inspectedObject() {
+			return inspectedObject;
+		},
 	};
 };

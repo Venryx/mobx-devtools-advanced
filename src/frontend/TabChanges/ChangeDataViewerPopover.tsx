@@ -1,14 +1,28 @@
 import React from "react";
 import * as Aphrodite from "aphrodite";
+import {Assert} from "js-vextensions";
 import {PreviewValue} from "../PreviewValue";
 import {InjectStores} from "../../utils/InjectStores";
-import Popover from "../Popover";
+import {PopoverTrigger} from "../Popover";
 import {DataViewer} from "../DataViewer";
+import {FinalizeDataViewerDataProps} from "../DataViewer/DataView";
 
 const {css, StyleSheet} = Aphrodite;
 
-export function ChangeDataViewerPopover(props: {className?: string, displayName?: string, path: any[], getValueByPath: (path)=>any, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void, showMenu: Function}) {
-	const {className, displayName, path, getValueByPath, inspect, stopInspecting, showMenu} = props;
+type ChangeDataViewerPopover = {
+	className?: string, displayName?: string,
+	// data, option 1
+	path?: any[], getValueByPath?: (path)=>any,
+	// data, option 2
+	data?: any,
+	inspect?: (path: string[])=>void, stopInspecting?: (path: string[])=>void, showMenu?: (event, value: any, path: string[])=>void,
+	previewText?: string,
+};
+export function ChangeDataViewerPopover(props: ChangeDataViewerPopover) {
+	let {className, displayName, path, getValueByPath, data, inspect, stopInspecting, showMenu, previewText} = props;
+
+	({path, getValueByPath} = FinalizeDataViewerDataProps({path, getValueByPath, data}));
+
 	const value = getValueByPath(path);
 	//console.log("Value:", value);
 	const otype = typeof value;
@@ -26,6 +40,7 @@ export function ChangeDataViewerPopover(props: {className?: string, displayName?
 		<DataViewer
 			path={path}
 			getValueByPath={getValueByPath}
+			data={data}
 			inspect={inspect}
 			stopInspecting={stopInspecting}
 			showMenu={showMenu}
@@ -39,7 +54,7 @@ export function ChangeDataViewerPopover(props: {className?: string, displayName?
 	);
 
 	return (
-		<Popover
+		<PopoverTrigger
 			requireClick
 			content={dataViewer}
 			onShown={()=>inspect(path)} // eslint-disable-line react/jsx-no-bind
@@ -52,9 +67,10 @@ export function ChangeDataViewerPopover(props: {className?: string, displayName?
 					}
 				}}
 			>
-				<PreviewValue data={value} displayName={displayName} path={path} />
+				{previewText != null && previewText}
+				{previewText == null && <PreviewValue data={value} displayName={displayName} path={path}/>}
 			</span>
-		</Popover>
+		</PopoverTrigger>
 	);
 }
 

@@ -3,6 +3,8 @@ import preferences from "../../preferences";
 import {Change_types, ChangeType, Change} from "../../utils/changesProcessor";
 
 export class ActionsStore extends AbstractStore {
+	static main: ActionsStore;
+
 	logEnabled = false;
 	consoleLogEnabled = false;
 	searchText = "";
@@ -13,6 +15,7 @@ export class ActionsStore extends AbstractStore {
 
 	constructor(bridge) {
 		super();
+		ActionsStore.main = this;
 		this.bridge = bridge;
 
 		this.addDisposer(

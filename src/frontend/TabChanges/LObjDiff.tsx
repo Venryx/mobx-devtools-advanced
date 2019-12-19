@@ -2,37 +2,40 @@
 import React from "react";
 import * as Aphrodite from "aphrodite";
 import {ChangeDataViewerPopover} from "./ChangeDataViewerPopover";
+import {Change} from "../../utils/changesProcessor";
 
 const {css, StyleSheet} = Aphrodite;
 
-export class LObjDiff extends React.PureComponent<{change, path: any[], getValueByPath: (path: string[])=>any, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void, showMenu: Function}> {
+export class LObjDiff extends React.PureComponent<{
+	change: Change, path: any[], getValueByPath: (path: string[])=>any, inspect: (path: string[])=>void, stopInspecting: (path: string[])=>void, showMenu: (event, changeID: number, path: string[])=>void
+}> {
 	getDiff() {
 		const {change} = this.props;
 		switch (change.type) {
 			case "add":
 				return {
-					added: [{name: change.name, value: change.newValue, path: ["newValue"]}],
+					added: [{name: `${change.name  } [key: ${change["key"]}]`, value: change.newValue, path: ["newValue"]}],
 				};
 			case "delete":
 				return {
-					removed: [{name: change.name, value: change.oldValue, path: ["oldValue"]}],
+					removed: [{name: `${change.name  } [key: ${change["key"]}]`, value: change.oldValue, path: ["oldValue"]}],
 				};
 			case "update":
 				return {
-					added: [{name: change.name, value: change.newValue, path: ["newValue"]}],
-					removed: [{name: change.name, value: change.oldValue, path: ["oldValue"]}],
+					removed: [{name: `${change.name  } [key: ${change["key"]}]`, value: change.oldValue, path: ["oldValue"]}],
+					added: [{name: `${change.name  } [key: ${change["key"]}]`, value: change.newValue, path: ["newValue"]}],
 				};
 			case "splice":
 				return {
 					added: (change.added || []).map((value, i)=>({
-						name: change.index + i,
+						name: `${change.index + i as any  } [key: ${change["key"]}]`,
 						value,
-						path: ["added", i],
+						path: ["added", i] as string[],
 					})),
 					removed: (change.removed || []).map((value, i)=>({
-						name: change.index + i,
+						name: `${change.index + i as any  } [key: ${change["key"]}]`,
 						value,
-						path: ["removed", i],
+						path: ["removed", i] as string[],
 					})),
 				};
 			default:
@@ -45,12 +48,12 @@ export class LObjDiff extends React.PureComponent<{change, path: any[], getValue
 		return (
 			<div className={css(styles.container)}>
 				<div className={css(styles.innerContainer)}>
-					{removed.map(({name, path}, i)=>(
+					{removed.map((diff, i)=>(
 						<div className={css(styles.diffRow, styles.removed)} key={i}>
-							<div className={css(styles.propName, styles.propNameRemoved)}>{name}</div>
+							<div className={css(styles.propName, styles.propNameRemoved)}>{diff.name}</div>
 							<div className={css(styles.propValue, styles.propValueRemoved)}>
 								<ChangeDataViewerPopover
-									path={this.props.path.concat(path)}
+									path={this.props.path.concat(diff.path)}
 									getValueByPath={this.props.getValueByPath}
 									inspect={this.props.inspect}
 									stopInspecting={this.props.stopInspecting}
@@ -59,12 +62,12 @@ export class LObjDiff extends React.PureComponent<{change, path: any[], getValue
 							</div>
 						</div>
 					))}
-					{added.map(({name, path}, i)=>(
+					{added.map((diff, i)=>(
 						<div className={css(styles.diffRow, styles.added)} key={i}>
-							<div className={css(styles.propName, styles.propNameAdded)}>{name}</div>
+							<div className={css(styles.propName, styles.propNameAdded)}>{diff.name}</div>
 							<div className={css(styles.propValue, styles.propValueAdded)}>
 								<ChangeDataViewerPopover
-									path={this.props.path.concat(path)}
+									path={this.props.path.concat(diff.path)}
 									getValueByPath={this.props.getValueByPath}
 									inspect={this.props.inspect}
 									stopInspecting={this.props.stopInspecting}
