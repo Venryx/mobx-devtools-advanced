@@ -6,7 +6,7 @@ import {InitBackend} from "../../../src/backend";
 import {Bridge, SerializeOptions} from "../../../src/Bridge";
 import debugConnection from "../../../src/utils/debugConnection";
 import installGlobalHook from "../../../src/backend/utils/installGlobalHook";
-import {backendStore, UpdateBackendStore, BackendStore} from "../../../src/backend/Store";
+import {backendStore, UpdateBackendStoreDataWith, BackendStore} from "../../../src/backend/Store";
 
 installGlobalHook(window);
 const hook = window["__MOBX_DEVTOOLS_GLOBAL_HOOK__"]; // eslint-disable-line no-underscore-dangle
@@ -51,7 +51,7 @@ export function connectToDevTools(options) {
 		bridge.sub("notify-settings", (settings: BackendStore)=>{
 			//backendStore.autoSerializeDepth = settings.autoSerializeDepth;
 			//bridge.serializeOptions.autoSerializeDepth = settings.autoSerializeDepth;
-			UpdateBackendStore(settings);
+			UpdateBackendStoreDataWith(settings);
 		});
 	};
 

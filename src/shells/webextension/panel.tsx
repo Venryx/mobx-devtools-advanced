@@ -48,6 +48,7 @@ const inject = done=>{
 				});
 			},
 			send(data) {
+				//console.log("Trying to send:", data, "@disconnected:", disconnected);
 				if (disconnected) return;
 				debugConnection("[FRONTEND -> background]", data);
 				port.postMessage(data);

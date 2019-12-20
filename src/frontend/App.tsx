@@ -34,9 +34,11 @@ export class App extends React.PureComponent<
 	},
 	State
 > {
+	static main
 	static defaultProps = {
 		quiet: false,
 	};
+
 	state = {
 		loaded: false,
 		connected: false,
@@ -57,7 +59,6 @@ export class App extends React.PureComponent<
 
 			this.$disposables.push(
 				bridge.sub("capabilities", ({mobxFound})=>{
-					console.log("Got capabilities:", mobxFound);
 					this.setState({mobxFound});
 				}),
 				bridge.sub("content-script-installation-error", ()=>{
@@ -77,6 +78,8 @@ export class App extends React.PureComponent<
 
 				this.setState({connected: true});
 				bridge.send("get-capabilities");
+				//Bridge.main_connected = true;
+				Bridge.main_onConnected.forEach(a=>a());
 			});
 
 			if (!this.$unMounted) {

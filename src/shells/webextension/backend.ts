@@ -7,7 +7,7 @@
 import {InitBackend} from "../../backend";
 import {Bridge, SerializeOptions} from "../../Bridge";
 import debugConnection from "../../utils/debugConnection";
-import {UpdateBackendStore, BackendStore, backendStore} from "../../backend/Store";
+import {UpdateBackendStoreDataWith, BackendStore, backendStore} from "../../backend/Store";
 
 const backendId = Math.random()
 	.toString(32)
@@ -54,7 +54,7 @@ function handshake(hook, contentScriptId) {
 	bridge.sub("notify-settings", (settings: BackendStore)=>{
 		//backendStore.autoSerializeDepth = settings.autoSerializeDepth;
 		//bridge.serializeOptions.autoSerializeDepth = settings.autoSerializeDepth;
-		UpdateBackendStore(settings);
+		UpdateBackendStoreDataWith(settings);
 	});
 }
 

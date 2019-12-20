@@ -34,6 +34,7 @@ export class SerializeExtras {
 }
 export function Serialize(opt: SerializeOptions, data, path = [] as string[], seen = new Map(), extras?: SerializeExtras) {
 	opt = Object.assign(new SerializeOptions(), opt);
+	//Assert(opt.autoSerializeDepth >= 0, "autoSerializeDepth must be at least 0. (otherwise it freezes ui)");
 	extras = extras || {};
 
 	try {
@@ -239,6 +240,8 @@ const requestIdleCallback = window["requestIdleCallback"]
 export class Bridge {
 	//@observable static main: Bridge;
 	static main: Bridge;
+	//static main_onSet = [] as (()=>void)[];
+	static main_onConnected = [] as (()=>void)[];
 
 	$listeners = [];
 
@@ -250,6 +253,7 @@ export class Bridge {
 	deserialize = Deserialize;
 	constructor(store: BackendStore, wall) {
 		Bridge.main = this;
+		//Bridge.main_onSet.forEach(a=>a());
 		this.store = store;
 		this.$wall = wall;
 		wall.listen(this.$handleMessage.bind(this));
@@ -341,7 +345,7 @@ export class Bridge {
 			//const store = window.location.href.startsWith("devtools://") ? require("./backend/Store").backendStore : require("./frontend/Store").store;
 			return {
 				eventName,
-				eventData: this.serialize({autoSerializeDepth: this.store.autoSerializeDepth}, eventData, undefined, undefined, extras),
+				eventData: this.serialize(this.store._initialized && {autoSerializeDepth: this.store.autoSerializeDepth}, eventData, undefined, undefined, extras),
 			};
 		});
 		this.$wall.send({type: "many-events", events});
