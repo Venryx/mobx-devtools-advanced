@@ -116,6 +116,7 @@ export default (bridge, hook)=>{
 				return MobXObserverToPlainObj(GetBySymbol(nextNode.fiber.stateNode["render"], "mobx administration"));
 			}
 			nextNode = nextNode.children[part];
+			if (nextNode == null) return null;
 		}
 		return MobXObservableToPlainObj(GetBySymbol(nextNode.fiber.stateNode, "mobx administration"));
 	}
