@@ -171,15 +171,16 @@ export default function installGlobalHook(window) {
 	let officialHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 	let officialHookProps = Object.assign({}, officialHook);
 	// if we are running before react-devtools, temporarily place ourselves at the hook site
-	if (officialHook == null) {
+	/*if (officialHook == null) {
 		window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = hook;
-	}
+	}*/
 	
 	// wait until the official hook is added, then patch it
-	//let startTime = Date.now();
+	let startTime = Date.now();
 	let timerID = setInterval(()=> {
-		//if (!__DEV__ && Date.now() - startTime > 10000) {
-		if (!__DEV__) {
+		//if (!__DEV__) {
+		// cancel wait if in prod, and we've waited for more than 5s
+		if (!__DEV__ && Date.now() - startTime > 5000) {
 			return void clearInterval(timerID);
 		}
 
