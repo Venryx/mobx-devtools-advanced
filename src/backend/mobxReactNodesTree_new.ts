@@ -98,7 +98,7 @@ export default (bridge, hook)=>{
 		}
 		result.lastAccessedBy = mobx.lastAccessedBy;
 		if (mobx.values) {
-			result.values = mobx.values.toJSON().map(a=>a[1]).map(observable=>MobXObservableToPlainObj(observable));
+			result.values = Array.from(mobx.values).map(a=>a[1]).map(observable=>MobXObservableToPlainObj(observable));
 		}
 		if (mobx.observing) {
 			result.observing = mobx.observing.map(observable=>MobXObservableToPlainObj(observable));
@@ -107,7 +107,7 @@ export default (bridge, hook)=>{
 	}
 	function GetMobXObjectData(path: string) {
 		const parts = path.split("/");
-		const fiberRoots = reactHook.fiberRoots.toJSON();
+		const fiberRoots = Array.from(reactHook.fiberRoots) as any[];
 		const compTree = GetCompTreeForRoots(fiberRoots);
 		let nextNode = compTree;
 		for (const part of parts) {
@@ -123,7 +123,7 @@ export default (bridge, hook)=>{
 
 	const disposables = [
 		bridge.sub("backend:getCompTree", ({componentId})=>{
-			const fiberRoots = reactHook.fiberRoots.toJSON();
+			const fiberRoots = Array.from(reactHook.fiberRoots) as any[];
 			const compTree = GetCompTreeForRoots(fiberRoots);
 			console.log("Got comp-tree:", compTree);
 			bridge.send("frontend:receiveCompTree", {compTree});

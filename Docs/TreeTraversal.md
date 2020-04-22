@@ -69,7 +69,7 @@ hook = __REACT_DEVTOOLS_GLOBAL_HOOK__
 
 ###### Get root fiber/component
 ```
-rootFragmentFiber = hook.getFiberRoots(1).toJSON()[0].current
+rootFragmentFiber = Array.from(hook.getFiberRoots(1))[0].current
 rootCompFiber = rootFragmentFiber.child
 rootComp = rootFiber.stateNode
 ```
@@ -77,5 +77,5 @@ rootComp = rootFiber.stateNode
 ###### Get ancestors of component (using fiber id)
 ```
 fiberID = 1   // fill in actual value here; not sure yet how to obtain from comp
-childFragments = hook.rendererInterfaces.toJSON()[0][1].getOwnersList(fiberID)
+childFragments = Array.from(hook.rendererInterfaces)[0][1].getOwnersList(fiberID)
 ```
