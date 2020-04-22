@@ -64,13 +64,13 @@ export class TabChanges extends React.PureComponent<
 					<Text ml={5} title="When a change occurs, record/serialize the first X layers of its data-tree. (for stable inspection; only applies after top-level changes)">Auto-serialize depth: </Text>
 					<Spinner min={0} max={500} style={{width: 40}} value={store.autoSerializeDepth} onChange={val=>store.autoSerializeDepth = val}/>
 					<CheckBox ml={5} text="Infer paths" title="Attempts to infer the paths to MobX objects/values. (shown in change details; only works in some cases)"
-						checked={store.inferPaths} onChange={val=>store.inferPaths = val}/>
+						value={store.inferPaths} onChange={val=>store.inferPaths = val}/>
 					<Text ml={5}>Types:</Text>
 					{Change_types.map(type=>{
-						const typeStr = ModifyString(type, {firstLower_to_upper: true, hyphenLower_to_hyphenUpper: true});
+						const typeStr = ModifyString(type, a=>[a.startLower_to_upper, a.hyphenLower_to_hyphenUpper]);
 						const text = `${typeStr} (${this.GetItemsOfType(type).length})`;
 						return (
-							<CheckBox key={type} ml={3} text={text} checked={changeTypesToShow.includes(type)} onChange={checked=>{
+							<CheckBox key={type} ml={3} text={text} value={changeTypesToShow.includes(type)} onChange={checked=>{
 								const newTypes = changeTypesToShow.slice();
 								if (!checked) CE(newTypes).Remove(type);
 								else newTypes.push(type);
