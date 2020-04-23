@@ -64,7 +64,9 @@ export default class TabComponents extends React.PureComponent<{pickingComponent
 					<Button ml={5} text="Refresh" onClick={()=>{
 						Bridge.main.send("backend:getCompTree");
 						Bridge.main.once("frontend:receiveCompTree", ({compTree: newCompTree})=>{
-							RehydrateCompTree(newCompTree);
+							if (newCompTree) {
+								RehydrateCompTree(newCompTree);
+							}
 							console.log("Got comp tree:", newCompTree);
 							this.setState({compTree: newCompTree});
 						});

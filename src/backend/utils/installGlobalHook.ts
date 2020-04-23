@@ -6,6 +6,8 @@
  */
 
 export default function installGlobalHook(window) {
+	//console.log("Backend starting... (injected page code which adds the hook)");
+
 	if (window.__MOBX_DEVTOOLS_GLOBAL_HOOK__ && window.__MOBX_DEVTOOLS_GLOBAL_HOOK__.collections) {
 		return;
 	}
@@ -81,9 +83,7 @@ export default function installGlobalHook(window) {
 						}
 					}
 				if (!mobxid) {
-					mobxid = Math.random()
-						.toString(32)
-						.slice(2);
+					mobxid = Math.random().toString(32).slice(2);
 					this.collections[mobxid] = {};
 				}
 				for (let prop in collection)

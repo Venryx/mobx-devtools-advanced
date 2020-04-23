@@ -179,7 +179,7 @@ export default class TreeView extends React.Component<
 		return (
 			<div className={css(styles.container)} style={{overflowY: "auto"}}>
 				{compTree && <CompTreeNodeUI node={compTree} collapseNonMobX={collapseNonMobX}/>}
-				{compTree && compTree.fiber == null && <div>Could not find any React Fiber roots. (React must be v16 or higher)</div>}
+				{compTree === null && <div>Could not find any React Fiber roots. (React must be v16 or higher)</div>}
 			</div>
 		);
 	}

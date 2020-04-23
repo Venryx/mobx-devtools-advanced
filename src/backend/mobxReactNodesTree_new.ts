@@ -30,7 +30,7 @@ export class CompTreeNode {
 	_serialize(path: string[], seen: Map<any, any>) {
 		const clone = {} as any;
 		for (const prop in this) {
-			if (prop == "fiber") continue; // custom
+			if (prop == "fiber") continue; // custom; frontend doesn't need fiber structure passed
 			if (Object.prototype.hasOwnProperty.call(this, prop)) {
 				clone[prop] = Serialize({}, this[prop], path.concat(prop), seen, {isObjProp: true, sendFull: true});
 			}
@@ -41,7 +41,8 @@ export class CompTreeNode {
 
 export function GetCompTreeForRoots(fiberRoots: FiberRootNode[]): CompTreeNode {
 	console.log("GetCompTree... fiberRoots:", fiberRoots);
-	if (fiberRoots.length == 0) return new CompTreeNode();
+	//if (fiberRoots.length == 0) return new CompTreeNode();
+	if (fiberRoots.length == 0) return null;
 	return GetCompTree(fiberRoots[0].current);
 }
 export function GetCompTree(fiber: FiberNode, parentPath?: string, indexInParent?: number): CompTreeNode {

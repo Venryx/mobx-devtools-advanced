@@ -59,8 +59,7 @@ function handshake(hook, contentScriptId) {
 }
 
 /*
-  This mechanism ensures that each content-script can be messaging with only one backend
-  and vice versa:
+  This mechanism ensures that each content-script can be messaging with only one backendand vice versa:
   1. Wait for `ping`
   2. As soon as pinged, stop listening to `ping` send `pong`,
      start waiting for `hello`/`connection-fail`
@@ -79,12 +78,7 @@ function waitForPing() {
 
 			const payload = "contentScript:pong";
 			debugConnection("[contentScript -> BACKEND]", payload);
-			window.postMessage(
-				{
-					source: "mobx-devtools-backend", payload, contentScriptId, backendId,
-				},
-				"*",
-			);
+			window.postMessage({source: "mobx-devtools-backend", payload, contentScriptId, backendId}, "*");
 
 			const helloListener = e=>{
 				if (
