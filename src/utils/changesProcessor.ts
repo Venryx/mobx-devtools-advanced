@@ -78,8 +78,12 @@ export type Change = Partial<
 		time: number;
 		objectName: string;
 		targetName: string;
+		added?: any[];
+		removed?: any[];
+		arguments?: any[];
 		oldValue: any;
 		newValue: any;
+		name?: string;
 		target: any;
 		summary: boolean;
 		hasChildren: boolean;

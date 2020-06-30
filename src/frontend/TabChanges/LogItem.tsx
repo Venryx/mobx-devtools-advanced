@@ -94,20 +94,6 @@ export class LogItem extends React.Component<
 
 		switch (change.type) {
 			case "action":
-
-		/*return (
-					<div className={css(styles.headContent)}>
-						<span className={css(styles.headContentTitle)}>
-
-						</span>
-						{" "}
-						{change.object && <>
-							{"on "}
-							<ChangeDataViewerPopover accessors={accessors} path={path.concat("object")} displayName={change.objectName} className={css(styles.headContentMisc)}/>
-						</>}
-						{changeViewer}
-					</div>
-				);*/
 			case "transaction":
 			case "reaction": {
 				const objectName = change.objectName || change.object?.[symbols.name];
