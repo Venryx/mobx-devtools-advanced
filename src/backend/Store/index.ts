@@ -6,7 +6,6 @@ export type BackendStore = Pick<FrontendStore,
 export type BackendStore = ReturnType<typeof GetBackendStoreData>;*/
 export type BackendStore = import("../../frontend/Store").BackendStore_Source & {_initialized?: boolean};
 
-
 /*export class BackendStore {
 	inferPaths = 1;
 	autoSerializeDepth = 7;

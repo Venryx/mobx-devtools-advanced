@@ -17,13 +17,14 @@ const {css, StyleSheet} = Aphrodite;
 
 @InjectStores({
 	subscribe: {
-		actionsLoggerStore: ["logEnabled", "log"],
+		actionsLoggerStore: ["logEnabled", "consoleLogEnabled", "log"],
 	},
 	injectProps: ({actionsLoggerStore}: {actionsLoggerStore: ActionsStore})=>({
 		store: actionsLoggerStore,
 		searchText: actionsLoggerStore.searchText,
 		changeTypesToShow: actionsLoggerStore.changeTypesToShow,
 		logEnabled: actionsLoggerStore.logEnabled,
+		consoleLogEnabled: actionsLoggerStore.consoleLogEnabled,
 		logItemsIds: actionsLoggerStore.logItemsIds,
 		logItemsById: actionsLoggerStore.logItemsById,
 		clearLog() {
@@ -31,6 +32,10 @@ const {css, StyleSheet} = Aphrodite;
 		},
 		toggleLogging() {
 			actionsLoggerStore.toggleLogging();
+		},
+		toggleConsoleLogging() {
+			console.log("toggle console logging", actionsLoggerStore.consoleLogEnabled);
+			actionsLoggerStore.toggleConsoleLogging();
 		},
 		setSearchText(e) {
 			actionsLoggerStore.setSearchText(e.target.value);
@@ -44,7 +49,7 @@ const {css, StyleSheet} = Aphrodite;
 export class TabChanges extends React.PureComponent<
 	{} & Partial<{
 		store: ActionsStore,
-		searchText: string, changeTypesToShow: ChangeType[], logEnabled: boolean, clearLog: ()=>void, toggleLogging: ()=>void, setSearchText: (event)=>void, setChangeTypesToShow: (types: ChangeType[])=>void,
+		searchText: string, changeTypesToShow: ChangeType[], logEnabled: boolean, consoleLogEnabled: boolean, toggleConsoleLogging: ()=>void, clearLog: ()=>void, toggleLogging: ()=>void, setSearchText: (event)=>void, setChangeTypesToShow: (types: ChangeType[])=>void,
 		logItemsIds: number[], logItemsById: {[key: number]: Change},
 	}>
 > {
@@ -54,11 +59,14 @@ export class TabChanges extends React.PureComponent<
 		return logItems.filter(change=>change.type == type);
 	}
 	render() {
-		const {logEnabled, toggleLogging, clearLog, searchText, changeTypesToShow, setSearchText, setChangeTypesToShow, logItemsIds} = this.props;
+
+		console.log("render tabchang");
+		const {logEnabled, consoleLogEnabled, toggleConsoleLogging, toggleLogging, clearLog, searchText, changeTypesToShow, setSearchText, setChangeTypesToShow, logItemsIds} = this.props;
 		return (
 			<div className={css(styles.panel)}>
 				<SecondaryPanel>
 					<ButtonRecord active={logEnabled} onClick={toggleLogging} showTipStartRecoding={!logEnabled && logItemsIds.length === 0}/>
+					<ButtonRecord active={consoleLogEnabled} onClick={toggleConsoleLogging} />
 					<ButtonClear onClick={clearLog} />
 					<InputSearch searchText={searchText} changeSearch={setSearchText}/>
 					<Text ml={5} title="When a change occurs, record/serialize the first X layers of its data-tree. (for stable inspection; only applies after top-level changes)">Auto-serialize depth: </Text>

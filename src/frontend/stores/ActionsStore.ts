@@ -52,6 +52,9 @@ export class ActionsStore extends AbstractStore {
 		preferences.get("logEnabled").then(({logEnabled})=>{
 			if (logEnabled) this.toggleLogging(true);
 		});
+		preferences.get("consoleLogEnabled").then(({consoleLogEnabled})=>{
+			if (consoleLogEnabled) this.toggleConsoleLogging(true);
+		});
 	}
 
 	inspect(changeId, path) {
@@ -70,6 +73,7 @@ export class ActionsStore extends AbstractStore {
 	}
 
 	toggleConsoleLogging(consoleLogEnabled = !this.consoleLogEnabled) {
+		preferences.set({consoleLogEnabled});
 		this.bridge.send("set-console-log-enabled", consoleLogEnabled);
 		this.consoleLogEnabled = consoleLogEnabled;
 		this.emit("consoleLogEnabled");
