@@ -14,7 +14,7 @@ const {css, StyleSheet} = Aphrodite;
 const renderSparseArrayHole = (count, key)=>(
 	<li key={key}>
 		<div className={css(styles.head)}>
-			<div className={css(styles.sparseArrayHole)}>
+			<div>
 				undefined ×
 				{count}
 			</div>

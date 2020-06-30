@@ -77,7 +77,7 @@ export default class TabComponents extends React.PureComponent<{pickingComponent
 					}}/>
 				</SecondaryPanel>
 				<TreeView compTree={compTree} collapseNonMobX={collapseNonMobX}/>
-				<div className={css(styles.footer)}>
+				<div>
 					<Breadcrumb />
 				</div>
 			</div>

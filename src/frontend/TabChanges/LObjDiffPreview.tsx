@@ -117,8 +117,8 @@ export class LObjDiffPreview extends React.PureComponent<{change: Change, access
 			<div className={css(styles2.container)}>
 				<div className={css(styles2.innerContainer)}>
 					{(remov || add)?.name}:{" "}
-					{remov && <span className={css(styles2.propValueRemoved)}><ChangeDataViewerPopover accessors={accessors} path={path.concat(remov.path)}/></span>}
-					{add && <span className={css(styles2.propValueAdded)}><ChangeDataViewerPopover accessors={accessors} path={path.concat(add.path)}/></span>}
+					{remov && <span className={css(styles2.propValue, styles2.propValueRemoved)}><ChangeDataViewerPopover accessors={accessors} path={path.concat(remov.path)}/></span>}
+					{add && <span className={css(styles2.propValue, styles2.propValueAdded)}><ChangeDataViewerPopover accessors={accessors} path={path.concat(add.path)}/></span>}
 				</div>
 			</div>
 		);
@@ -135,7 +135,7 @@ const styles2 = StyleSheet.create({
 	innerContainer: {
 		display: "table",
 	},
-	title: {},
+	title: {},propValue: {marginLeft: "1ex", marginRight: "1ex"},
 	propValueRemoved: {
 		backgroundColor: "rgba(245, 0, 30, 0.07)",
 		":before": {

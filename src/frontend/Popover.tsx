@@ -28,11 +28,11 @@ const GUTTER = 20;
 const popoverStyleForPlacement = placement=>{
 	switch (placement) {
 		case "top":
-			return styles.popoverTop;
+			return undefined;//styles.popoverTop;
 		case "bottom":
-			return styles.popoverBottom;
+			return undefined;//styles.popoverBottom;
 		case "right":
-			return styles.popoverRight;
+			return undefined;//styles.popoverRight;
 		default:
 			return undefined;
 	}

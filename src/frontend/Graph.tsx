@@ -14,7 +14,7 @@ TreeItem.propTypes = {
 function TreeItem({dependencies, isLast, isRoot, name}) {
 	return (
     <div className={css(styles.item)}>
-      <span className={css(styles.box, isRoot && styles.box.root)}>{name}</span>
+      <span className={css(styles.box, isRoot && styles.rootE)}>{name}</span>
       {dependencies && (
         <div className={css(styles.tree)}>
           {dependencies.map((d, i)=>(<TreeItem
@@ -26,7 +26,7 @@ function TreeItem({dependencies, isLast, isRoot, name}) {
       )}
       {!isRoot && <span className={css(styles.itemHorisontalDash)} />}
       {!isRoot && (
-        <span className={css(styles.itemVericalStick, isLast && styles.itemVericalStick.short)} />
+        <span className={css(styles.itemVericalStick, isLast && styles.itemVericalStickShort)} />
       )}
     </div>
 	);
@@ -71,11 +71,11 @@ const styles = StyleSheet.create({
     display: "inline-block",
     marginBottom: "8px",
     color: "#000",
-    root: {
-      fontSize: "15px",
-      fontWeight: "bold",
-      padding: "6px 13px",
-    },
+  },
+  rootE: {
+    fontSize: "15px",
+    fontWeight: "bold",
+    padding: "6px 13px",
   },
 
   itemHorisontalDash: {
@@ -97,5 +97,13 @@ const styles = StyleSheet.create({
     short: {
       height: "23px",
     },
+  },
+  itemVericalStickShort: {
+    position: "absolute",
+    left: "-12px",
+    borderLeft: "1px solid rgba(0, 0, 0, 0.2)",
+    width: 0,
+    top: "-8px",
+    height: "23px",
   },
 });
