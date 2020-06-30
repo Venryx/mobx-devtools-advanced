@@ -38,10 +38,12 @@
         "@babel/plugin-proposal-decorators": "^7.7.0",
         "@babel/preset-env": "^7.7.1",
         "@babel/preset-react": "^7.7.0",
+        "@types/chrome": "0.0.117",
+        "@types/node": "file:./typings/empty",
         "@types/react": "^16.9.11",
         "@typescript-eslint/eslint-plugin": "^2.7.0",
         "@typescript-eslint/parser": "^2.7.0",
-        "aphrodite": "^1.2.4",
+        "aphrodite": "^2.4.0",
         "archiver": "^2.0.3",
         "babel-eslint": "^10.0.3",
         "babel-loader": "^8.0.6",
@@ -105,11 +107,9 @@
         "webpack-cli": "^3.3.12",
         "webpack-dev-server": "^3.9.0",
         "webpack-string-replacer": "0.0.15",
-        "write-file-webpack-plugin": "^4.5.1",
-        "@types/node": "file:./typings/empty"
+        "write-file-webpack-plugin": "^4.5.1"
     },
     "dependencies": {
-        "@types/chrome": "0.0.117",
         "geckodriver": "^1.19.1"
     }
 }

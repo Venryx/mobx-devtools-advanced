@@ -119,22 +119,6 @@ export class LObjDiffPreview extends React.PureComponent<{change: Change, access
 					{(remov || add)?.name}:{" "}
 					{remov && <span className={css(styles2.propValueRemoved)}><ChangeDataViewerPopover accessors={accessors} path={path.concat(remov.path)}/></span>}
 					{add && <span className={css(styles2.propValueAdded)}><ChangeDataViewerPopover accessors={accessors} path={path.concat(add.path)}/></span>}
-					{/*{removed.map((diff, i)=>(
-						<div className={css(styles2.diffRow, styles2.removed)} key={i}>
-							<div className={css(styles2.propName, styles2.propNameRemoved)}>{diff.name}</div>
-							<div className={css(styles2.propValue, styles2.propValueRemoved)}>
-								<ChangeDataViewerPopover accessors={accessors} path={path.concat(diff.path)}/>
-							</div>
-						</div>
-					))}
-					{added.map((diff, i)=>(
-						<div className={css(styles.diffRow, styles.added)} key={i}>
-							{diff.name !== removed[0]?.name && <div className={css(styles2.propName, styles2.propNameAdded)}>{diff.name}</div>}
-							<div className={css(styles2.propValue, styles2.propValueAdded)}>
-								<ChangeDataViewerPopover accessors={accessors} path={path.concat(diff.path)}/>
-							</div>
-						</div>
-					))*/}
 				</div>
 			</div>
 		);
@@ -152,35 +136,6 @@ const styles2 = StyleSheet.create({
 		display: "table",
 	},
 	title: {},
-	diffRow: {
-		display: "inline-block",
-	},
-	propName: {
-		display: "inline-block",
-		minWidth: 70,
-		//maxWidth: 180,
-		overflow: "hidden",
-		textOverflow: "ellipsis",
-		whiteSpace: "nowrap",
-		padding: 5,
-	},
-	propNameRemoved: {
-		backgroundColor: "rgba(245, 0, 30, 0.13)",
-	},
-	propNameAdded: {
-		backgroundColor: "rgba(0, 246, 54, 0.18)",
-	},
-	propValue: {
-		padding: "5px 5px 5px 20px",
-		flex: "1 1 auto",
-		display: "inline-block",
-		position: "relative",
-		":before": {
-			position: "absolute",
-			left: 5,
-			flex: "0 0 auto",
-		},
-	},
 	propValueRemoved: {
 		backgroundColor: "rgba(245, 0, 30, 0.07)",
 		":before": {
