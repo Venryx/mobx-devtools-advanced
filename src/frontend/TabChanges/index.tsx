@@ -65,8 +65,8 @@ export class TabChanges extends React.PureComponent<
 		return (
 			<div className={css(styles.panel)}>
 				<SecondaryPanel>
-					<ButtonRecord active={logEnabled} onClick={toggleLogging} showTipStartRecoding={!logEnabled && logItemsIds.length === 0}/>
-					<ButtonRecord active={consoleLogEnabled} onClick={toggleConsoleLogging} />
+					<ButtonRecord active={logEnabled} onClick={toggleLogging} showTipStartRecoding={!logEnabled && logItemsIds.length === 0} title="Logging"/>
+					<ButtonRecord active={consoleLogEnabled} onClick={toggleConsoleLogging} title="Console logging"/>
 					<ButtonClear onClick={clearLog} />
 					<InputSearch searchText={searchText} changeSearch={setSearchText}/>
 					<Text ml={5} title="When a change occurs, record/serialize the first X layers of its data-tree. (for stable inspection; only applies after top-level changes)">Auto-serialize depth: </Text>

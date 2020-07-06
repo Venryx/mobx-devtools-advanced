@@ -1,4 +1,4 @@
-import React from "react";
+import React, {HTMLProps} from "react";
 import PropTypes from "prop-types";
 import * as Aphrodite from "aphrodite";
 import {StartRecordingArrow} from "./icons";
@@ -11,9 +11,10 @@ ButtonRecord.propTypes = {
   onClick: PropTypes.func,
 };
 
-export default function ButtonRecord({active, onClick, showTipStartRecoding}) {
+export default function ButtonRecord(props: {active, onClick, showTipStartRecoding} & HTMLProps<HTMLDivElement>) {
+	const {active, onClick, showTipStartRecoding, ...rest} = props;
 	return (
-    <div className={css(styles.button)} onClick={onClick}>
+    <div {...rest} className={css(styles.button)} onClick={onClick}>
       <span className={css(styles.record, active && styles.recordActive)} />
       {showTipStartRecoding && (
         <div className={css(styles.tipStartRecoding)}>
