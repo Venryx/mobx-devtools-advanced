@@ -49,7 +49,7 @@ export class LObjDiff extends React.PureComponent<{change: Change, accessors: Ac
 			<div className={css(styles.container)}>
 				<div className={css(styles.innerContainer)}>
 					{removed.map((diff, i)=>(
-						<div className={css(styles.diffRow, styles.removed)} key={i}>
+						<div className={css(styles.diffRow)} key={i}>
 							<div className={css(styles.propName, styles.propNameRemoved)}>{diff.name}</div>
 							<div className={css(styles.propValue, styles.propValueRemoved)}>
 								<ChangeDataViewerPopover accessors={accessors} path={path.concat(diff.path)}/>
@@ -57,7 +57,7 @@ export class LObjDiff extends React.PureComponent<{change: Change, accessors: Ac
 						</div>
 					))}
 					{added.map((diff, i)=>(
-						<div className={css(styles.diffRow, styles.added)} key={i}>
+						<div className={css(styles.diffRow)} key={i}>
 							<div className={css(styles.propName, styles.propNameAdded)}>{diff.name}</div>
 							<div className={css(styles.propValue, styles.propValueAdded)}>
 								<ChangeDataViewerPopover accessors={accessors} path={path.concat(diff.path)}/>

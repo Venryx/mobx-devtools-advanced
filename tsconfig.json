@@ -9,15 +9,6 @@
 		//"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"experimentalDecorators": true,
-
-		//"rootDir": "src",
-		//"baseUrl": "src",
-		// @types/node fix below doesn't work fsr, so we use "types" to explicitly list the ones we want for now
-		"types": [],
-		/*"paths": {
-			// remove @types/node and such (conflicts with typescript web definitions)
-			"@types/node": ["../Typings/empty.d.ts"]
-		},*/
 	},
 	/*"exclude": [
 		"node_modules",
@@ -32,7 +23,7 @@
 		//"src/**#/*.jsx"
 	],*/
 	"include": [
-		"Typings/**/*.d.ts",
+		"typings/**/*.d.ts",
 		"src/**/*.ts",
 		"src/**/*.tsx"
 	]

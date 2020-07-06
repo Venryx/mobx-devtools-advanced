@@ -15,7 +15,7 @@ function observableName(mobx: MobX, object) {
 	return mobx.getDebugName(object);
 }
 
-function isPrimitive(value) {
+function isPrimitive(value): value is null | undefined | string| number| boolean {
 	return (
 		value === null
     || value === undefined
@@ -78,12 +78,21 @@ export type Change = Partial<
 		time: number;
 		objectName: string;
 		targetName: string;
+		added?: any[];
+		removed?: any[];
+		arguments?: any[];
+		oldValue: any;
+		newValue: any;
+		name?: string;
 		target: any;
 		summary: boolean;
 		hasChildren: boolean;
 		open: boolean;
 		height: number;
 		message: string;
+		object_path: any;
+		newValue_path: any;
+		object: any;
 	}
 >;
 

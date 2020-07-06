@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
 
   rightButtons: {
-    opacity: "var(--log-item-buttons-pane-opacity)",
+    opacity: "var(--log-item-buttons-pane-opacity)" as any,
     display: "flex",
     position: "absolute",
     right: 0,

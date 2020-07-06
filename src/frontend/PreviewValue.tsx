@@ -174,7 +174,7 @@ class PreviewComplexValue extends React.PureComponent<{accessors: AccessorPack, 
 				trimDuplicates: true,
 				keysToIgnore: CE(symbols).VValues(),
 			});
-			return CE(json).KeepAtMost(100, "...}");
+			return CE(json).KeepAtMost(100, "...}").replace(/([{,])"([a-z]+)"/gi, "$1$2");
 		};
 
 		if (Array.isArray(data)) {
@@ -202,10 +202,12 @@ class PreviewComplexValue extends React.PureComponent<{accessors: AccessorPack, 
 		}
 		if (type == "object" || type == "map" || type == "set") {
 			//const dataPreviewStr = ` ${CE(ToJSON_Advanced(data, {trimDuplicates: true})).KeepAtMost(100, "…}")}`;
+			let name = this.props.displayName || data[symbols.name] || "";
+			if (name === "Object") name = "";
 			const dataPreviewStr = ` ${ToJSON_Trimmed(data)}`;
 			return (
 				<span className={css(styles.previewComplex, mobxObject && styles.mobxObject)}>
-					{`${this.props.displayName || data[symbols.name] || ""}${dataPreviewStr}`}
+					{`${name}${dataPreviewStr}`}
 				</span>
 			);
 		}

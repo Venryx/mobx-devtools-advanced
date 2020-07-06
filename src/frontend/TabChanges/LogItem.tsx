@@ -11,6 +11,7 @@ import {Change} from "../../utils/changesProcessor";
 import {ActionsStore} from "../stores/ActionsStore";
 import {GetValueByPath} from "../../utils/General";
 import {AccessorPack, RawAccessorPack} from "../DataViewer/AccessorPack";
+import {symbols} from "../../Bridge";
 
 const {css, StyleSheet} = Aphrodite;
 
@@ -94,29 +95,33 @@ export class LogItem extends React.Component<
 		switch (change.type) {
 			case "action":
 			case "transaction":
-			case "reaction":
+			case "reaction": {
+				const objectName = change.objectName || change.object?.[symbols.name];
+				const name = <>{change.type} {objectName ? `${objectName}.` : ""}{change.name || "??"}({
+								(change.arguments || []).map((_, i)=><><ChangeDataViewerPopover accessors={accessors} path={path.concat("arguments", i)} />, </>)})</>;
 				return (
 					<div className={css(styles.headContent)}>
 						<span className={css(styles.headContentTitle)}>
-							{change.name
-								? change.name
-								: change.type.toUpperCase().slice(0, 1) + change.type.slice(1)}
+							{name}
 						</span>
 						{" "}
-						{change.object && (
+						{change.object && <>
+							{"on "}
 							<ChangeDataViewerPopover accessors={accessors} path={path.concat("object")} displayName={change.objectName} className={css(styles.headContentMisc)}/>
-						)}
+						</>}
 						{changeViewer}
 					</div>
 				);
-
+			}
 			case "add":
 			case "delete":
 			case "update":
 			case "splice":
 				return (
 					<div className={css(styles.headContent)}>
-						<ChangeDataViewerPopover accessors={accessors} path={path.concat("object")} displayName={change.objectName} className={css(styles.headContentMisc)}/>
+						<span className={css(styles.headContentTitle)}>
+							{change.type}
+						</span>
 						<PopoverTrigger
 							className={css(styles.headContentMisc)}
 							requireClick
@@ -128,9 +133,11 @@ export class LogItem extends React.Component<
 							)}
 						>
 							<div>
-								<LObjDiffPreview change={change} />
+								<LObjDiffPreview change={change} path={path} accessors={accessors} />
 							</div>
 						</PopoverTrigger>
+						{" on "}
+						<ChangeDataViewerPopover accessors={accessors} path={path.concat("object")} displayName={change.objectName} className={css(styles.headContentMisc)}/>
 						{changeViewer}
 					</div>
 				);
@@ -139,7 +146,7 @@ export class LogItem extends React.Component<
 					<div className={css(styles.headContent, styles.headContentWithIcon)}>
 						<IconComputed className={css(styles.headContentIcon)} />
 						<span className={css(styles.headContentTitle)}>
-							Computed
+							computed
 							{change.targetName}
 						</span>
 						{change.object && (
